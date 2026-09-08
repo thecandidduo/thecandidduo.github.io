@@ -13,7 +13,7 @@ author: The Candid Duo
 # Your live web address.
 # If your repo is named  <username>.github.io  keep baseurl empty (recommended).
 # If it's a normal repo (e.g. "blog"), set baseurl to "/blog".
-url: "https://nadyarizka.github.io"    # << CHANGE  (your GitHub Pages URL)
+url: "https://thecandidduo.github.io"  # << CHANGE  (your GitHub Pages URL)
 baseurl: ""                            # << CHANGE only if using a project repo
 
 # ---- Build settings (leave as-is) ----

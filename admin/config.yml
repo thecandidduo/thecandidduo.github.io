@@ -6,7 +6,7 @@
 
 backend:
   name: github
-  repo: nadyarizka/nadyarizka.github.io
+  repo: thecandidduo/thecandidduo.github.io
   branch: main
   base_url: https://candidduo-cms-auth.thecandiduo2.workers.dev
 
@@ -15,8 +15,8 @@ media_folder: "assets/images/uploads"
 public_folder: "/assets/images/uploads"
 
 # Nice touches for the editor UI
-site_url: https://nadyarizka.github.io
-logo_url: https://nadyarizka.github.io/assets/images/favicon.svg
+site_url: https://thecandidduo.github.io
+logo_url: https://thecandidduo.github.io/assets/images/favicon.svg
 publish_mode: simple
 
 collections:

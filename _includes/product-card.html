@@ -9,7 +9,7 @@
     {% if p.blurb %}<p class="product-card__blurb">{{ p.blurb }}</p>{% endif %}
     <div class="product-card__pills">
       {% if p.platform %}<span class="pill pill--platform">Available on {{ p.platform }}</span>{% endif %}
-      {% if p.country %}<span class="pill pill--country"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>{{ p.country }}</span>{% endif %}
+      {% if p.country %}<span class="pill pill--country"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>{{ p.country | join: ", " }}</span>{% endif %}
     </div>
     <div class="product-card__foot">
       {% if p.price %}<span class="product-card__price">{{ p.price }}</span>{% endif %}

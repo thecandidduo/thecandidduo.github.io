@@ -18,8 +18,11 @@ A one-page checklist. Full details for each item are in **SETUP-GUIDE.md**.
 - [ ] Create a Cloudflare Worker, paste `oauth-worker/worker.js`, Deploy → copy URL
 - [ ] Create a GitHub OAuth App (callback = worker URL + `/callback`)
 - [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` secrets in Cloudflare
-- [ ] In `admin/config.yml`: set `repo`, `base_url`, `site_url`
+- [ ] In `admin/js/config.js`: set `REPO`, `AUTH_BASE_URL`, `SITE_URL`
 - [ ] Log in at `https://YOURNAME.github.io/admin`
+- [ ] *(Optional, Step 6f)* Add `ANTHROPIC_API_KEY` + `GITHUB_REPO` secrets in
+      Cloudflare to turn on **✨ Generate with AI** (Stories) and
+      **Fetch details** (Products)
 
 ## Write
 - [ ] Replace/delete the 4 starter stories with your own

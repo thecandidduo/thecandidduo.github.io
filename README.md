@@ -15,8 +15,8 @@ For a quick one-page checklist, see [`GO-LIVE-CHECKLIST.md`](GO-LIVE-CHECKLIST.m
 
 - **Editorial design** — warm, magazine-style layout with a hero carousel, a
   WATCH/LISTEN ticker, story cards, destinations, and a rich footer.
-- **Write from a dashboard** — Decap CMS at `/admin`. Create and edit posts,
-  homepage sections, pages and the menu without touching code.
+- **Write from a dashboard** — a custom-built admin at `/admin`. Create and
+  edit posts, homepage sections, pages and the menu without touching code.
 - **Monetisation built in** — AdSense-ready ad slots (banner, in-feed,
   in-article) plus `ads.txt` and a privacy policy for approval.
 - **Good for SEO** — clean URLs, sitemap, RSS feed, Open Graph tags and
@@ -44,8 +44,8 @@ _data/navigation.yml   Top menu
 _layouts/ _includes/   Page templates (design)
 assets/css/main.css    Colours & fonts (edit the :root block at the top)
 assets/images/         Images (favicon + starter art + your uploads)
-admin/                 The CMS (config.yml + index.html)
-oauth-worker/          The free login helper for the CMS (Cloudflare)
+admin/                 The CMS (index.html, style.css, js/)
+oauth-worker/          The CMS's login helper, and (optional) AI story proxy (Cloudflare)
 ```
 
 ## License

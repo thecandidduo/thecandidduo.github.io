@@ -173,17 +173,12 @@ along carefully — it's just copy, paste, click.
 
 ### 6d — Point your CMS at the login helper
 
-On GitHub, edit **`admin/config.yml`** and update the `# << CHANGE` lines:
+On GitHub, edit **`admin/js/config.js`** and update the constants:
 
-```yaml
-backend:
-  name: github
-  repo: YOURNAME/YOURNAME.github.io          # your username / your repo name
-  branch: main
-  base_url: https://candidduo-cms-auth.YOURNAME.workers.dev   # your worker URL
-
-site_url: https://YOURNAME.github.io
-logo_url: https://YOURNAME.github.io/assets/images/favicon.svg
+```js
+export const REPO = "YOURNAME/YOURNAME.github.io";        // your username / your repo name
+export const AUTH_BASE_URL = "https://candidduo-cms-auth.YOURNAME.workers.dev"; // your worker URL
+export const SITE_URL = "https://YOURNAME.github.io";
 ```
 
 Commit changes.
@@ -192,24 +187,54 @@ Commit changes.
 
 1. Go to **`https://YOURNAME.github.io/admin`**.
 2. Click **Login with GitHub**, approve the pop-up, and you're in.
-3. You'll see **Story**, **Homepage**, **Pages** and **Navigation** — edit
-   anything, hit **Publish**, and your live site updates in about a minute.
+3. You'll see **Stories**, **Products**, **Homepage**, **Navigation** and
+   **Pages** in the sidebar — edit anything, hit **Save**, and your live site
+   updates in about a minute.
 
 > **Login troubles?** 99% of the time it's a typo. Double-check that the
 > callback URL in 6b ends in `/callback`, that both secrets are saved in
-> Cloudflare, and that `base_url` in `admin/config.yml` exactly matches your
-> worker URL (no trailing slash).
+> Cloudflare, and that `AUTH_BASE_URL` in `admin/js/config.js` exactly matches
+> your worker URL (no trailing slash).
+
+### 6f — Turn on the AI features (optional)
+
+Two optional buttons in the CMS use your own Anthropic API key — the login
+helper worker from 6a proxies both requests so your key never sits in the
+browser's JS, and it costs a few cents per use. Skip this step if you don't
+want either; the rest of the CMS works fine without it.
+
+- **Stories → "✨ Generate with AI"** — give it a prompt (and optionally some
+  photos or a PDF/notes), and it writes a full draft (title, subtitle,
+  summary, tags, body) for you to review and edit before saving.
+- **Products → "Fetch details"** — paste an affiliate/product link and it
+  tries to pull the name, price, photo and a short description straight off
+  the page. Works well on storefronts like Shopee, Lazada and Etsy; sites
+  that block automated visits (Amazon, notably) may only partly fill in, so
+  always double-check before saving.
+
+1. Go to **[console.anthropic.com](https://console.anthropic.com)**, sign up,
+   add billing, and create an **API key**.
+2. Back in Cloudflare (same worker as 6a) → **Settings** → **Variables and
+   Secrets**, add two more **secrets**:
+   - Name `ANTHROPIC_API_KEY` → value = the API key from step 1
+   - Name `GITHUB_REPO` → value = `YOURNAME/YOURNAME.github.io` (same as
+     `REPO` in `admin/js/config.js`) — this makes sure only someone logged
+     into **your** site's CMS can trigger a generation, not a stranger who
+     finds your worker's web address.
+3. **Save / Deploy.**
 
 ---
 
 ## 🟢 Step 7 — Write your first post
 
-1. In the CMS (`/admin`), click **Story → New Story**.
+1. In the CMS (`/admin`), click **Stories** in the sidebar, then **+ New Story**.
+   (If you set up Step 6f, you can click **✨ Generate with AI** here first to
+   get a draft, then edit it like normal.)
 2. Fill in the title, pick a category and destination, upload a **cover image**,
    write a short **summary**, and write your story in the **Body** box.
 3. Turn **"Feature on homepage"** on for the *one* story you want as the big
    feature (turn it off on the old one).
-4. Click **Publish → Publish now**.
+4. Click **Save**.
 
 Your post is live in ~1 minute. The four starter stories are just examples —
 edit or delete them and make the blog yours.
@@ -226,11 +251,13 @@ Your homepage has an **"Our Recent Fav Products"** strip, plus a full
 **Our Favorite Products** page (in the menu under **Shop**). Both are powered by
 the CMS.
 
-1. In the CMS, go to **Product → New Product**.
+1. In the CMS, click **Products** in the sidebar, then **+ New Product**.
+   (If you set up Step 6f, paste your affiliate link into **Fetch details**
+   first — it'll try to fill in the name, price and photo for you.)
 2. Add a photo, name, price, the platform to buy on (Shopee, Amazon, etc.), the
    country it's available in, a **category**, and your **affiliate link**.
 3. Turn on **"Feature on homepage"** for the few you want in the homepage strip.
-4. **Publish.**
+4. Click **Save**.
 
 The **category** you type becomes a filter button on the Products page
 automatically — reuse the same wording (e.g. always "Camera Gear") to group items
@@ -327,8 +354,8 @@ instructions. Tick **Enforce HTTPS**. (Then update `url:` in `_config.yml`.)
 
 | I want to change... | Edit this (or use the CMS) |
 |---|---|
-| A blog post | **CMS → Story** (or files in `_posts/`) |
-| A product / affiliate pick | **CMS → Product** (or files in `_products/`) |
+| A blog post | **CMS → Stories** (or files in `_posts/`) |
+| A product / affiliate pick | **CMS → Products** (or files in `_products/`) |
 | The hero slides / ticker / Watch & Listen cards | **CMS → Homepage** (or `_data/homepage.yml`) |
 | The top menu | **CMS → Navigation** (or `_data/navigation.yml`) |
 | About / Work With Us / Privacy pages | **CMS → Pages** |
@@ -360,8 +387,8 @@ The simplest fix is to use the `YOURNAME.github.io` repo name from Step 2.
 
 **The CMS won't log in.**
 Recheck Step 6: the callback URL must end in `/callback`; both secrets must be
-saved in Cloudflare; `base_url` in `admin/config.yml` must exactly match your
-worker URL with no trailing slash.
+saved in Cloudflare; `AUTH_BASE_URL` in `admin/js/config.js` must exactly
+match your worker URL with no trailing slash.
 
 **Images don't show.**
 Make sure the image was uploaded (in the CMS it happens automatically). If you

@@ -4,66 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <title>Content Manager · The Candid Duo</title>
+  <title>Admin · The Candid Duo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <!--
-    Decap CMS has no official theming API — it's an emotion-styled React app,
-    so these overrides target emotion's auto-generated class names by substring
-    (the hash suffix changes per build, but the readable label doesn't). Verified
-    against the current logged-out screen; the logged-in dashboard uses the same
-    labeling convention but individual selectors here may need adjusting once
-    you see it live, since it can't be tested without your GitHub session.
-  -->
-  <style>
-    :root{
-      --cms-bg:#1c1815;
-      --cms-panel:#2a241f;
-      --cms-ink:#efe7da;
-      --cms-muted:#a89e90;
-      --cms-accent:#c05a2f;
-      --cms-line:#3a332c;
-    }
-    html, body, #nc-root{ background:var(--cms-bg) !important; }
-    body{
-      color:var(--cms-ink);
-      font-family:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    h1,h2,h3,[class*="ViewHeading"],[class*="CardTitle"]{
-      font-family:"Playfair Display", Georgia, serif !important;
-    }
-
-    /* ---- Login screen ---- */
-    [class*="StyledAuthenticationPage"]{ background:var(--cms-bg) !important; }
-    [class*="CustomIconWrapper"] img{ filter:sepia(1) saturate(3) hue-rotate(-10deg) brightness(.9); }
-    [class*="LoginButton"]{
-      background:var(--cms-accent) !important;
-      border-color:var(--cms-accent) !important;
-      color:#fff !important;
-      border-radius:4px !important;
-    }
-    [class*="LoginButton"]:hover{ filter:brightness(1.1); }
-    [class*="GoBackButtonStyle"], [class*="ButtonText"]{ color:var(--cms-muted) !important; }
-    [class*="NetlifyCreditIcon"]{ opacity:.5; }
-
-    /* ---- App chrome (sidebar, top bar, cards, lists) — best effort ---- */
-    [class*="AppMainContainer"], [class*="Sidebar"], [class*="TopBarContainer"],
-    [class*="CardWrapper"], [class*="EntryListing"]{
-      background:var(--cms-panel) !important;
-      color:var(--cms-ink) !important;
-      border-color:var(--cms-line) !important;
-    }
-    [class*="SidebarListItem"] a, [class*="Sidebar"] a{ color:var(--cms-muted) !important; }
-    [class*="SidebarListItem"][class*="active"] a, [class*="Sidebar"] a[class*="active"]{
-      color:var(--cms-accent) !important;
-    }
-    a{ color:var(--cms-accent); }
-    button[class*="default"]{ border-radius:4px !important; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Decap CMS — your on-site editor. Loads from a CDN; nothing to install. -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <div id="app"></div>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -20,9 +20,9 @@ A one-page checklist. Full details for each item are in **SETUP-GUIDE.md**.
 - [ ] Add `GITHUB_CLIENT_ID` + `GITHUB_CLIENT_SECRET` secrets in Cloudflare
 - [ ] In `admin/js/config.js`: set `REPO`, `AUTH_BASE_URL`, `SITE_URL`
 - [ ] Log in at `https://YOURNAME.github.io/admin`
-- [ ] *(Optional, Step 6f)* Add `ANTHROPIC_API_KEY` + `GITHUB_REPO` secrets in
-      Cloudflare to turn on **✨ Generate with AI** (Stories) and
-      **Fetch details** (Products)
+- [ ] *(Optional, Step 6f)* Re-paste updated `worker.js`, add free
+      `GEMINI_API_KEY` + `GITHUB_REPO` secrets in Cloudflare to turn on
+      **✨ Generate with AI** (Stories) and **Fetch details** (Products)
 
 ## Write
 - [ ] Replace/delete the 4 starter stories with your own

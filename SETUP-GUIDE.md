@@ -198,10 +198,11 @@ Commit changes.
 
 ### 6f — Turn on the AI features (optional)
 
-Two optional buttons in the CMS use your own Anthropic API key — the login
-helper worker from 6a proxies both requests so your key never sits in the
-browser's JS, and it costs a few cents per use. Skip this step if you don't
-want either; the rest of the CMS works fine without it.
+Two optional buttons in the CMS use your own free Google Gemini API key — the
+login helper worker from 6a proxies both requests so your key never sits in
+the browser's JS. Google's free tier needs no credit card and comfortably
+covers occasional personal-blog use, so this stays $0. Skip this step if you
+don't want either; the rest of the CMS works fine without it.
 
 - **Stories → "✨ Generate with AI"** — give it a prompt (and optionally some
   photos or a PDF/notes), and it writes a full draft (title, subtitle,
@@ -212,16 +213,23 @@ want either; the rest of the CMS works fine without it.
   that block automated visits (Amazon, notably) may only partly fill in, so
   always double-check before saving.
 
-1. Go to **[console.anthropic.com](https://console.anthropic.com)**, sign up,
-   add billing, and create an **API key**.
-2. Back in Cloudflare (same worker as 6a) → **Settings** → **Variables and
+1. **Update your worker's code.** `oauth-worker/worker.js` grew the two new
+   AI routes after you first pasted it in 6a, so the copy currently deployed
+   on Cloudflare doesn't have them yet. Go to your worker (same one from 6a)
+   → **Edit code**, select all and delete, open `oauth-worker/worker.js` from
+   your website folder again, copy **all** of it, paste it in, and click
+   **Deploy**.
+2. Go to **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**,
+   sign in with any Google account, and click **Create API key** — no billing
+   or credit card needed for the free tier.
+3. Back in Cloudflare (same worker) → **Settings** → **Variables and
    Secrets**, add two more **secrets**:
-   - Name `ANTHROPIC_API_KEY` → value = the API key from step 1
+   - Name `GEMINI_API_KEY` → value = the API key from step 2
    - Name `GITHUB_REPO` → value = `YOURNAME/YOURNAME.github.io` (same as
      `REPO` in `admin/js/config.js`) — this makes sure only someone logged
      into **your** site's CMS can trigger a generation, not a stranger who
      finds your worker's web address.
-3. **Save / Deploy.**
+4. **Save / Deploy.**
 
 ---
 

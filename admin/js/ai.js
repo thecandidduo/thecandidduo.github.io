@@ -1,6 +1,7 @@
-// Client for the worker's /generate-story endpoint (see oauth-worker/worker.js).
-// The worker holds the real Anthropic API key server-side and only accepts
-// requests from a GitHub session with push access to this repo.
+// Client for the worker's /generate-story and /fetch-product endpoints (see
+// oauth-worker/worker.js). The worker holds the real Gemini API key
+// server-side and only accepts requests from a GitHub session with push
+// access to this repo.
 
 import { AUTH_BASE_URL } from "./config.js";
 

@@ -1,13 +1,13 @@
 ---
 title: "A Winter in Jeju: Tangerines, Black Sand, and the Island We Didn't Expect"
 date: 2026-08-18
-category: Culture
-destination: Jeju
-image: /assets/images/hero-jeju.jpg
+category: "Culture"
+destination: "Jeju"
+image: "/assets/images/uploads/1789395738935-img_9147.jpg"
 image_alt: "Volcanic coastline on Jeju Island at golden hour"
 dek: "We came for the crater hikes. We stayed for the tangerine farmers, the haenyeo divers, and the slowest, softest week we've had in a long time."
 excerpt: "We came for the crater hikes and stayed for the tangerine farmers, the sea-women divers, and the slowest, softest week we've had in a long time. Here's the honest Jeju."
-tags: [jeju, south korea, island, slow travel]
+tags: ["jeju", "south korea", "island", "slow travel"]
 featured: true
 ---
 

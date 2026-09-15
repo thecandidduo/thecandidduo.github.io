@@ -26,7 +26,7 @@
  *                           for the AI features only; login works without it
  */
 
-const AI_MODEL = "gemini-2.0-flash";
+const AI_MODEL = "gemini-3.6-flash";
 const MAX_AI_IMAGES = 6;
 const MAX_AI_DOCUMENTS = 3;
 const MAX_FETCHED_IMAGE_BYTES = 8 * 1024 * 1024;

@@ -127,15 +127,28 @@ async function renderCollectionList(key, schema) {
   });
 
   const singular = schema.singular;
+  const view = getListView(key);
   main.innerHTML = `
     <div class="main-header">
       <div><span class="eyebrow">Manage</span><h1>${schema.label}</h1></div>
-      <button id="new-item-btn" class="btn-primary">+ New ${singular}</button>
+      <div class="header-actions">
+        <div class="view-toggle">
+          <button type="button" class="view-toggle-btn ${view === "grid" ? "active" : ""}" data-view="grid" title="Grid view">${ICONS.grid}</button>
+          <button type="button" class="view-toggle-btn ${view === "list" ? "active" : ""}" data-view="list" title="List view">${ICONS.list}</button>
+        </div>
+        <button id="new-item-btn" class="btn-primary">+ New ${singular}</button>
+      </div>
     </div>
-    <div class="card-list">
-      ${items.length === 0 ? `<p class="empty">No ${schema.label.toLowerCase()} yet.</p>` : items.map((item) => collectionCardHtml(item, schema)).join("")}
+    <div class="${view === "grid" ? "card-list" : "row-list"}">
+      ${items.length === 0 ? `<p class="empty">No ${schema.label.toLowerCase()} yet.</p>` : items.map((item) => (view === "grid" ? collectionCardHtml(item, schema) : collectionRowHtml(item, schema))).join("")}
     </div>`;
 
+  main.querySelectorAll(".view-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setListView(key, btn.dataset.view);
+      renderCollectionList(key, schema);
+    });
+  });
   document.getElementById("new-item-btn").addEventListener("click", () => renderCollectionEditor(key, schema, null));
   main.querySelectorAll("[data-open]").forEach((el) => {
     el.addEventListener("click", () => {
@@ -145,20 +158,67 @@ async function renderCollectionList(key, schema) {
   });
 }
 
+function getListView(key) {
+  try {
+    return localStorage.getItem(`cms_view_${key}`) === "list" ? "list" : "grid";
+  } catch {
+    return "grid";
+  }
+}
+function setListView(key, view) {
+  try {
+    localStorage.setItem(`cms_view_${key}`, view);
+  } catch {
+    // Ignore — private browsing or blocked storage just means the preference won't stick.
+  }
+}
+
+// The field (if any) that stores this collection's thumbnail focus point, so
+// list/grid cards crop the same way the live site will.
+function findCropField(schema) {
+  return (schema.fields || []).find((f) => f.type === "image_position" && f.cropFor === schema.imageField);
+}
+
+function badgeInfo(item, schema) {
+  if (schema.draftField && item.data[schema.draftField] === false) return { text: "DRAFT", cls: "pill-draft" };
+  if (schema.badgeField && item.data[schema.badgeField]) return { text: "FEATURED", cls: "pill-featured" };
+  const fallback = item.data.category || item.data.platform || "";
+  return fallback ? { text: fallback, cls: "" } : null;
+}
+
 function collectionCardHtml(item, schema) {
   const title = item.data[schema.titleField] || "(untitled)";
   const img = schema.imageField ? item.data[schema.imageField] : null;
-  const featured = schema.badgeField && item.data[schema.badgeField];
-  const badge = featured ? "FEATURED" : (item.data.category || item.data.platform || "");
+  const cropField = findCropField(schema);
+  const cropPos = cropField ? item.data[cropField.name] : null;
+  const badge = badgeInfo(item, schema);
   const meta = (schema.metaFields || []).map((f) => item.data[f]).filter(Boolean).join(" · ");
   return `
     <div class="card" data-open="${escapeAttr(item.path)}">
-      <div class="card-thumb">${img ? `<img src="${imageSrc(img)}" loading="lazy">` : '<div class="thumb-empty"></div>'}</div>
+      <div class="card-thumb">${img ? `<img src="${imageSrc(img)}" loading="lazy"${cropPos ? ` style="object-position:${escapeAttr(cropPos)}"` : ""}>` : '<div class="thumb-empty"></div>'}</div>
       <div class="card-body">
-        ${badge ? `<span class="pill ${featured ? "pill-featured" : ""}">${escapeHtml(badge)}</span>` : ""}
+        ${badge ? `<span class="pill ${badge.cls}">${escapeHtml(badge.text)}</span>` : ""}
         <h3>${escapeHtml(title)}</h3>
         ${meta ? `<p class="card-meta">${escapeHtml(meta)}</p>` : ""}
       </div>
+    </div>`;
+}
+
+function collectionRowHtml(item, schema) {
+  const title = item.data[schema.titleField] || "(untitled)";
+  const img = schema.imageField ? item.data[schema.imageField] : null;
+  const cropField = findCropField(schema);
+  const cropPos = cropField ? item.data[cropField.name] : null;
+  const badge = badgeInfo(item, schema);
+  const meta = (schema.metaFields || []).map((f) => item.data[f]).filter(Boolean).join(" · ");
+  return `
+    <div class="row-item" data-open="${escapeAttr(item.path)}">
+      <div class="row-thumb">${img ? `<img src="${imageSrc(img)}" loading="lazy"${cropPos ? ` style="object-position:${escapeAttr(cropPos)}"` : ""}>` : '<div class="thumb-empty"></div>'}</div>
+      <div class="row-body">
+        <h3>${escapeHtml(title)}</h3>
+        ${meta ? `<p class="card-meta">${escapeHtml(meta)}</p>` : ""}
+      </div>
+      ${badge ? `<span class="pill ${badge.cls}">${escapeHtml(badge.text)}</span>` : ""}
     </div>`;
 }
 
@@ -188,6 +248,8 @@ function renderCollectionEditor(key, schema, item) {
 
   wireImageFields(main);
   wireMultiselectFields(main);
+  wireCropFields(main);
+  wireBodyImageInsert(main);
   if (key === "posts" && !item) wireAiGenerator(main);
   if (key === "products") wireProductFetch(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
@@ -244,7 +306,9 @@ async function renderDatafile(key, schema) {
   renderDatafileBody(key, schema, st);
 }
 
-// Post summaries for the "Populate from story" hero-slide picker.
+// Post summaries for the "Populate from story" hero-slide picker. Drafts are
+// excluded — their live URL wouldn't resolve, so linking a hero slide to one
+// would 404 until it's published.
 async function loadPostSummaries() {
   const postSchema = SCHEMA.posts;
   const files = (await GH.listDir(state.token, postSchema.folder)).filter((f) => f.type === "file" && f.name.endsWith(".md"));
@@ -257,11 +321,13 @@ async function loadPostSummaries() {
         image: data.image || "",
         subtitle: data.dek || data.excerpt || "",
         url: postUrlFromFilename(f.name),
+        published: data.published !== false,
       };
     })
   );
-  items.sort((a, b) => a.title.localeCompare(b.title));
-  return items;
+  const published = items.filter((p) => p.published);
+  published.sort((a, b) => a.title.localeCompare(b.title));
+  return published;
 }
 
 function postUrlFromFilename(name) {
@@ -452,6 +518,7 @@ async function renderSinglesEditor(key, schema, pageDef) {
       ${bodyField ? bodyFieldHtml(bodyField, body) : ""}
     </form>`;
 
+  wireBodyImageInsert(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
   document.getElementById("save-btn").addEventListener("click", async () => {
     const form = document.getElementById("entry-form");
@@ -644,7 +711,7 @@ function renderFormFields(fields, values, idPrefix = "") {
       (f) => `
     <div class="form-row">
       <label for="${idPrefix}f_${f.name}">${escapeHtml(f.label)}${f.required ? " *" : ""}</label>
-      ${fieldInputHtml(f, values[f.name], idPrefix)}
+      ${fieldInputHtml(f, values[f.name], idPrefix, values)}
       ${f.hint ? `<p class="hint">${escapeHtml(f.hint)}</p>` : ""}
     </div>`
     )
@@ -652,10 +719,19 @@ function renderFormFields(fields, values, idPrefix = "") {
 }
 
 function bodyFieldHtml(field, value) {
-  return `<div class="form-row form-row-full"><label>${escapeHtml(field.label)}</label><textarea data-field="${field.name}" data-type="markdown" rows="18" class="markdown-input">${escapeHtml(value)}</textarea></div>`;
+  return `
+    <div class="form-row form-row-full">
+      <div class="body-field-head">
+        <label>${escapeHtml(field.label)}</label>
+        <button type="button" class="btn-secondary body-insert-btn" data-target="${field.name}">+ Insert image</button>
+      </div>
+      <textarea data-field="${field.name}" data-type="markdown" rows="18" class="markdown-input">${escapeHtml(value)}</textarea>
+      <input type="file" accept="image/*" class="body-insert-input" data-target="${field.name}" hidden>
+      <p class="hint body-insert-status" data-target="${field.name}"></p>
+    </div>`;
 }
 
-function fieldInputHtml(field, rawValue, idPrefix = "") {
+function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}) {
   const id = `${idPrefix}f_${field.name}`;
   const value = rawValue !== undefined && rawValue !== null ? rawValue : field.default !== undefined ? field.default : "";
   switch (field.type) {
@@ -679,6 +755,24 @@ function fieldInputHtml(field, rawValue, idPrefix = "") {
           <input type="file" accept="image/*" data-role="file-input" id="${id}">
           <div class="image-status"></div>
         </div>`;
+    case "image_position": {
+      const posValue = value || field.default || "center center";
+      const imgPath = field.cropFor ? allValues[field.cropFor] : "";
+      const positions = [
+        "left top", "center top", "right top",
+        "left center", "center center", "right center",
+        "left bottom", "center bottom", "right bottom",
+      ];
+      return `
+        <div class="crop-field" data-field="${field.name}" data-type="image_position" data-crop-for="${escapeAttr(field.cropFor || "")}">
+          <input type="hidden" data-role="value" value="${escapeAttr(posValue)}">
+          <div class="crop-preview" style="${imgPath ? `background-image:url('${imageSrc(imgPath)}');` : ""}background-position:${escapeAttr(posValue)}">
+            <div class="crop-grid">
+              ${positions.map((p) => `<button type="button" class="crop-dot ${p === posValue ? "active" : ""}" data-pos="${p}" title="${p}"></button>`).join("")}
+            </div>
+          </div>
+        </div>`;
+    }
     case "multiselect": {
       const selected = Array.isArray(value) ? value : value ? [value] : [];
       return `
@@ -711,6 +805,11 @@ function collectFormValues(container, fields) {
       values[f.name] = wrap ? Array.from(wrap.querySelectorAll('input[type="checkbox"]:checked')).map((c) => c.value) : [];
       continue;
     }
+    if (f.type === "image_position") {
+      const wrap = container.querySelector(`[data-field="${f.name}"][data-type="image_position"]`);
+      values[f.name] = wrap ? wrap.querySelector('[data-role="value"]').value : "";
+      continue;
+    }
     const el = container.querySelector(`[data-field="${f.name}"]`);
     if (!el) continue;
     if (f.type === "boolean") values[f.name] = el.checked;
@@ -727,6 +826,7 @@ function wireImageFields(scopeEl) {
     const fileInput = wrap.querySelector('[data-role="file-input"]');
     if (!fileInput || fileInput.dataset.wired) return;
     fileInput.dataset.wired = "1";
+    const fieldName = wrap.dataset.field;
     fileInput.addEventListener("change", async () => {
       const file = fileInput.files[0];
       if (!file) return;
@@ -737,14 +837,79 @@ function wireImageFields(scopeEl) {
       }
       const statusEl = wrap.querySelector(".image-status");
       const preview = wrap.querySelector(".image-preview");
-      preview.innerHTML = `<img src="${URL.createObjectURL(file)}">`;
+      const objectUrl = URL.createObjectURL(file);
+      preview.innerHTML = `<img src="${objectUrl}">`;
+      updateCropPreview(scopeEl, fieldName, objectUrl);
       statusEl.textContent = "Uploading…";
       try {
         const path = await uploadImage(file);
         wrap.querySelector('[data-role="value"]').value = path;
         statusEl.textContent = "Uploaded ✓";
+        updateCropPreview(scopeEl, fieldName, imageSrc(path));
       } catch (e) {
         statusEl.textContent = "Upload failed: " + e.message;
+      }
+    });
+  });
+}
+
+function updateCropPreview(scopeEl, imageFieldName, url) {
+  const preview = scopeEl.querySelector(`.crop-field[data-crop-for="${imageFieldName}"] .crop-preview`);
+  if (preview) preview.style.backgroundImage = `url('${url}')`;
+}
+
+function wireCropFields(scopeEl) {
+  scopeEl.querySelectorAll(".crop-field").forEach((wrap) => {
+    if (wrap.dataset.wired) return;
+    wrap.dataset.wired = "1";
+    const preview = wrap.querySelector(".crop-preview");
+    const hidden = wrap.querySelector('[data-role="value"]');
+    wrap.querySelectorAll(".crop-dot").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        hidden.value = btn.dataset.pos;
+        preview.style.backgroundPosition = btn.dataset.pos;
+        wrap.querySelectorAll(".crop-dot").forEach((b) => b.classList.toggle("active", b === btn));
+      });
+    });
+  });
+}
+
+// "+ Insert image" toolbar above any markdown body field — uploads the
+// chosen photo and drops a Markdown image tag at the cursor position.
+function wireBodyImageInsert(scopeEl) {
+  scopeEl.querySelectorAll(".body-insert-btn").forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    const target = btn.dataset.target;
+    const fileInput = scopeEl.querySelector(`.body-insert-input[data-target="${target}"]`);
+    const statusEl = scopeEl.querySelector(`.body-insert-status[data-target="${target}"]`);
+    const textarea = scopeEl.querySelector(`[data-field="${target}"][data-type="markdown"]`);
+    btn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        alert("Image too large (max 8MB).");
+        fileInput.value = "";
+        return;
+      }
+      const start = textarea.selectionStart ?? textarea.value.length;
+      const end = textarea.selectionEnd ?? textarea.value.length;
+      btn.disabled = true;
+      statusEl.textContent = "Uploading…";
+      try {
+        const path = await uploadImage(file);
+        const snippet = `\n\n![](${path})\n\n`;
+        textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
+        const newPos = start + snippet.length;
+        textarea.focus();
+        textarea.setSelectionRange(newPos, newPos);
+        statusEl.textContent = "Image inserted ✓";
+      } catch (e) {
+        statusEl.textContent = "Upload failed: " + e.message;
+      } finally {
+        btn.disabled = false;
+        fileInput.value = "";
       }
     });
   });
@@ -835,6 +1000,8 @@ const ICONS = {
   navigation: '<svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>',
   pages: '<svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm8 1.5V8h4.5Z"/></svg>',
   default: '<svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5Zm0 7L2 14l10 5 10-5Z"/></svg>',
+  grid: '<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg>',
+  list: '<svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zm7 1h9v2h-9zM4 10h5v5H4zm7 1h9v2h-9zM4 16h5v5H4zm7 1h9v2h-9z"/></svg>',
 };
 
 init();

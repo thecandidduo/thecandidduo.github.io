@@ -21,7 +21,7 @@ header_overlay: true
     {% if lead %}
     <article class="featured card">
       <a class="card__media" href="{{ lead.url | relative_url }}" aria-label="{{ lead.title | escape }}">
-        {% if lead.image %}<img src="{{ lead.image | relative_url }}" alt="{{ lead.title | escape }}">{% endif %}
+        {% if lead.image %}<img src="{{ lead.image | relative_url }}" alt="{{ lead.title | escape }}" style="object-position: {{ lead.image_position | default: 'center center' }}">{% endif %}
       </a>
       <div>
         <div class="card__meta">

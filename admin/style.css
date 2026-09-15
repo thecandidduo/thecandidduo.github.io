@@ -112,6 +112,25 @@ a { color: var(--accent); }
 .card-meta { color: var(--muted); font-size: .78rem; margin: 0; }
 .pill { display: inline-block; background: var(--panel-alt); color: var(--muted); font-size: .65rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: .2rem .5rem; border-radius: 3px; }
 .pill-featured { background: var(--accent); color: #fff; }
+.pill-draft { background: none; border: 1px solid var(--line); }
+
+/* ---- Grid/list view toggle ---- */
+.view-toggle { display: flex; gap: .2rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: .2rem; }
+.view-toggle-btn { background: none; border: 0; padding: .4rem; border-radius: 3px; color: var(--muted); display: flex; }
+.view-toggle-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.view-toggle-btn:hover { color: var(--ink); }
+.view-toggle-btn.active { background: var(--accent); color: #fff; }
+
+/* ---- List (row) view ---- */
+.row-list { display: flex; flex-direction: column; gap: .5rem; }
+.row-item { display: flex; align-items: center; gap: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: .6rem .9rem; cursor: pointer; transition: border-color .15s; }
+.row-item:hover { border-color: var(--accent); }
+.row-thumb { width: 56px; height: 56px; flex-shrink: 0; border-radius: 3px; overflow: hidden; background: var(--panel-alt); }
+.row-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.row-body { flex: 1; min-width: 0; }
+.row-body h3 { font-size: .92rem; margin: 0 0 .15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-body .card-meta { margin: 0; }
+.row-item .pill { flex-shrink: 0; }
 
 /* ---- Forms ---- */
 .entry-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.2rem; }
@@ -158,6 +177,22 @@ textarea { resize: vertical; }
 
 .story-picker-row { background: var(--panel-alt); border: 1px dashed var(--line); border-radius: var(--radius); padding: .8rem .9rem; margin-bottom: 1.2rem; }
 .story-picker-row label { color: var(--accent); }
+
+/* ---- Thumbnail focus-point (crop) picker ---- */
+.crop-field { max-width: 240px; }
+.crop-preview { position: relative; aspect-ratio: 16/9; background-color: var(--panel-alt); background-size: cover; background-repeat: no-repeat; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.crop-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+.crop-dot { background: rgba(0,0,0,.1); border: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; }
+.crop-dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.7); transition: transform .1s, background .1s; }
+.crop-dot:hover { background: rgba(0,0,0,.02); }
+.crop-dot.active { background: rgba(192,90,47,.28); }
+.crop-dot.active::after { background: var(--accent); transform: scale(1.5); }
+
+/* ---- "+ Insert image" in a markdown body ---- */
+.body-field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .35rem; }
+.body-field-head label { margin: 0; }
+.body-insert-btn { padding: .3rem .7rem; font-size: .78rem; }
+.body-insert-status { margin-top: .4rem; }
 
 /* ---- AI story generation ---- */
 .ai-box { margin-bottom: 1.4rem; }

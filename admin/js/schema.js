@@ -1,9 +1,11 @@
 // Source of truth for what the CMS can edit — replaces admin/config.yml
 // (Decap's schema format). Field shape: { name, label, type, options?,
 // default?, hint?, required? }. type is one of:
-//   text | textarea | date | select | multiselect | boolean | tags | image | markdown
+//   text | textarea | date | select | multiselect | boolean | tags | image | image_position | markdown
 // `isBody: true` marks the one field (per collection) that holds the
 // markdown body instead of a front matter key.
+// `image_position` renders a focus-point picker over the field named in
+// `cropFor` and stores a CSS object-position value (e.g. "center top").
 
 const COUNTRY_OPTIONS = [
   "Available Worldwide",
@@ -16,9 +18,11 @@ const COUNTRY_OPTIONS = [
 const postFields = [
   { name: "title", label: "Title", type: "text", required: true },
   { name: "date", label: "Publish date", type: "date", required: true },
+  { name: "published", label: "Published", type: "boolean", default: true, hint: "Turn off to save as a draft — it won't appear on the live site until turned back on." },
   { name: "category", label: "Category", type: "select", options: ["Culture", "Adventure", "Guide", "Food", "Reflection"], default: "Culture" },
   { name: "destination", label: "Destination", type: "select", options: ["Jeju", "New Zealand", "Tasmania", "Umroh", "Singapore", "Other"] },
   { name: "image", label: "Cover image", type: "image", hint: "Best size ~1600×900px." },
+  { name: "image_position", label: "Thumbnail focus point", type: "image_position", cropFor: "image", default: "center center", hint: "Click where the important part of the photo is, so cropped thumbnails don't cut it off." },
   { name: "image_alt", label: "Cover image alt text", type: "text", hint: "Describe the photo for accessibility & SEO." },
   { name: "dek", label: "Subtitle (dek)", type: "text", hint: "The italic line under the title." },
   { name: "excerpt", label: "Short summary", type: "textarea", hint: "1–2 sentences. Shown on cards and in Google results." },
@@ -86,6 +90,7 @@ export const SCHEMA = {
     imageField: "image",
     metaFields: ["category", "date"],
     badgeField: "featured",
+    draftField: "published",
     buildFilename(values, existingName) {
       if (existingName) return existingName;
       const date = /^\d{4}-\d{2}-\d{2}$/.test(values.date || "") ? values.date : new Date().toISOString().slice(0, 10);

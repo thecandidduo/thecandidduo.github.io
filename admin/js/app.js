@@ -248,7 +248,6 @@ function renderCollectionEditor(key, schema, item) {
 
   wireImageFields(main);
   wireMultiselectFields(main);
-  wireCropFields(main);
   wireBodyImageInsert(main);
   if (key === "posts" && !item) wireAiGenerator(main);
   if (key === "products") wireProductFetch(main);
@@ -706,12 +705,14 @@ function wireProductFetch(main) {
 
 function renderFormFields(fields, values, idPrefix = "") {
   return fields
-    .filter((f) => !f.isBody)
+    // image_position fields with `cropFor` render nested inside their paired
+    // image field (as the "Crop" button's popover) instead of their own row.
+    .filter((f) => !f.isBody && !(f.type === "image_position" && f.cropFor))
     .map(
       (f) => `
     <div class="form-row">
       <label for="${idPrefix}f_${f.name}">${escapeHtml(f.label)}${f.required ? " *" : ""}</label>
-      ${fieldInputHtml(f, values[f.name], idPrefix, values)}
+      ${fieldInputHtml(f, values[f.name], idPrefix, values, fields)}
       ${f.hint ? `<p class="hint">${escapeHtml(f.hint)}</p>` : ""}
     </div>`
     )
@@ -731,7 +732,20 @@ function bodyFieldHtml(field, value) {
     </div>`;
 }
 
-function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}) {
+const CROP_POSITIONS = [
+  "left top", "center top", "right top",
+  "left center", "center center", "right center",
+  "left bottom", "center bottom", "right bottom",
+];
+
+// The 9-dot overlay shown over an image preview once "Crop" is clicked.
+// Hidden by default; wireImageFields() toggles it and updates the paired
+// image_position value + the <img>'s object-position as dots are clicked.
+function cropGridHtml(posValue) {
+  return `<div class="crop-grid" hidden>${CROP_POSITIONS.map((p) => `<button type="button" class="crop-dot ${p === posValue ? "active" : ""}" data-pos="${p}" title="${p}"></button>`).join("")}</div>`;
+}
+
+function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}, allFields = []) {
   const id = `${idPrefix}f_${field.name}`;
   const value = rawValue !== undefined && rawValue !== null ? rawValue : field.default !== undefined ? field.default : "";
   switch (field.type) {
@@ -747,29 +761,32 @@ function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}) {
         .join("")}</select>`;
     case "tags":
       return `<input type="text" id="${id}" data-field="${field.name}" data-type="tags" value="${escapeAttr(Array.isArray(value) ? value.join(", ") : value)}" placeholder="comma, separated, tags">`;
-    case "image":
+    case "image": {
+      const cropField = allFields.find((f) => f.type === "image_position" && f.cropFor === field.name);
+      const posValue = cropField ? allValues[cropField.name] || cropField.default || "center center" : "";
       return `
         <div class="image-field" data-field="${field.name}" data-type="image">
           <input type="hidden" data-role="value" value="${escapeAttr(value)}">
-          <div class="image-preview">${value ? `<img src="${imageSrc(value)}">` : '<div class="image-empty">No image</div>'}</div>
+          <div class="image-preview">
+            ${value ? `<img src="${imageSrc(value)}"${posValue ? ` style="object-position:${escapeAttr(posValue)}"` : ""}>` : '<div class="image-empty">No image</div>'}
+            ${value && cropField ? cropGridHtml(posValue) : ""}
+            ${value && cropField ? `<button type="button" class="crop-toggle-btn"${cropField.hint ? ` title="${escapeAttr(cropField.hint)}"` : ""}>✂ Crop</button>` : ""}
+          </div>
+          ${cropField ? `<div class="crop-value-holder" data-field="${cropField.name}" data-type="image_position" data-hint="${escapeAttr(cropField.hint || "")}" hidden><input type="hidden" data-role="value" value="${escapeAttr(posValue)}"></div>` : ""}
           <input type="file" accept="image/*" data-role="file-input" id="${id}">
           <div class="image-status"></div>
         </div>`;
+    }
+    // Fallback for an image_position field with no `cropFor` pairing — not
+    // used today (both current fields are paired), kept so the type still
+    // renders sensibly if reused standalone.
     case "image_position": {
       const posValue = value || field.default || "center center";
-      const imgPath = field.cropFor ? allValues[field.cropFor] : "";
-      const positions = [
-        "left top", "center top", "right top",
-        "left center", "center center", "right center",
-        "left bottom", "center bottom", "right bottom",
-      ];
       return `
-        <div class="crop-field" data-field="${field.name}" data-type="image_position" data-crop-for="${escapeAttr(field.cropFor || "")}">
+        <div class="crop-value-holder" data-field="${field.name}" data-type="image_position">
           <input type="hidden" data-role="value" value="${escapeAttr(posValue)}">
-          <div class="crop-preview" style="${imgPath ? `background-image:url('${imageSrc(imgPath)}');` : ""}background-position:${escapeAttr(posValue)}">
-            <div class="crop-grid">
-              ${positions.map((p) => `<button type="button" class="crop-dot ${p === posValue ? "active" : ""}" data-pos="${p}" title="${p}"></button>`).join("")}
-            </div>
+          <div class="crop-preview-standalone">
+            <div class="crop-grid">${CROP_POSITIONS.map((p) => `<button type="button" class="crop-dot ${p === posValue ? "active" : ""}" data-pos="${p}" title="${p}"></button>`).join("")}</div>
           </div>
         </div>`;
     }
@@ -826,7 +843,6 @@ function wireImageFields(scopeEl) {
     const fileInput = wrap.querySelector('[data-role="file-input"]');
     if (!fileInput || fileInput.dataset.wired) return;
     fileInput.dataset.wired = "1";
-    const fieldName = wrap.dataset.field;
     fileInput.addEventListener("change", async () => {
       const file = fileInput.files[0];
       if (!file) return;
@@ -837,39 +853,64 @@ function wireImageFields(scopeEl) {
       }
       const statusEl = wrap.querySelector(".image-status");
       const preview = wrap.querySelector(".image-preview");
+      const cropHolder = wrap.querySelector(".crop-value-holder");
+      const posValue = cropHolder ? cropHolder.querySelector('[data-role="value"]').value || "center center" : "";
       const objectUrl = URL.createObjectURL(file);
-      preview.innerHTML = `<img src="${objectUrl}">`;
-      updateCropPreview(scopeEl, fieldName, objectUrl);
+      preview.innerHTML = `<img src="${objectUrl}"${posValue ? ` style="object-position:${posValue}"` : ""}>` + (cropHolder ? cropGridHtml(posValue) : "");
+      ensureCropToggleButton(wrap);
+      wireCropUi(scopeEl);
       statusEl.textContent = "Uploading…";
       try {
         const path = await uploadImage(file);
         wrap.querySelector('[data-role="value"]').value = path;
         statusEl.textContent = "Uploaded ✓";
-        updateCropPreview(scopeEl, fieldName, imageSrc(path));
       } catch (e) {
         statusEl.textContent = "Upload failed: " + e.message;
       }
     });
   });
+  wireCropUi(scopeEl);
 }
 
-function updateCropPreview(scopeEl, imageFieldName, url) {
-  const preview = scopeEl.querySelector(`.crop-field[data-crop-for="${imageFieldName}"] .crop-preview`);
-  if (preview) preview.style.backgroundImage = `url('${url}')`;
+// Adds the "Crop" toggle button the first time a field gets an image (a
+// field that started empty has no button yet — nothing to crop until now).
+function ensureCropToggleButton(wrap) {
+  if (wrap.querySelector(".crop-toggle-btn")) return;
+  const holder = wrap.querySelector(".crop-value-holder");
+  if (!holder) return;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "crop-toggle-btn";
+  btn.textContent = "✂ Crop";
+  if (holder.dataset.hint) btn.title = holder.dataset.hint;
+  wrap.querySelector(".image-preview").appendChild(btn);
 }
 
-function wireCropFields(scopeEl) {
-  scopeEl.querySelectorAll(".crop-field").forEach((wrap) => {
-    if (wrap.dataset.wired) return;
-    wrap.dataset.wired = "1";
-    const preview = wrap.querySelector(".crop-preview");
-    const hidden = wrap.querySelector('[data-role="value"]');
-    wrap.querySelectorAll(".crop-dot").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        hidden.value = btn.dataset.pos;
-        preview.style.backgroundPosition = btn.dataset.pos;
-        wrap.querySelectorAll(".crop-dot").forEach((b) => b.classList.toggle("active", b === btn));
-      });
+// Wires the "Crop" button (toggles the dot-grid open/closed) and the dots
+// themselves (update the paired image_position value + the live preview's
+// object-position). Safe to call repeatedly — every listener is guarded.
+function wireCropUi(scopeEl) {
+  scopeEl.querySelectorAll(".crop-toggle-btn").forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    btn.addEventListener("click", () => {
+      const grid = btn.closest(".image-field")?.querySelector(".crop-grid");
+      if (grid) grid.hidden = !grid.hidden;
+    });
+  });
+  scopeEl.querySelectorAll(".crop-grid .crop-dot").forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    btn.addEventListener("click", () => {
+      const pos = btn.dataset.pos;
+      const grid = btn.closest(".crop-grid");
+      grid.querySelectorAll(".crop-dot").forEach((b) => b.classList.toggle("active", b === btn));
+      const imageField = btn.closest(".image-field");
+      const holder = imageField ? imageField.querySelector(".crop-value-holder") : btn.closest(".crop-value-holder");
+      const hidden = holder?.querySelector('[data-role="value"]');
+      if (hidden) hidden.value = pos;
+      const img = imageField?.querySelector(".image-preview img");
+      if (img) img.style.objectPosition = pos;
     });
   });
 }

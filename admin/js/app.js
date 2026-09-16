@@ -1,7 +1,7 @@
 import { SCHEMA } from "./schema.js";
 import * as GH from "./github-api.js";
 import { login, getToken, setToken, clearToken, fetchCurrentUser } from "./auth.js";
-import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml } from "./content.js";
+import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml, parseFlatYaml, serializeFlatYaml } from "./content.js";
 import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
 import { fetchLatestYoutubeVideo, fetchTiktokOembed } from "./media.js";
@@ -10,6 +10,7 @@ const app = document.getElementById("app");
 const state = { token: null, user: null, section: Object.keys(SCHEMA)[0] };
 
 async function init() {
+  applyFavicon();
   const token = getToken();
   if (token) {
     try {
@@ -20,6 +21,28 @@ async function init() {
     }
   }
   render();
+}
+
+// admin/index.html has no build-time templating (it's a plain static file,
+// not processed by Jekyll), so the CMS's own favicon — same one used on the
+// live site — has to be applied at runtime instead of via a <link> Jekyll
+// would fill in. Runs before login too (anonymous read of a public repo).
+async function applyFavicon() {
+  try {
+    const file = await GH.getFile(state.token, SCHEMA.settings.file);
+    if (!file) return;
+    const data = parseFlatYaml(file.text);
+    if (!data.favicon) return;
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = imageSrc(data.favicon);
+  } catch {
+    // Non-critical — the admin just keeps the browser's default icon.
+  }
 }
 
 function render() {
@@ -104,6 +127,7 @@ async function renderSection(key) {
     if (schema.kind === "collection") await renderCollectionList(key, schema);
     else if (schema.kind === "datafile") await renderDatafile(key, schema);
     else if (schema.kind === "singles") await renderSingles(key, schema);
+    else if (schema.kind === "settings") await renderSettingsEditor(key, schema);
   } catch (e) {
     main.innerHTML = `<div class="error-banner">${escapeHtml(e.message)}</div>`;
   }
@@ -259,7 +283,14 @@ function renderCollectionEditor(key, schema, item) {
         await GH.deleteFile(state.token, item.path, `Delete ${singular}: ${values[schema.titleField]}`, item.sha);
         renderSection(key);
       } catch (e) {
-        showFormError(e.message);
+        if (e.conflict) {
+          showFormError("This was changed elsewhere since you opened it, so deleting now could remove the wrong version.", {
+            label: "Reload latest",
+            onClick: () => reopenCollectionEditor(key, schema, item.path),
+          });
+        } else {
+          showFormError(e.message);
+        }
       }
     });
   }
@@ -282,7 +313,14 @@ function renderCollectionEditor(key, schema, item) {
       await GH.putTextFile(state.token, path, text, `${item ? "Update" : "Create"} ${singular}: ${newValues[schema.titleField]}`, item ? item.sha : undefined);
       renderSection(key);
     } catch (e) {
-      showFormError(e.message);
+      if (e.conflict) {
+        showFormError(`This ${singular.toLowerCase()} was changed elsewhere since you opened it — your edits here haven't been saved. Reload to see the latest version, then reapply your changes.`, {
+          label: "Reload latest",
+          onClick: () => (item ? reopenCollectionEditor(key, schema, item.path) : renderSection(key)),
+        });
+      } else {
+        showFormError(e.message);
+      }
       btn.disabled = false;
       btn.textContent = "Save";
     }
@@ -370,7 +408,14 @@ function renderDatafileBody(key, schema, st) {
         btn.textContent = "Save changes";
       }, 1500);
     } catch (e) {
-      showFormError(e.message);
+      if (e.conflict) {
+        showFormError(`${schema.label} was changed elsewhere since you opened it — your edits here haven't been saved. Reload to see the latest version, then reapply your changes.`, {
+          label: "Reload latest",
+          onClick: () => renderDatafile(key, schema),
+        });
+      } else {
+        showFormError(e.message);
+      }
       btn.disabled = false;
       btn.textContent = "Save changes";
     }
@@ -610,7 +655,64 @@ async function renderSinglesEditor(key, schema, pageDef) {
       await GH.putTextFile(state.token, pageDef.file, text, `Update page: ${pageDef.label}`, file ? file.sha : undefined);
       renderSection(key);
     } catch (e) {
-      showFormError(e.message);
+      if (e.conflict) {
+        showFormError("This page was changed elsewhere since you opened it — your edits here haven't been saved. Reload to see the latest version, then reapply your changes.", {
+          label: "Reload latest",
+          onClick: () => renderSinglesEditor(key, schema, pageDef),
+        });
+      } else {
+        showFormError(e.message);
+      }
+      btn.disabled = false;
+      btn.textContent = "Save";
+    }
+  });
+}
+
+// ---------------- Settings (single flat file, no list/body) ----------------
+
+async function renderSettingsEditor(key, schema) {
+  const main = document.getElementById("main");
+  const file = await GH.getFile(state.token, schema.file);
+  const data = file ? parseFlatYaml(file.text) : {};
+  let sha = file ? file.sha : undefined;
+
+  main.innerHTML = `
+    <div class="main-header">
+      <div><span class="eyebrow">Manage</span><h1>${schema.label}</h1></div>
+      <div class="header-actions"><button id="save-btn" class="btn-primary">Save</button></div>
+    </div>
+    <div class="error-banner" id="form-error" hidden></div>
+    <form id="entry-form" class="entry-form">
+      ${renderFormFields(schema.fields, data)}
+    </form>`;
+
+  wireImageFields(main);
+  document.getElementById("save-btn").addEventListener("click", async () => {
+    const form = document.getElementById("entry-form");
+    const { values } = collectFormValues(form, schema.fields);
+    const text = serializeFlatYaml(values, schema.fields);
+    const btn = document.getElementById("save-btn");
+    btn.disabled = true;
+    btn.textContent = "Saving…";
+    try {
+      const result = await GH.putTextFile(state.token, schema.file, text, `Update ${schema.label}`, sha);
+      sha = result.content.sha;
+      applyFavicon();
+      btn.textContent = "Saved ✓";
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = "Save";
+      }, 1500);
+    } catch (e) {
+      if (e.conflict) {
+        showFormError(`${schema.label} was changed elsewhere since you opened it — your edits here haven't been saved. Reload to see the latest version, then reapply your changes.`, {
+          label: "Reload latest",
+          onClick: () => renderSettingsEditor(key, schema),
+        });
+      } else {
+        showFormError(e.message);
+      }
       btn.disabled = false;
       btn.textContent = "Save";
     }
@@ -1244,12 +1346,41 @@ function imageSrc(path) {
   return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path.replace(/^\//, "")}`;
 }
 
-function showFormError(msg) {
+// `action`: optional { label, onClick } — rendered as a button inside the
+// banner, e.g. "Reload latest" for a stale-sha save conflict.
+function showFormError(msg, action) {
   const el = document.getElementById("form-error");
-  if (el) {
-    el.hidden = false;
-    el.textContent = msg;
-  } else alert(msg);
+  if (!el) {
+    alert(msg);
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = "";
+  el.appendChild(document.createTextNode(msg));
+  if (action) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "error-banner-action";
+    btn.textContent = action.label;
+    btn.addEventListener("click", action.onClick);
+    el.appendChild(btn);
+  }
+}
+
+// Re-fetches one collection item fresh (current content + current sha) and
+// reopens its editor — used to recover from a stale-sha save/delete conflict.
+async function reopenCollectionEditor(key, schema, path) {
+  try {
+    const file = await GH.getFile(state.token, path);
+    if (!file) {
+      renderSection(key);
+      return;
+    }
+    const { data, body } = parseFrontmatter(file.text);
+    renderCollectionEditor(key, schema, { name: path.split("/").pop(), path, sha: file.sha, data, body });
+  } catch {
+    renderSection(key);
+  }
 }
 
 function escapeHtml(str) {
@@ -1265,6 +1396,7 @@ const ICONS = {
   homepage: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1Z"/></svg>',
   navigation: '<svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>',
   pages: '<svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm8 1.5V8h4.5Z"/></svg>',
+  settings: '<svg viewBox="0 0 24 24"><path d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Zm8.94 2.5a7.99 7.99 0 0 0-.16-1.6l1.92-1.5-2-3.46-2.26.9a7.97 7.97 0 0 0-1.4-.8L16.6 2h-4l-.44 2.54a7.97 7.97 0 0 0-1.4.8l-2.26-.9-2 3.46 1.92 1.5A7.99 7.99 0 0 0 8.26 11l-2.26.9v.2a7.99 7.99 0 0 0 .16 1.6l-1.92 1.5 2 3.46 2.26-.9c.43.32.9.59 1.4.8L10.4 22h4l.44-2.54c.5-.21.97-.48 1.4-.8l2.26.9 2-3.46-1.92-1.5c.1-.52.16-1.05.16-1.6Z"/></svg>',
   default: '<svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5Zm0 7L2 14l10 5 10-5Z"/></svg>',
   grid: '<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg>',
   list: '<svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zm7 1h9v2h-9zM4 10h5v5H4zm7 1h9v2h-9zM4 16h5v5H4zm7 1h9v2h-9z"/></svg>',

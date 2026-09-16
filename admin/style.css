@@ -97,7 +97,10 @@ a { color: var(--accent); }
 .btn-danger-ghost:hover { color: var(--danger); }
 
 .loading, .empty { color: var(--muted); padding: 2rem 0; }
-.error-banner { background: rgba(192,57,43,.15); border: 1px solid var(--danger); color: #f3b4ab; padding: .7rem 1rem; border-radius: var(--radius); margin-bottom: 1.2rem; font-size: .85rem; }
+.error-banner { background: rgba(192,57,43,.15); border: 1px solid var(--danger); color: #f3b4ab; padding: .7rem 1rem; border-radius: var(--radius); margin-bottom: 1.2rem; font-size: .85rem; display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.error-banner[hidden] { display: none; }
+.error-banner-action { flex-shrink: 0; border-radius: var(--radius); padding: .4rem .8rem; font-size: .8rem; font-weight: 500; border: 1px solid #f3b4ab; background: none; color: #f3b4ab; }
+.error-banner-action:hover { background: #f3b4ab; color: #221d19; }
 
 /* ---- Card list ---- */
 .card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }

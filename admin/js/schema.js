@@ -140,6 +140,14 @@ export const SCHEMA = {
       { key: "privacy", label: "Privacy & Cookies", file: "privacy.md", fields: pageFields },
     ],
   },
+  settings: {
+    label: "Settings",
+    kind: "settings",
+    file: "_data/settings.yml",
+    fields: [
+      { name: "favicon", label: "Favicon", type: "image", hint: "Used for both the live site and this admin panel. A square image works best (e.g. 512×512 .png) — .svg and .ico also work." },
+    ],
+  },
 };
 
 export function slugify(str) {

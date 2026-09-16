@@ -44,6 +44,33 @@ function serializeScalar(value, type) {
   return quoteString(value);
 }
 
+// Shared by frontmatter and plain flat-YAML files: turns a run of
+// `key: value` lines into a data object.
+function parseFlatLines(lines) {
+  const data = {};
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const m = line.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
+    if (!m) continue;
+    data[m[1]] = parseScalar(m[2]);
+  }
+  return data;
+}
+
+// Shared by frontmatter and plain flat-YAML files: `key: value` lines for
+// every field present and non-empty in `data`, in schema order.
+function serializeFlatFields(data, fields) {
+  const lines = [];
+  for (const f of fields) {
+    if (f.isBody) continue;
+    const v = data[f.name];
+    if (v === null || v === undefined || v === "") continue;
+    if (Array.isArray(v) && v.length === 0) continue;
+    lines.push(`${f.name}: ${serializeScalar(v, f.type)}`);
+  }
+  return lines;
+}
+
 export function parseFrontmatter(text) {
   const normalized = text.replace(/\r\n/g, "\n");
   if (!normalized.startsWith("---")) return { data: {}, body: normalized };
@@ -58,30 +85,25 @@ export function parseFrontmatter(text) {
     fmLines.push(lines[i]);
   }
   const body = lines.slice(i).join("\n").replace(/^\n+/, "");
-  const data = {};
-  for (const line of fmLines) {
-    if (!line.trim()) continue;
-    const m = line.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
-    if (!m) continue;
-    data[m[1]] = parseScalar(m[2]);
-  }
-  return { data, body };
+  return { data: parseFlatLines(fmLines), body };
 }
 
 // `fields`: schema field list (order + type), used so output is stable and
 // correctly typed. Fields absent/empty in `data` are omitted, matching how
 // optional front matter fields look in hand-written posts.
 export function serializeFrontmatter(data, body, fields) {
-  const lines = ["---"];
-  for (const f of fields) {
-    if (f.isBody) continue;
-    const v = data[f.name];
-    if (v === null || v === undefined || v === "") continue;
-    if (Array.isArray(v) && v.length === 0) continue;
-    lines.push(`${f.name}: ${serializeScalar(v, f.type)}`);
-  }
-  lines.push("---", "", (body || "").trim(), "");
+  const lines = ["---", ...serializeFlatFields(data, fields), "---", "", (body || "").trim(), ""];
   return lines.join("\n");
+}
+
+// ---- A single flat settings file (e.g. `_data/settings.yml`) — just
+// `key: value` lines, no frontmatter delimiters and no body.
+export function parseFlatYaml(text) {
+  return parseFlatLines(text.replace(/\r\n/g, "\n").split("\n"));
+}
+
+export function serializeFlatYaml(data, fields) {
+  return [...serializeFlatFields(data, fields), ""].join("\n");
 }
 
 // ---- `_data/*.yml`: a dict of top-level keys, each a block sequence of

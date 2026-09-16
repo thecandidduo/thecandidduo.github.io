@@ -53,6 +53,15 @@ async function errorMessage(res, fallback) {
   return body.message || fallback;
 }
 
+// GitHub returns 409 when the `sha` we sent doesn't match the file's current
+// sha — i.e. it changed on GitHub since we last read it. Marking the error
+// lets callers offer "reload the latest version" instead of a generic alert.
+async function apiError(res, fallback) {
+  const err = new Error(await errorMessage(res, fallback));
+  if (res.status === 409) err.conflict = true;
+  return err;
+}
+
 // `base64Content` must already be base64 — callers pass `encodeUtf8Base64(text)`
 // for text files, or raw base64 image bytes for uploads. Omit `sha` to create.
 export async function putFileRaw(token, filePath, base64Content, message, sha) {
@@ -63,7 +72,7 @@ export async function putFileRaw(token, filePath, base64Content, message, sha) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(await errorMessage(res, `Couldn't save ${filePath} (${res.status})`));
+  if (!res.ok) throw await apiError(res, `Couldn't save ${filePath} (${res.status})`);
   return res.json();
 }
 
@@ -77,6 +86,6 @@ export async function deleteFile(token, filePath, message, sha) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message, sha, branch: BRANCH }),
   });
-  if (!res.ok) throw new Error(await errorMessage(res, `Couldn't delete ${filePath} (${res.status})`));
+  if (!res.ok) throw await apiError(res, `Couldn't delete ${filePath} (${res.status})`);
   return res.json();
 }

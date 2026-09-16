@@ -199,9 +199,11 @@ function setListView(key, view) {
 }
 
 // The field (if any) that stores this collection's cropped thumbnail image,
-// so list/grid cards show the same crop the live site will.
+// so list/grid cards show the same crop the live site will. `listThumbnail`
+// disambiguates when a source photo has more than one crop (e.g. posts also
+// have a wide `image_hero` crop that isn't a list-card thumbnail).
 function findCropField(schema) {
-  return (schema.fields || []).find((f) => f.type === "image_crop" && f.cropFor === schema.imageField);
+  return (schema.fields || []).find((f) => f.type === "image_crop" && f.cropFor === schema.imageField && f.listThumbnail);
 }
 
 function badgeInfo(item, schema) {
@@ -342,9 +344,14 @@ async function renderDatafile(key, schema) {
   renderDatafileBody(key, schema, st);
 }
 
-// Post summaries for the "Populate from story" hero-slide picker. Drafts are
-// excluded — their live URL wouldn't resolve, so linking a hero slide to one
-// would 404 until it's published.
+// Post summaries for the "Populate from story" hero-slide picker. Prefers
+// each post's wide `image_hero` crop over its raw cover photo — the hero
+// carousel is a full-bleed panorama, a very different shape from the 4:3
+// `image_thumb` card crop, so reusing that one here would recrop it again
+// and shift its framing (can misalign the subject with the overlaid title
+// text). Falls back to the raw image for posts that don't have a hero crop
+// yet. Drafts are excluded — their live URL wouldn't resolve, so linking a
+// hero slide to one would 404 until it's published.
 async function loadPostSummaries() {
   const postSchema = SCHEMA.posts;
   const files = (await GH.listDir(state.token, postSchema.folder)).filter((f) => f.type === "file" && f.name.endsWith(".md"));
@@ -354,7 +361,7 @@ async function loadPostSummaries() {
       const { data } = parseFrontmatter(file.text);
       return {
         title: data.title || f.name,
-        image: data.image_thumb || data.image || "",
+        image: data.image_hero || data.image || "",
         subtitle: data.dek || data.excerpt || "",
         url: postUrlFromFilename(f.name),
         published: data.published !== false,
@@ -911,16 +918,21 @@ function bodyFieldHtml(field, value) {
     </div>`;
 }
 
-// A small "current thumbnail + Crop button" row nested inside the image
-// field's box. The thumbnail is a genuinely separate, physically-cropped
-// file (produced by the drag/zoom modal in openCropModal()) — the source
-// photo above is never modified.
+// A small "current crop + Crop button" row nested inside the image field's
+// box — one per paired `image_crop` field, since a photo can have more than
+// one crop (a 4:3 thumbnail, a wide hero banner, etc). Each crop is a
+// genuinely separate, physically-cropped file (produced by the drag/zoom
+// modal in openCropModal()) — the source photo above is never modified.
 function thumbCropRowHtml(cropField, thumbValue) {
   return `
-    <div class="thumb-crop-row">
+    <div class="thumb-crop-row" data-crop-field="${cropField.name}">
       <div class="thumb-crop-preview">${thumbValue ? `<img src="${imageSrc(thumbValue)}">` : '<span>No crop yet</span>'}</div>
       <div class="thumb-crop-info">
-        <button type="button" class="btn-secondary crop-open-btn">✂ Crop thumbnail</button>
+        <button type="button" class="btn-secondary crop-open-btn"
+          data-crop-field="${cropField.name}"
+          data-crop-label="${escapeAttr(cropField.label)}"
+          data-aspect-w="${cropField.aspectW || 4}" data-aspect-h="${cropField.aspectH || 3}"
+          data-output-w="${cropField.outputW || 1200}" data-output-h="${cropField.outputH || 900}">✂ ${escapeHtml(cropField.label)}</button>
         ${cropField.hint ? `<p class="hint">${escapeHtml(cropField.hint)}</p>` : ""}
       </div>
     </div>`;
@@ -943,16 +955,20 @@ function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}, allField
     case "tags":
       return `<input type="text" id="${id}" data-field="${field.name}" data-type="tags" value="${escapeAttr(Array.isArray(value) ? value.join(", ") : value)}" placeholder="comma, separated, tags">`;
     case "image": {
-      const cropField = allFields.find((f) => f.type === "image_crop" && f.cropFor === field.name);
-      const thumbValue = cropField ? allValues[cropField.name] || "" : "";
+      const cropFields = allFields.filter((f) => f.type === "image_crop" && f.cropFor === field.name);
       return `
         <div class="image-field" data-field="${field.name}" data-type="image">
           <input type="hidden" data-role="value" value="${escapeAttr(value)}">
           <div class="image-preview">${value ? `<img src="${imageSrc(value)}">` : '<div class="image-empty">No image</div>'}</div>
           <input type="file" accept="image/*" data-role="file-input" id="${id}">
           <div class="image-status"></div>
-          ${value && cropField ? thumbCropRowHtml(cropField, thumbValue) : ""}
-          ${cropField ? `<div class="crop-value-holder" data-field="${cropField.name}" data-type="image_crop" data-hint="${escapeAttr(cropField.hint || "")}" hidden><input type="hidden" data-role="value" value="${escapeAttr(thumbValue)}"></div>` : ""}
+          ${value && cropFields.length ? `<div class="crop-rows">${cropFields.map((cf) => thumbCropRowHtml(cf, allValues[cf.name] || "")).join("")}</div>` : ""}
+          ${cropFields
+            .map(
+              (cf) =>
+                `<div class="crop-value-holder" data-field="${cf.name}" data-type="image_crop" data-hint="${escapeAttr(cf.hint || "")}" data-label="${escapeAttr(cf.label)}" data-aspect-w="${cf.aspectW || 4}" data-aspect-h="${cf.aspectH || 3}" data-output-w="${cf.outputW || 1200}" data-output-h="${cf.outputH || 900}" hidden><input type="hidden" data-role="value" value="${escapeAttr(allValues[cf.name] || "")}"></div>`
+            )
+            .join("")}
         </div>`;
     }
     // image_crop fields render nested inside their paired image field (see
@@ -1040,27 +1056,44 @@ function wireImageFields(scopeEl) {
   wireThumbCrop(scopeEl);
 }
 
-// Adds the "current thumbnail + Crop" row the first time a field gets a
-// photo (a field that started empty has nothing to crop until now).
+// Adds each paired crop field's "current crop + Crop" row the first time a
+// field gets a photo (a field that started empty has nothing to crop until
+// now) — one row per `.crop-value-holder`, since a photo can have more than
+// one crop variant (thumbnail, hero banner, ...).
 function ensureThumbCropRow(wrap) {
-  if (wrap.querySelector(".thumb-crop-row")) return;
-  const holder = wrap.querySelector(".crop-value-holder");
-  if (!holder) return;
-  const row = document.createElement("div");
-  row.className = "thumb-crop-row";
-  row.innerHTML = `
-    <div class="thumb-crop-preview"><span>No crop yet</span></div>
-    <div class="thumb-crop-info">
-      <button type="button" class="btn-secondary crop-open-btn">✂ Crop thumbnail</button>
-      ${holder.dataset.hint ? `<p class="hint">${escapeHtml(holder.dataset.hint)}</p>` : ""}
-    </div>`;
-  wrap.querySelector(".image-status").insertAdjacentElement("afterend", row);
+  const holders = wrap.querySelectorAll(".crop-value-holder");
+  if (!holders.length) return;
+  let rows = wrap.querySelector(".crop-rows");
+  if (!rows) {
+    rows = document.createElement("div");
+    rows.className = "crop-rows";
+    wrap.querySelector(".image-status").insertAdjacentElement("afterend", rows);
+  }
+  holders.forEach((holder) => {
+    const fieldName = holder.dataset.field;
+    if (rows.querySelector(`.thumb-crop-row[data-crop-field="${fieldName}"]`)) return;
+    const row = document.createElement("div");
+    row.className = "thumb-crop-row";
+    row.dataset.cropField = fieldName;
+    row.innerHTML = `
+      <div class="thumb-crop-preview"><span>No crop yet</span></div>
+      <div class="thumb-crop-info">
+        <button type="button" class="btn-secondary crop-open-btn"
+          data-crop-field="${fieldName}"
+          data-crop-label="${escapeAttr(holder.dataset.label || "Crop")}"
+          data-aspect-w="${holder.dataset.aspectW}" data-aspect-h="${holder.dataset.aspectH}"
+          data-output-w="${holder.dataset.outputW}" data-output-h="${holder.dataset.outputH}">✂ ${escapeHtml(holder.dataset.label || "Crop")}</button>
+        ${holder.dataset.hint ? `<p class="hint">${escapeHtml(holder.dataset.hint)}</p>` : ""}
+      </div>`;
+    rows.appendChild(row);
+  });
   wireThumbCrop(wrap);
 }
 
-// Wires "Crop thumbnail" buttons to open the drag/zoom modal against
-// whichever source is freshest (a just-picked local file, falling back to
-// the already-saved photo), then uploads the cropped result.
+// Wires "Crop" buttons to open the drag/zoom modal (at that button's own
+// aspect ratio/output size) against whichever source is freshest (a
+// just-picked local file, falling back to the already-saved photo), then
+// uploads the cropped result into that button's paired crop field.
 function wireThumbCrop(scopeEl) {
   scopeEl.querySelectorAll(".crop-open-btn").forEach((btn) => {
     if (btn.dataset.wired) return;
@@ -1070,38 +1103,48 @@ function wireThumbCrop(scopeEl) {
       const savedPath = wrap.querySelector('[data-role="value"]').value;
       const sourceUrl = wrap.dataset.sourceUrl || (savedPath ? imageSrc(savedPath) : "");
       if (!sourceUrl) return;
-      openCropModal(sourceUrl, async (blob) => {
-        const holder = wrap.querySelector(".crop-value-holder");
-        const preview = wrap.querySelector(".thumb-crop-preview");
+      const fieldName = btn.dataset.cropField;
+      const opts = {
+        aspectW: Number(btn.dataset.aspectW) || 4,
+        aspectH: Number(btn.dataset.aspectH) || 3,
+        outputW: Number(btn.dataset.outputW) || 1200,
+        outputH: Number(btn.dataset.outputH) || 900,
+        title: btn.dataset.cropLabel || "Crop photo",
+      };
+      openCropModal(sourceUrl, opts, async (blob) => {
+        const holder = wrap.querySelector(`.crop-value-holder[data-field="${fieldName}"]`);
+        const preview = wrap.querySelector(`.thumb-crop-row[data-crop-field="${fieldName}"] .thumb-crop-preview`);
         const localUrl = URL.createObjectURL(blob);
         preview.innerHTML = `<img src="${localUrl}">`;
         try {
           const base64 = await fileToBase64(blob);
-          const path = await uploadImageBase64(base64, "thumb.jpg");
+          const path = await uploadImageBase64(base64, `${fieldName}.jpg`);
           holder.querySelector('[data-role="value"]').value = path;
         } catch (e) {
           preview.innerHTML = `<span>Save failed</span>`;
-          alert("Couldn't save the cropped thumbnail: " + e.message);
+          alert("Couldn't save the cropped photo: " + e.message);
         }
       });
     });
   });
 }
 
-const CROP_ASPECT_W = 4, CROP_ASPECT_H = 3;
-const CROP_OUTPUT_W = 1200, CROP_OUTPUT_H = 900;
-
 // A standard drag-to-pan + zoom-slider image cropper (the same interaction
 // as most avatar/thumbnail croppers). Renders its own modal, resolves
 // nothing — `onSave(blob)` is called with the cropped JPEG once the admin
-// clicks Save; Cancel/close just discard.
-async function openCropModal(sourceUrl, onSave) {
+// clicks Save; Cancel/close just discard. `options` sets the crop frame's
+// shape (`aspectW`/`aspectH`) and the exported file's pixel size
+// (`outputW`/`outputH`) — different fields crop the same kind of source
+// photo to different shapes (e.g. a 4:3 card thumbnail vs. a 16:9 hero
+// banner), so these aren't fixed constants.
+async function openCropModal(sourceUrl, options, onSave) {
+  const { aspectW = 4, aspectH = 3, outputW = 1200, outputH = 900, title = "Crop photo" } = options || {};
   const backdrop = document.createElement("div");
   backdrop.className = "crop-modal-backdrop";
   backdrop.innerHTML = `
     <div class="crop-modal">
       <div class="crop-modal-head">
-        <h3>Crop thumbnail</h3>
+        <h3>${escapeHtml(title)}</h3>
         <button type="button" class="crop-modal-close" title="Cancel">&times;</button>
       </div>
       <div class="crop-modal-body">
@@ -1121,7 +1164,7 @@ async function openCropModal(sourceUrl, onSave) {
   document.body.appendChild(backdrop);
 
   const stage = backdrop.querySelector(".crop-stage");
-  stage.style.aspectRatio = `${CROP_ASPECT_W} / ${CROP_ASPECT_H}`;
+  stage.style.aspectRatio = `${aspectW} / ${aspectH}`;
   const img = backdrop.querySelector(".crop-stage-img");
   const zoomSlider = backdrop.querySelector(".crop-zoom-slider");
   const saveBtn = backdrop.querySelector(".crop-modal-save");
@@ -1207,10 +1250,10 @@ async function openCropModal(sourceUrl, onSave) {
     const sx = -offsetX / totalScale, sy = -offsetY / totalScale;
     const sw = stageW / totalScale, sh = stageH / totalScale;
     const canvas = document.createElement("canvas");
-    canvas.width = CROP_OUTPUT_W;
-    canvas.height = CROP_OUTPUT_H;
+    canvas.width = outputW;
+    canvas.height = outputH;
     try {
-      canvas.getContext("2d").drawImage(img, sx, sy, sw, sh, 0, 0, CROP_OUTPUT_W, CROP_OUTPUT_H);
+      canvas.getContext("2d").drawImage(img, sx, sy, sw, sh, 0, 0, outputW, outputH);
     } catch {
       errorEl.hidden = false;
       errorEl.textContent = "Couldn't crop this photo (a browser security restriction) — try re-uploading it first.";

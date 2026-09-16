@@ -241,7 +241,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
   align-items:center;margin-bottom:clamp(2.5rem,5vw,4rem);
   padding-bottom:clamp(2.5rem,5vw,4rem);border-bottom:1px solid var(--line);
 }
-.featured .card__media{aspect-ratio:3/2;margin:0}
+.featured .card__media{aspect-ratio:4/3;margin:0}
 .featured .card__title{font-size:clamp(2rem,3.6vw,2.9rem)}
 .featured .card__excerpt{font-size:1.12rem}
 @media(max-width:800px){.featured{grid-template-columns:1fr}}

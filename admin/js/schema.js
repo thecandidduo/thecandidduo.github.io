@@ -4,10 +4,17 @@
 //   text | textarea | date | select | multiselect | boolean | tags | image | image_crop | markdown
 // `isBody: true` marks the one field (per collection) that holds the
 // markdown body instead of a front matter key.
-// `image_crop` is a derived, actually-cropped thumbnail (drag-to-pan +
-// zoom, like a standard avatar cropper) produced from the photo in the
-// field named by `cropFor`. It renders no input of its own — it's a
-// separate uploaded file, written only by the crop modal in app.js.
+// `image_crop` is a derived, actually-cropped image (drag-to-pan + zoom,
+// like a standard avatar cropper) produced from the photo in the field
+// named by `cropFor`. It renders no input of its own — it's a separate
+// uploaded file, written only by the crop modal in app.js. A single source
+// photo can have more than one crop for different display contexts (e.g. a
+// 4:3 card thumbnail vs. a wide hero banner) — `aspectW`/`aspectH` set the
+// crop frame's shape and `outputW`/`outputH` the exported file's pixel size
+// (default 4:3, 1200×900, if omitted). `listThumbnail: true` marks which
+// one of a field's several crops is used for collection list/grid cards
+// (`findCropField` in app.js) — needed once there's more than one to choose
+// from.
 
 const COUNTRY_OPTIONS = [
   "Available Worldwide",
@@ -24,7 +31,8 @@ const postFields = [
   { name: "category", label: "Category", type: "select", options: ["Culture", "Adventure", "Guide", "Food", "Reflection"], default: "Culture" },
   { name: "destination", label: "Destination", type: "select", options: ["Jeju", "New Zealand", "Tasmania", "Umroh", "Singapore", "Other"] },
   { name: "image", label: "Cover image", type: "image", hint: "Best size ~1600×900px." },
-  { name: "image_thumb", label: "Thumbnail crop", type: "image_crop", cropFor: "image", hint: "Crop how this photo appears in story-card thumbnails across the site." },
+  { name: "image_thumb", label: "Thumbnail crop", type: "image_crop", cropFor: "image", listThumbnail: true, aspectW: 4, aspectH: 3, outputW: 1200, outputH: 900, hint: "Crop how this photo appears in story-card thumbnails across the site." },
+  { name: "image_hero", label: "Hero banner crop", type: "image_crop", cropFor: "image", aspectW: 16, aspectH: 9, outputW: 1600, outputH: 900, hint: "Crop how this photo appears as the homepage's full-width hero banner — a much wider frame than the thumbnail crop above. Only needed if this story is picked as a Hero Slide." },
   { name: "image_alt", label: "Cover image alt text", type: "text", hint: "Describe the photo for accessibility & SEO." },
   { name: "dek", label: "Subtitle (dek)", type: "text", hint: "The italic line under the title." },
   { name: "excerpt", label: "Short summary", type: "textarea", hint: "1–2 sentences. Shown on cards and in Google results." },

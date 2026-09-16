@@ -19,9 +19,10 @@ header_overlay: true
     </div>
 
     {% if lead %}
+    {% assign lead_thumb = lead.image_thumb | default: lead.image %}
     <article class="featured card">
       <a class="card__media" href="{{ lead.url | relative_url }}" aria-label="{{ lead.title | escape }}">
-        {% if lead.image %}<img src="{{ lead.image | relative_url }}" alt="{{ lead.title | escape }}" style="object-position: {{ lead.image_position | default: 'center center' }}">{% endif %}
+        {% if lead_thumb %}<img src="{{ lead_thumb | relative_url }}" alt="{{ lead.title | escape }}">{% endif %}
       </a>
       <div>
         <div class="card__meta">

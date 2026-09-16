@@ -1,9 +1,10 @@
 {% assign post = include.post %}
 {% assign words = post.content | number_of_words %}
 {% assign rt = words | divided_by: 200 | plus: 1 %}
+{% assign thumb = post.image_thumb | default: post.image %}
 <article class="card" data-cat="{{ post.category | default: 'story' | slugify }}">
   <a class="card__media" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}">
-    {% if post.image %}<img src="{{ post.image | relative_url }}" alt="{{ post.image_alt | default: post.title | escape }}" loading="lazy" style="object-position: {{ post.image_position | default: 'center center' }}">{% endif %}
+    {% if thumb %}<img src="{{ thumb | relative_url }}" alt="{{ post.image_alt | default: post.title | escape }}" loading="lazy">{% endif %}
   </a>
   <div class="card__meta">
     {% if post.category %}<span class="cat">{{ post.category }}</span> &nbsp;·&nbsp; {% endif %}{{ post.read_time | default: rt }} min read

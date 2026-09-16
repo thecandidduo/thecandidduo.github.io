@@ -18,7 +18,7 @@ layout: default
 
   {% if page.image %}
   <div class="wrap">
-    <img class="post-hero__cover" src="{{ page.image | relative_url }}" alt="{{ page.image_alt | default: page.title | escape }}" style="object-position: {{ page.image_position | default: 'center center' }}">
+    <img class="post-hero__cover" src="{{ page.image | relative_url }}" alt="{{ page.image_alt | default: page.title | escape }}">
     {% if page.image_credit %}<p style="text-align:center;font-family:var(--font-ui);font-size:.78rem;color:var(--muted);margin-top:.6rem">{{ page.image_credit }}</p>{% endif %}
   </div>
   {% endif %}

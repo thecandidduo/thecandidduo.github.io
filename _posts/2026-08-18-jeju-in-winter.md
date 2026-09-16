@@ -5,7 +5,7 @@ published: true
 category: "Culture"
 destination: "Jeju"
 image: "/assets/images/uploads/1789395738935-img_9147.jpg"
-image_thumb: "/assets/images/uploads/1789526334656-thumb.jpg"
+image_thumb: "/assets/images/uploads/1789526629524-thumb.jpg"
 image_alt: "Volcanic coastline on Jeju Island at golden hour"
 dek: "We came for the crater hikes. We stayed for the tangerine farmers, the haenyeo divers, and the slowest, softest week we've had in a long time."
 excerpt: "We came for the crater hikes and stayed for the tangerine farmers, the sea-women divers, and the slowest, softest week we've had in a long time. Here's the honest Jeju."

@@ -1,70 +1,55 @@
-# ============================================================
-#  HOMEPAGE CONTENT  (all editable in the CMS → "Homepage")
-#  Swap the image paths for your own photos once you upload them.
-# ============================================================
-
-# ---- Hero carousel (rotates every ~7s) ----
 hero:
-  - image: /assets/images/hero-brand.jpg
-    eyebrow: A Travel Journal
-    title: The Candid Duo
-    subtitle: Unscripted stories from two wanderers — one road, one lens, one honest conversation at a time.
-    cta_text: Read the latest
-    cta_url: /stories/
-
-  - image: /assets/images/hero-jeju.jpg
-    eyebrow: Featured — South Korea
-    title: A Winter in Jeju
-    subtitle: Tangerine groves, black-sand coastline and the slow island rhythm we didn't see coming.
-    cta_text: Read the story
-    cta_url: /stories/jeju-in-winter/
-
-  - image: /assets/images/hero-newzealand.jpg
-    eyebrow: Featured — New Zealand
-    title: The South Island, End to End
-    subtitle: Two weeks, one campervan, and more mountain passes than we could photograph.
-    cta_text: Read the story
-    cta_url: /stories/new-zealand-south-island-road-trip/
-
-  - image: /assets/images/hero-umroh.jpg
-    eyebrow: Featured — Saudi Arabia
-    title: Umroh, For The First Time
-    subtitle: The honest, practical guide we wish we'd had before our first pilgrimage.
-    cta_text: Read the guide
-    cta_url: /stories/umroh-first-timers-guide/
-
-# ---- Ticker bar (the scrolling WATCH / LISTEN / READ strip) ----
+  - image: "/assets/images/uploads/1789395738935-img_9147.jpg"
+    eyebrow: "A Travel Journal"
+    title: "A Winter in Jeju: Tangerines, Black Sand, and the Island We Didn't Expect"
+    subtitle: "We came for the crater hikes. We stayed for the tangerine farmers, the haenyeo divers, and the slowest, softest week we've had in a long time."
+    cta_text: "Read the latest"
+    cta_url: "/stories/jeju-in-winter/"
+  - image: "/assets/images/hero-jeju.jpg"
+    eyebrow: "Featured — South Korea"
+    title: "A Winter in Jeju"
+    subtitle: "Tangerine groves, black-sand coastline and the slow island rhythm we didn't see coming."
+    cta_text: "Read the story"
+    cta_url: "/stories/jeju-in-winter/"
+  - image: "/assets/images/hero-newzealand.jpg"
+    eyebrow: "Featured — New Zealand"
+    title: "The South Island, End to End"
+    subtitle: "Two weeks, one campervan, and more mountain passes than we could photograph."
+    cta_text: "Read the story"
+    cta_url: "/stories/new-zealand-south-island-road-trip/"
+  - image: "/assets/images/hero-umroh.jpg"
+    eyebrow: "Featured — Saudi Arabia"
+    title: "Umroh, For The First Time"
+    subtitle: "The honest, practical guide we wish we'd had before our first pilgrimage."
+    cta_text: "Read the guide"
+    cta_url: "/stories/umroh-first-timers-guide/"
 ticker:
-  - kind: WATCH
+  - kind: "WATCH"
     label: "Jeju in Winter — Full Vlog"
     url: "https://youtube.com/@thecandidduo"
-  - kind: LISTEN
+  - kind: "LISTEN"
     label: "Ep. 12 — The Real Cost of Full-Time Travel"
-    url: ""
-  - kind: READ
+  - kind: "READ"
     label: "What nobody tells you about Umroh for first-timers"
-    url: /stories/umroh-first-timers-guide/
-  - kind: WATCH
+    url: "/stories/umroh-first-timers-guide/"
+  - kind: "WATCH"
     label: "The day the campervan wouldn't start in Wānaka 😅"
     url: "https://tiktok.com/@thecandidduo"
-
-# ---- Media cards (shown between the story cards on the homepage) ----
 media_features:
-  - platform: youtube
-    label: Watch on YouTube
+  - platform: "youtube"
+    label: "Watch on YouTube"
     title: "Jeju in Winter — Full Vlog"
     blurb: "The complete, unedited island loop — sunrise peak to tangerine farm."
     url: "https://youtube.com/@thecandidduo"
-    image: /assets/images/media-youtube.jpg
-  - platform: spotify
-    label: Listen on Spotify
+    image: "/assets/images/media-youtube.jpg"
+  - platform: "spotify"
+    label: "Listen on Spotify"
     title: "Ep. 12 — The Real Cost of Full-Time Travel"
     blurb: "We break down every dollar from six months on the road."
-    url: ""
-    image: /assets/images/media-spotify.jpg
-  - platform: tiktok
-    label: Watch on TikTok
+    image: "/assets/images/media-spotify.jpg"
+  - platform: "tiktok"
+    label: "Watch on TikTok"
     title: "That time the last ferry left without us 😂"
     blurb: "Sometimes the best moments are the unplanned ones."
     url: "https://tiktok.com/@thecandidduo"
-    image: /assets/images/media-tiktok.jpg
+    image: "/assets/images/media-tiktok.jpg"

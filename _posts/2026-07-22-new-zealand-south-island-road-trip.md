@@ -4,7 +4,8 @@ date: 2026-07-22
 published: true
 category: "Adventure"
 destination: "New Zealand"
-image: "/assets/images/hero-newzealand.jpg"
+image: "/assets/images/uploads/1789572528165-img_4405.jpg"
+image_thumb: "/assets/images/uploads/1789572537773-thumb.jpg"
 image_alt: "Mountain pass road winding through New Zealand's South Island"
 dek: "One campervan, more mountain passes than we could photograph, and a lesson in why the drive is the destination."
 excerpt: "One campervan, more mountain passes than we could count, and a two-week loop that taught us the drive is the destination. Our honest South Island route, costs and mistakes."

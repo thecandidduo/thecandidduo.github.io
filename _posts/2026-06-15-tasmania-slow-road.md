@@ -4,7 +4,8 @@ date: 2026-06-15
 published: true
 category: "Adventure"
 destination: "Tasmania"
-image: "/assets/images/dest-tasmania.jpg"
+image: "/assets/images/uploads/1789569565587-img_6703.jpeg"
+image_thumb: "/assets/images/uploads/1789569572187-thumb.jpg"
 image_alt: "Wild coastline and forest in Tasmania"
 dek: "Australia's island state doesn't shout. It waits — with empty roads, wild coastlines, and quiet that takes a few days to sink into."
 excerpt: "Australia's island state doesn't shout. It waits — with empty roads, wild coastlines and a quiet that takes a few days to properly sink into. Our slow loop of Tasmania."

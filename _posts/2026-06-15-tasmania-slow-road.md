@@ -1,13 +1,15 @@
 ---
-title: "Tasmania, the Slow Road: Empty Highways and the Cleanest Air on Earth"
+title: "Tasmania, the Slow Road"
 date: 2026-06-15
-category: Adventure
-destination: Tasmania
-image: /assets/images/dest-tasmania.jpg
+published: true
+category: "Adventure"
+destination: "Tasmania"
+image: "/assets/images/dest-tasmania.jpg"
 image_alt: "Wild coastline and forest in Tasmania"
 dek: "Australia's island state doesn't shout. It waits — with empty roads, wild coastlines, and quiet that takes a few days to sink into."
 excerpt: "Australia's island state doesn't shout. It waits — with empty roads, wild coastlines and a quiet that takes a few days to properly sink into. Our slow loop of Tasmania."
-tags: [tasmania, australia, road trip, nature]
+tags: ["tasmania", "australia", "road trip", "nature"]
+featured: false
 ---
 
 There's a spot on the west coast of Tasmania where a sign tells you the air blowing in off the ocean is among the cleanest measured anywhere on the planet — nothing between you and South America but open sea. We stood there breathing it in like idiots, and it genuinely felt different.

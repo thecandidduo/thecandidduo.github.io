@@ -163,7 +163,7 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .hero__inner .wrap{width:100%}
 .hero .eyebrow{color:rgba(255,255,255,.82)}
 .hero__title{
-  font-size:clamp(3.1rem,11vw,7rem);color:#fff;line-height:.94;
+  font-size:clamp(2.325rem,8.25vw,5.25rem);color:#fff;line-height:.94;
   margin:0 0 1.1rem;max-width:14ch;text-shadow:0 2px 30px rgba(0,0,0,.25);
 }
 .hero__subtitle{

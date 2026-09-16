@@ -354,7 +354,7 @@ async function loadPostSummaries() {
       const { data } = parseFrontmatter(file.text);
       return {
         title: data.title || f.name,
-        image: data.image || "",
+        image: data.image_thumb || data.image || "",
         subtitle: data.dek || data.excerpt || "",
         url: postUrlFromFilename(f.name),
         published: data.published !== false,

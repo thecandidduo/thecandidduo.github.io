@@ -1,5 +1,5 @@
 ---
-title: "A Winter in Jeju: Tangerines, Black Sand, and the Island We Didn't Expect"
+title: "A Winter in Jeju"
 date: 2026-08-18
 published: true
 category: "Culture"

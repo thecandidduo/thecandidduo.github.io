@@ -4,6 +4,11 @@ hero:
     subtitle: "We came for the crater hikes. We stayed for the tangerine farmers, the haenyeo divers, and the slowest, softest week we've had in a long time."
     cta_text: "Read the story"
     cta_url: "/stories/jeju-in-winter/"
+  - image: "/assets/images/uploads/1789572528165-img_4405.jpg"
+    title: "New Zealand: Two Weeks in a Campervan"
+    subtitle: "One campervan, more mountain passes than we could photograph, and a lesson in why the drive is the destination."
+    cta_text: "Read the story"
+    cta_url: "/stories/new-zealand-south-island-road-trip/"
 ticker:
   - kind: "WATCH"
     label: "Jeju in Winter — Full Vlog"

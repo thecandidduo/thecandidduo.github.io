@@ -179,6 +179,7 @@ On GitHub, edit **`admin/js/config.js`** and update the constants:
 export const REPO = "YOURNAME/YOURNAME.github.io";        // your username / your repo name
 export const AUTH_BASE_URL = "https://candidduo-cms-auth.YOURNAME.workers.dev"; // your worker URL
 export const SITE_URL = "https://YOURNAME.github.io";
+export const YOUTUBE_CHANNEL_URL = "https://youtube.com/@YOURNAME"; // used by "Pull latest YouTube video" (Step 6f)
 ```
 
 Commit changes.
@@ -196,27 +197,36 @@ Commit changes.
 > Cloudflare, and that `AUTH_BASE_URL` in `admin/js/config.js` exactly matches
 > your worker URL (no trailing slash).
 
-### 6f — Turn on the AI features (optional)
+### 6f — Turn on the extra CMS buttons (optional)
 
-Two optional buttons in the CMS use your own free Google Gemini API key — the
-login helper worker from 6a proxies both requests so your key never sits in
-the browser's JS. Google's free tier needs no credit card and comfortably
-covers occasional personal-blog use, so this stays $0. Skip this step if you
-don't want either; the rest of the CMS works fine without it.
+A handful of optional CMS buttons need the worker's code updated to their
+latest version — do this step once, then two of them (the AI ones) also need
+a free key.
 
+- **Homepage → Watch & Listen → "📺 Pull latest YouTube video"** — grabs your
+  channel's most recent upload from its free public feed and embeds it as an
+  actual playable video (no key needed, no cost — just needs step 1 below).
+- **Homepage → Watch & Listen → "🎵 Add TikTok video from URL"** — paste one
+  TikTok video link and it becomes a real embedded, playable card (also no
+  key needed — TikTok has no public "latest video" feed to auto-discover
+  from, so this is a paste-the-link-once, auto-embed approach instead).
 - **Stories → "✨ Generate with AI"** — give it a prompt (and optionally some
   photos or a PDF/notes), and it writes a full draft (title, subtitle,
-  summary, tags, body) for you to review and edit before saving.
+  summary, tags, body) for you to review and edit before saving. *(Needs
+  steps 2–4 below.)*
 - **Products → "Fetch details"** — paste an affiliate/product link and it
   tries to pull the name, price, photo and a short description straight off
   the page. Works well on storefronts like Shopee, Lazada and Etsy; sites
   that block automated visits (Amazon, notably) may only partly fill in, so
-  always double-check before saving.
+  always double-check before saving. *(Needs steps 2–4 below.)*
 
-1. **Update your worker's code.** `oauth-worker/worker.js` grew the two new
-   AI routes after you first pasted it in 6a, so the copy currently deployed
-   on Cloudflare doesn't have them yet. Go to your worker (same one from 6a)
-   → **Edit code**, select all and delete, open `oauth-worker/worker.js` from
+Skip steps 2–4 if you don't want the two AI buttons; the rest of the CMS
+(including the YouTube/TikTok buttons) works fine without them.
+
+1. **Update your worker's code.** `oauth-worker/worker.js` has grown new
+   routes since you first pasted it in 6a, so the copy currently deployed on
+   Cloudflare doesn't have them yet. Go to your worker (same one from 6a) →
+   **Edit code**, select all and delete, open `oauth-worker/worker.js` from
    your website folder again, copy **all** of it, paste it in, and click
    **Deploy**.
 2. Go to **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**,

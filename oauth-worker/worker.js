@@ -1,14 +1,19 @@
 /**
  * The Candid Duo — CMS backend worker (Cloudflare Workers)
  * ---------------------------------------------------------
- * This tiny free service does three things for the hand-built CMS at /admin:
+ * This tiny free service does several things for the hand-built CMS at /admin:
  *   1. Logs you in with your GitHub account (unchanged since the Decap days).
  *   2. Proxies "Generate with AI" story requests to the Gemini API.
  *   3. Proxies "Fetch details from URL" product-link lookups (also via
  *      Gemini) — fetching arbitrary product pages and extracting the image
  *      must happen server-side anyway (the browser can't do either due to
  *      CORS), so it rides the same Gemini key as AI stories.
- * Both AI features keep your API key server-side instead of in the
+ *   4. Proxies "pull latest YouTube video" and "add TikTok video from URL"
+ *      lookups for the homepage's Watch & Listen section — both hit public,
+ *      free endpoints (YouTube's channel RSS feed, TikTok's oEmbed API), no
+ *      API key or cost involved, just server-side fetches the browser can't
+ *      make itself due to CORS.
+ * The two AI features keep your API key server-side instead of in the
  * browser's JS where anyone could read it. Gemini was picked for these two
  * specifically because Google AI Studio's free tier needs no credit card —
  * unlike most other providers, this stays $0 for normal personal-blog use.
@@ -31,9 +36,9 @@ const MAX_AI_IMAGES = 6;
 const MAX_AI_DOCUMENTS = 3;
 const MAX_FETCHED_IMAGE_BYTES = 8 * 1024 * 1024;
 
-const AI_CORS_HEADERS = {
+const CORS_HEADERS = {
   "access-control-allow-origin": "*",
-  "access-control-allow-methods": "POST, OPTIONS",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
   "access-control-allow-headers": "content-type, authorization",
 };
 
@@ -61,6 +66,15 @@ async function requirePushAccess(request, env) {
   if (!repoData.permissions || !repoData.permissions.push)
     return { ok: false, status: 403, message: "Not authorized for this site" };
   return { ok: true };
+}
+
+function decodeXmlEntities(str) {
+  return str
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
 }
 
 function guessPlatform(hostname) {
@@ -162,7 +176,7 @@ export default {
     // AI story generation — called via fetch() from the CMS, so (unlike the
     // popup-based /auth and /callback above) it needs real CORS handling.
     if (pathname === "/generate-story") {
-      const corsHeaders = AI_CORS_HEADERS;
+      const corsHeaders = CORS_HEADERS;
       if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
       if (request.method !== "POST")
         return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -217,7 +231,7 @@ export default {
     // best-effort downloads the image too so it can be re-uploaded to the
     // repo like any other CMS image instead of hot-linking someone else's URL.
     if (pathname === "/fetch-product") {
-      const corsHeaders = AI_CORS_HEADERS;
+      const corsHeaders = CORS_HEADERS;
       if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
       if (request.method !== "POST")
         return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -304,6 +318,104 @@ export default {
         }),
         { headers: { ...corsHeaders, "content-type": "application/json" } }
       );
+    }
+
+    // "Pull latest YouTube video" on the Homepage editor's Watch & Listen
+    // tab. Every channel has a free, public Atom feed — no API key, no
+    // cost — but the browser can't fetch it directly (no CORS), and can't
+    // resolve a "@handle" URL to the channel ID the feed needs either.
+    if (pathname === "/latest-youtube") {
+      const corsHeaders = CORS_HEADERS;
+      if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+      if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
+
+      const channelUrl = searchParams.get("channel");
+      if (!channelUrl) return new Response("Missing ?channel=", { status: 400, headers: corsHeaders });
+
+      const browserHeaders = {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      };
+
+      try {
+        const pageRes = await fetch(channelUrl, { headers: browserHeaders });
+        if (!pageRes.ok) throw new Error("Couldn't load that YouTube channel page.");
+        const html = await pageRes.text();
+        // YouTube has changed the exact embedded-JSON field name behind this
+        // before, so try the canonical link tag first — a much more stable
+        // signal — before falling back to the JSON key.
+        const channelIdMatch =
+          html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})"/) ||
+          html.match(/"externalId":"(UC[\w-]{22})"/) ||
+          html.match(/"channelId":"(UC[\w-]{22})"/);
+        if (!channelIdMatch) throw new Error("Couldn't find a channel ID on that page.");
+
+        const feedRes = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelIdMatch[1]}`, {
+          headers: browserHeaders,
+        });
+        // YouTube 404s this feed for a channel with zero public uploads,
+        // rather than returning an empty (but valid) feed.
+        if (feedRes.status === 404) throw new Error("This channel doesn't have any public videos yet.");
+        if (!feedRes.ok) throw new Error("Couldn't load this channel's video feed.");
+        const xml = await feedRes.text();
+        const entry = xml.split("<entry>")[1];
+        if (!entry) throw new Error("This channel doesn't have any videos yet.");
+        const videoId = (entry.match(/<yt:videoId>([\w-]+)<\/yt:videoId>/) || [])[1];
+        const title = (entry.match(/<title>([\s\S]*?)<\/title>/) || [])[1];
+        if (!videoId) throw new Error("Couldn't read a video ID from the feed.");
+
+        return new Response(
+          JSON.stringify({
+            videoId,
+            title: decodeXmlEntities(title || ""),
+            thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+            url: `https://www.youtube.com/watch?v=${videoId}`,
+          }),
+          { headers: { ...corsHeaders, "content-type": "application/json" } }
+        );
+      } catch (e) {
+        return new Response(e.message || "Couldn't fetch the latest video.", { status: 502, headers: corsHeaders });
+      }
+    }
+
+    // "Add TikTok video from URL" on the same tab. TikTok has no equivalent
+    // public feed to auto-discover a channel's latest video (that needs
+    // their developer API and an approval process), but a known video's
+    // metadata is available from their public oEmbed endpoint — the same
+    // one any website uses to embed a TikTok video, no key required.
+    if (pathname === "/tiktok-oembed") {
+      const corsHeaders = CORS_HEADERS;
+      if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+      if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
+
+      const videoUrl = searchParams.get("url");
+      if (!videoUrl) return new Response("Missing ?url=", { status: 400, headers: corsHeaders });
+
+      try {
+        const oembedRes = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(videoUrl)}`);
+        if (!oembedRes.ok) throw new Error("Couldn't find that TikTok video — check the link.");
+        const data = await oembedRes.json();
+        if (data.embed_type && data.embed_type !== "video")
+          throw new Error("That looks like a profile link, not a specific video — paste the link to one TikTok video instead.");
+        const idMatch = videoUrl.match(/video\/(\d+)/);
+        const videoId = idMatch ? idMatch[1] : data.embed_product_id || "";
+        if (!videoId) throw new Error("Couldn't read a video ID from that link.");
+
+        return new Response(
+          JSON.stringify({
+            videoId,
+            title: data.title || "",
+            authorName: data.author_name || "",
+            // Signed and short-lived (has an x-expires param) — fine to show
+            // once, but the CMS must not persist this into saved content.
+            thumbnail: data.thumbnail_url || "",
+            url: videoUrl,
+          }),
+          { headers: { ...corsHeaders, "content-type": "application/json" } }
+        );
+      } catch (e) {
+        return new Response(e.message || "Couldn't fetch that TikTok video.", { status: 502, headers: corsHeaders });
+      }
     }
 
     // 1) Kick off GitHub login

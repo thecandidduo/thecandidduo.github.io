@@ -2,8 +2,9 @@ import { SCHEMA } from "./schema.js";
 import * as GH from "./github-api.js";
 import { login, getToken, setToken, clearToken, fetchCurrentUser } from "./auth.js";
 import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml } from "./content.js";
-import { REPO, BRANCH, SITE_URL, UPLOADS_PATH } from "./config.js";
+import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
+import { fetchLatestYoutubeVideo, fetchTiktokOembed } from "./media.js";
 
 const app = document.getElementById("app");
 const state = { token: null, user: null, section: Object.keys(SCHEMA)[0] };
@@ -382,6 +383,7 @@ function renderTabItems(schema, st) {
   const items = st.data[tab.key] || [];
   const singular = tab.singular;
   body.innerHTML = `
+    ${tab.key === "media_features" ? mediaFetchActionsHtml() : ""}
     <div class="list-editor" id="list-editor">
       ${items.map((item, idx) => listItemHtml(tab, item, idx, items.length, st.posts)).join("")}
     </div>
@@ -389,6 +391,7 @@ function renderTabItems(schema, st) {
 
   wireImageFields(body);
   wireStoryPickers(body, st.posts);
+  if (tab.key === "media_features") wireMediaFetchActions(body, schema, st);
   document.getElementById("add-item-btn").addEventListener("click", () => {
     syncActiveTabFromDom(schema, st);
     st.data[tab.key].push({});
@@ -419,6 +422,82 @@ function renderTabItems(schema, st) {
       renderTabItems(schema, st);
     })
   );
+}
+
+// "Watch & Listen" tab only — pulls real video data so an admin doesn't
+// have to hand-type titles/IDs for something that already exists online.
+function mediaFetchActionsHtml() {
+  return `
+    <div class="media-fetch-actions">
+      <button type="button" id="pull-youtube-btn" class="btn-secondary">📺 Pull latest YouTube video</button>
+      <button type="button" id="add-tiktok-btn" class="btn-secondary">🎵 Add TikTok video from URL</button>
+    </div>
+    <div class="error-banner" id="media-fetch-error" hidden></div>`;
+}
+
+function wireMediaFetchActions(body, schema, st) {
+  const ytBtn = document.getElementById("pull-youtube-btn");
+  const ttBtn = document.getElementById("add-tiktok-btn");
+  const errEl = document.getElementById("media-fetch-error");
+
+  const showMediaFetchError = (msg) => {
+    errEl.hidden = false;
+    errEl.textContent = msg;
+  };
+
+  ytBtn.addEventListener("click", async () => {
+    errEl.hidden = true;
+    ytBtn.disabled = true;
+    ytBtn.textContent = "Pulling…";
+    try {
+      const video = await fetchLatestYoutubeVideo(YOUTUBE_CHANNEL_URL);
+      syncActiveTabFromDom(schema, st);
+      st.data.media_features.unshift({
+        platform: "youtube",
+        label: "Watch on YouTube",
+        title: video.title,
+        blurb: "",
+        url: video.url,
+        image: video.thumbnail,
+        embed_id: video.videoId,
+      });
+      renderTabItems(schema, st);
+    } catch (e) {
+      showMediaFetchError(e.message);
+    } finally {
+      ytBtn.disabled = false;
+      ytBtn.textContent = "📺 Pull latest YouTube video";
+    }
+  });
+
+  ttBtn.addEventListener("click", async () => {
+    const url = (prompt("Paste the TikTok video URL (not your profile link):") || "").trim();
+    if (!url) return;
+    errEl.hidden = true;
+    ttBtn.disabled = true;
+    ttBtn.textContent = "Fetching…";
+    try {
+      const video = await fetchTiktokOembed(url);
+      syncActiveTabFromDom(schema, st);
+      st.data.media_features.unshift({
+        platform: "tiktok",
+        label: "Watch on TikTok",
+        title: video.title,
+        blurb: video.authorName ? `via @${video.authorName}` : "",
+        url: video.url,
+        // Not video.thumbnail — TikTok's oEmbed thumbnail URLs are signed
+        // and expire within days; the live embed shows its own preview.
+        image: "",
+        embed_id: video.videoId,
+      });
+      renderTabItems(schema, st);
+    } catch (e) {
+      showMediaFetchError(e.message);
+    } finally {
+      ttBtn.disabled = false;
+      ttBtn.textContent = "🎵 Add TikTok video from URL";
+    }
+  });
 }
 
 function listItemHtml(tab, item, idx, total, posts) {

@@ -69,10 +69,20 @@ header_overlay: true
       {% for m in media %}
         {% capture mlink %}{% if m.url contains '://' %}{{ m.url }}{% elsif m.url != '' %}{{ m.url | relative_url }}{% endif %}{% endcapture %}
         <article class="card card--media">
-          <a class="card__media" href="{% if mlink != '' %}{{ mlink }}{% else %}#{% endif %}"{% if m.url contains '://' %} target="_blank" rel="noopener"{% endif %} aria-label="{{ m.title | escape }}">
-            {% if m.image %}<img src="{{ m.image | relative_url }}" alt="{{ m.title | escape }}" loading="lazy">{% endif %}
-            <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-          </a>
+          {% if m.platform == "youtube" and m.embed_id %}
+            <div class="media-embed media-embed--youtube">
+              <iframe src="https://www.youtube-nocookie.com/embed/{{ m.embed_id }}" title="{{ m.title | escape }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+          {% elsif m.platform == "tiktok" and m.embed_id %}
+            <div class="media-embed media-embed--tiktok">
+              <blockquote class="tiktok-embed" cite="{{ m.url }}" data-video-id="{{ m.embed_id }}"><section></section></blockquote>
+            </div>
+          {% else %}
+            <a class="card__media" href="{% if mlink != '' %}{{ mlink }}{% else %}#{% endif %}"{% if m.url contains '://' %} target="_blank" rel="noopener"{% endif %} aria-label="{{ m.title | escape }}">
+              {% if m.image %}<img src="{{ m.image | relative_url }}" alt="{{ m.title | escape }}" loading="lazy">{% endif %}
+              <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            </a>
+          {% endif %}
           <span class="badge badge--{{ m.platform }}"><span class="dot"></span>{{ m.label }}</span>
           <h3 class="card__title"><a href="{% if mlink != '' %}{{ mlink }}{% else %}#{% endif %}"{% if m.url contains '://' %} target="_blank" rel="noopener"{% endif %}>{{ m.title }}</a></h3>
           <p class="card__excerpt">{{ m.blurb }}</p>
@@ -81,6 +91,8 @@ header_overlay: true
     </div>
   </div>
 </section>
+{% assign tiktok_embed_count = media | where: "platform", "tiktok" | size %}
+{% if tiktok_embed_count > 0 %}<script async src="https://www.tiktok.com/embed.js"></script>{% endif %}
 {% endif %}
 
 <!-- ===================== DESTINATIONS ===================== -->

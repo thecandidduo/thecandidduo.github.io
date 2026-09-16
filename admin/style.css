@@ -230,6 +230,8 @@ textarea { resize: vertical; }
 #product-fetch-box .hint { margin-top: .6rem; }
 #product-fetch-box .error-banner { margin: .8rem 0 0; }
 
+.media-fetch-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+
 /* ---- Tabs / list editor (Homepage, Navigation) ---- */
 .tabs { display: flex; gap: .4rem; border-bottom: 1px solid var(--line); margin-bottom: 1.4rem; }
 .tab { background: none; border: 0; color: var(--muted); padding: .6rem .9rem; font-size: .85rem; border-bottom: 2px solid transparent; }

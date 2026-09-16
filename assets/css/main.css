@@ -258,6 +258,16 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 }
 .card--media:hover .play{transform:translate(-50%,-50%) scale(1.1);background:#fff}
 .card--media .play svg{width:20px;height:20px;margin-left:3px;fill:var(--ink)}
+
+/* Playable embeds pulled in via the CMS (replaces the thumbnail+link-out
+   for items with an embed_id). YouTube keeps the grid's 4/3 box — the
+   player letterboxes itself inside it. TikTok is portrait-native, so its
+   embed sizes itself instead of being forced into a landscape box. */
+.media-embed{border-radius:var(--radius);margin-bottom:1.15rem;background:var(--bg-alt);overflow:hidden}
+.media-embed--youtube{position:relative;aspect-ratio:4/3}
+.media-embed--youtube iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.media-embed--tiktok{display:flex;justify-content:center;background:none}
+.media-embed--tiktok blockquote{margin:0;width:100%}
 .badge{
   display:inline-flex;align-items:center;gap:.45em;
   font-family:var(--font-ui);font-size:.68rem;font-weight:700;letter-spacing:.13em;

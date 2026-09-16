@@ -75,6 +75,7 @@ const mediaItemFields = [
   { name: "blurb", label: "Blurb", type: "textarea" },
   { name: "url", label: "Link", type: "text" },
   { name: "image", label: "Image", type: "image" },
+  { name: "embed_id", label: "Video ID (playable embed)", type: "text", hint: "YouTube or TikTok video ID — filled in automatically by the buttons above. Leave blank to just link out instead of embedding." },
 ];
 const navItemFields = [
   { name: "title", label: "Label", type: "text" },

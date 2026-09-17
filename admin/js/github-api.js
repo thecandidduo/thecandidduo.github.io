@@ -24,9 +24,17 @@ function decodeBase64Utf8(b64) {
   return new TextDecoder("utf-8").decode(bytes);
 }
 
+// `cache: "no-store"` is required, not just a nicety: GitHub's Contents API
+// sends `Cache-Control: public, max-age=60` on GETs, and this CMS hits the
+// exact same URL (same path + `?ref=`) repeatedly — reopening an editor,
+// refreshing, retrying a save — often within that window. Without this, the
+// browser's own HTTP cache silently replays a request from up to a minute
+// ago: stale content, and a stale `sha` that then conflicts against the
+// real (already-saved) file on the very next save.
 async function apiFetch(token, path, options = {}) {
   const res = await fetch(`${API}${path}`, {
     ...options,
+    cache: "no-store",
     headers: { ...authHeaders(token), ...(options.headers || {}) },
   });
   return res;

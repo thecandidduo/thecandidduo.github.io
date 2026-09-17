@@ -9,6 +9,11 @@ hero:
     subtitle: "One campervan, more mountain passes than we could photograph, and a lesson in why the drive is the destination."
     cta_text: "Read the story"
     cta_url: "/stories/new-zealand-south-island-road-trip/"
+  - image: "/assets/images/uploads/1789569565587-img_6703.jpeg"
+    title: "Tasmania, the Slow Road"
+    subtitle: "Australia's island state doesn't shout. It waits — with empty roads, wild coastlines, and quiet that takes a few days to sink into."
+    cta_text: "Read the story"
+    cta_url: "/stories/tasmania-slow-road/"
 ticker:
   - kind: "WATCH"
     label: "Jeju in Winter — Full Vlog"

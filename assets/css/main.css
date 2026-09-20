@@ -452,6 +452,17 @@ a.post-nav__item:hover .post-nav__title{color:var(--accent)}
 /* ============================================================
    FOOTER
    ============================================================ */
+/* ---------- Socials strip (homepage + contact, above the newsletter) ---------- */
+.socials{border-top:1px solid var(--line);padding:clamp(3rem,6vw,4.5rem) 0;text-align:center}
+.socials .section-head{margin-bottom:clamp(1.6rem,3.5vw,2.4rem)}
+.socials__list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:1.6rem clamp(1.4rem,4vw,2.6rem)}
+.socials__link{display:flex;flex-direction:column;align-items:center;gap:.7rem;color:var(--ink)}
+.socials__icon{width:58px;height:58px;border:1px solid var(--line);border-radius:50%;background:var(--white);display:grid;place-items:center;transition:background .3s,border-color .3s,transform .3s var(--ease)}
+.socials__icon svg{width:22px;height:22px;fill:currentColor;transition:fill .3s}
+.socials__label{font-family:var(--font-ui);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);transition:color .3s}
+.socials__link:hover .socials__icon,.socials__link:focus-visible .socials__icon{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateY(-3px)}
+.socials__link:hover .socials__label,.socials__link:focus-visible .socials__label{color:var(--accent)}
+
 .newsletter{background:var(--bg-alt);border-top:1px solid var(--line)}
 .newsletter .wrap{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;padding-top:clamp(3rem,6vw,5rem);padding-bottom:clamp(3rem,6vw,5rem)}
 .newsletter h2{font-size:clamp(1.9rem,4vw,2.8rem)}

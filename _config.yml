@@ -31,8 +31,8 @@ plugins:
 # Turn 'enabled' to true AFTER AdSense approves your site,
 # then paste your publisher ID and (optionally) ad unit slot IDs.
 adsense:
-  enabled: false                       # << CHANGE to true once approved
-  publisher_id: "ca-pub-XXXXXXXXXXXXXXXX"   # << CHANGE (from AdSense)
+  enabled: true                        # << CHANGE to true once approved
+  publisher_id: "ca-pub-4194453206974732"   # << CHANGE (from AdSense)
   slot_leaderboard: ""                 # << optional ad unit slot ID
   slot_infeed: ""                      # << optional
   slot_inarticle: ""                   # << optional

@@ -1,11 +1,21 @@
 {% assign p = include.product %}
+{% comment %}
+  The buy link is `affiliate_url`, NOT `url`: on a collection document Jekyll's
+  built-in `url` (the item's would-be page address, /products/<slug>/) always
+  wins over a front matter key of the same name, so `{{ p.url }}` never returned
+  the CMS value. Scheme-less links get https:// so they don't turn into relative
+  links; a blank or "#" link renders the card without a dead Shop now button.
+{% endcomment %}
+{% assign buy_url = p.affiliate_url | strip %}
+{% if buy_url == "#" %}{% assign buy_url = "" %}{% endif %}
+{% if buy_url != "" %}{% unless buy_url contains "://" %}{% assign buy_url = "https://" | append: buy_url %}{% endunless %}{% endif %}
 <article class="product-card" data-cat="{{ p.category | default: 'other' | slugify }}">
-  <a class="product-card__media" href="{{ p.url }}" target="_blank" rel="noopener sponsored nofollow" aria-label="{{ p.name | escape }}">
+  {% if buy_url != "" %}<a class="product-card__media" href="{{ buy_url }}" target="_blank" rel="noopener sponsored nofollow" aria-label="{{ p.name | escape }}">{% else %}<div class="product-card__media">{% endif %}
     {% if p.image %}<img src="{{ p.image | relative_url }}" alt="{{ p.name | escape }}" loading="lazy">{% endif %}
-  </a>
+  {% if buy_url != "" %}</a>{% else %}</div>{% endif %}
   <div class="product-card__body">
     {% if p.category %}<span class="product-card__cat">{{ p.category }}</span>{% endif %}
-    <h3 class="product-card__name"><a href="{{ p.url }}" target="_blank" rel="noopener sponsored nofollow">{{ p.name }}</a></h3>
+    <h3 class="product-card__name">{% if buy_url != "" %}<a href="{{ buy_url }}" target="_blank" rel="noopener sponsored nofollow">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
     {% if p.blurb %}<p class="product-card__blurb">{{ p.blurb }}</p>{% endif %}
     <div class="product-card__pills">
       {% if p.platform %}<span class="pill pill--platform">Available on {{ p.platform }}</span>{% endif %}
@@ -13,7 +23,7 @@
     </div>
     <div class="product-card__foot">
       {% if p.price %}<span class="product-card__price">{{ p.price }}</span>{% endif %}
-      <a class="btn btn--accent btn--sm" href="{{ p.url }}" target="_blank" rel="noopener sponsored nofollow">Shop now</a>
+      {% if buy_url != "" %}<a class="btn btn--accent btn--sm" href="{{ buy_url }}" target="_blank" rel="noopener sponsored nofollow">Shop now</a>{% endif %}
     </div>
   </div>
 </article>

@@ -5,7 +5,7 @@ price: "SGD 8"
 platform: "Shopee"
 country: ["Singapore"]
 category: "Travel Essentials"
-url: "https://s.shopee.sg/1Ac5iuDk1"
+affiliate_url: "https://s.shopee.sg/1Ac5iuDk1"
 featured: false
 date: 2026-08-05
 ---

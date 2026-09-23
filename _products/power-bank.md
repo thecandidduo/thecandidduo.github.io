@@ -5,7 +5,7 @@ price: "SGD 620"
 platform: "Shopee"
 country: ["Singapore"]
 category: "Camera Gear"
-url: "https://s.shopee.sg/3qNKeRRMdQ"
+affiliate_url: "https://s.shopee.sg/3qNKeRRMdQ"
 blurb: "Insta360 GO Ultra - Tiny Hands-Free 4K Cam, Lightweight & Portable, Low Light Excellence, Mount Anywhere, FlowState Stabilization, 200 Min Battery Life Waterproof Cycling"
 featured: true
 date: 2026-08-20

@@ -48,7 +48,11 @@ const productFields = [
   { name: "platform", label: "Buy on (platform)", type: "select", options: ["Shopee", "Amazon", "Lazada", "TikTok Shop", "Etsy", "Other"] },
   { name: "country", label: "Available in (countries)", type: "multiselect", options: COUNTRY_OPTIONS, hint: "Select every country this product is available in." },
   { name: "category", label: "Category", type: "text", hint: "e.g. Camera Gear, Travel Essentials. Reuse exact wording to group items on /products/." },
-  { name: "url", label: "Affiliate link", type: "text", hint: "Paste your full affiliate URL." },
+  // Deliberately not named `url`: on a collection item Jekyll's built-in `url`
+  // (the item's generated page address) shadows any front matter `url`, so
+  // templates could never read it — the Shop now button linked to a
+  // non-existent /products/<slug>/ page instead of the affiliate link.
+  { name: "affiliate_url", label: "Affiliate link", type: "text", hint: "Paste your full affiliate URL — the \"Shop now\" button on the site links here." },
   { name: "blurb", label: "Short note", type: "textarea" },
   { name: "featured", label: "Feature on homepage", type: "boolean", default: false },
   { name: "date", label: "Date added", type: "date", required: true },

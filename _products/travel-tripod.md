@@ -5,7 +5,7 @@ price: "SGD 96"
 platform: "Shopee"
 country: ["Singapore"]
 category: "Travel Essential"
-url: "https://s.shopee.sg/6L4fcY8aL2"
+affiliate_url: "https://s.shopee.sg/6L4fcY8aL2"
 blurb: "Our go to cabin sized backpack that has a lot of pockets!"
 featured: true
 date: 2026-09-01

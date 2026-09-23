@@ -4,7 +4,7 @@ image: "/assets/images/uploads/1790173879113-sg-11134201-7rbmv-m64t1p60hebk60-re
 price: "SGD 53"
 platform: "Shopee"
 category: "Travel Essentials"
-url: "https://s.shopee.sg/9peXnGweTF"
+affiliate_url: "https://s.shopee.sg/9peXnGweTF"
 blurb: "The packing organizers are lightweight, stylish, and designed to fit easily into carry-on suitcases."
 featured: true
 date: 2026-08-28

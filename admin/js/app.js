@@ -836,7 +836,7 @@ function wireProductFetch(main) {
   const statusEl = document.getElementById("fetch-status");
   const form = document.getElementById("entry-form");
 
-  const existingUrl = form.querySelector('[data-field="url"]');
+  const existingUrl = form.querySelector('[data-field="affiliate_url"]');
   if (existingUrl && existingUrl.value) urlInput.value = existingUrl.value;
 
   btn.addEventListener("click", async () => {
@@ -852,7 +852,7 @@ function wireProductFetch(main) {
     btn.textContent = "Fetching…";
     try {
       const result = await fetchProductDetails(state.token, url);
-      setFieldValue(form, "url", url);
+      setFieldValue(form, "affiliate_url", url);
       if (result.name) setFieldValue(form, "name", result.name);
       if (result.price) setFieldValue(form, "price", result.price);
       if (result.blurb) setFieldValue(form, "blurb", result.blurb);

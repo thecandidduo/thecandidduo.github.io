@@ -5,7 +5,7 @@ price: "SGD 69"
 platform: "Shopee"
 country: ["Indonesia"]
 category: "Camera Gear"
-url: "https://s.shopee.sg/4fwReAW3u8"
+affiliate_url: "https://s.shopee.sg/4fwReAW3u8"
 featured: true
 date: 2026-08-15
 ---

@@ -22,11 +22,11 @@ Want the full picture — audience, past partners and rates? Email us for the me
 
 Drop us a line at **[{{ site.social.email }}](mailto:{{ site.social.email }})**, or use the form below.
 
-<form class="form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+<form class="form" id="contact-form">
   <label for="name">Your name</label>
   <input type="text" id="name" name="name" required>
 
-  <label for="email">Email</label>
+  <label for="email">Your email</label>
   <input type="email" id="email" name="email" required>
 
   <label for="message">Message</label>
@@ -36,5 +36,17 @@ Drop us a line at **[{{ site.social.email }}](mailto:{{ site.social.email }})**,
 </form>
 
 <p style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:1.5rem">
-The form uses <a href="https://formspree.io" target="_blank" rel="noopener">Formspree</a> (free). Create an account, make a form, and paste your form ID into the <code>action</code> above — steps are in the setup guide.
+This opens your email app with the message pre-filled, addressed to <strong>{{ site.social.email }}</strong> — nothing is sent from this page directly.
 </p>
+
+<script>
+  document.getElementById("contact-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("name").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var message = document.getElementById("message").value.trim();
+    var subject = "New message from " + name + " via thecandidduo.github.io";
+    var body = message + "\n\n—\n" + name + " (" + email + ")";
+    window.location.href = "mailto:{{ site.social.email }}?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  });
+</script>

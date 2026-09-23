@@ -1,12 +1,13 @@
 ---
-name: "Memory Foam Neck Pillow"
-image: /assets/images/product-neck-pillow.jpg
-price: "SGD 32"
+name: "Portable Travel Bidet Sprayer 450ML Blue Bidet Sprayer | Portable Travel Portable Washing Tool 450ML Portable Bidet | Portable Bidet Travel"
+image: "/assets/images/uploads/1790174327808-id-11134207-7r98u-lw0xmgv641f2e7.webp"
+price: "SGD 8"
 platform: "Shopee"
-country: "Singapore"
+country: ["Singapore"]
 category: "Travel Essentials"
-url: "#"
-blurb: "The difference between arriving wrecked and arriving ready to explore."
+url: "https://s.shopee.sg/1Ac5iuDk1"
 featured: false
 date: 2026-08-05
 ---
+
+

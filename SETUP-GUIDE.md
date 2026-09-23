@@ -347,13 +347,14 @@ publish a few real stories first.
 
 ## ✨ Optional extras (do these whenever)
 
-**📇 Make the contact form work** — it uses [Formspree](https://formspree.io)
-(free). Sign up, create a form, copy your form ID, and paste it into
-`contact.md` where it says `YOUR_FORM_ID`.
+**📇 Contact form** — nothing to set up. The form on `/contact/` opens the
+visitor's email app with the message pre-filled, addressed to `social.email`
+in `_config.yml`.
 
-**📧 Newsletter signups** — connect the footer signup box to a free service like
-[Buttondown](https://buttondown.email) or Mailchimp. See `_includes/footer.html`
-(the `<form>` around "Postcards, not spam").
+**📧 Newsletter signups** — there's no signup box at the moment (the footer one
+wasn't connected to anything, so it was removed). When you pick a free service
+like [Buttondown](https://buttondown.email) or Mailchimp, add its signup form to
+`_includes/footer.html`.
 
 **📈 Track your visitors** — create a free [Google Analytics](https://analytics.google.com)
 property, then set `google_analytics: "G-XXXXXXXXXX"` in `_config.yml`.

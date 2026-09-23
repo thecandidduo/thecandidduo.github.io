@@ -94,9 +94,10 @@ const navItemFields = [
   { name: "url", label: "Link", type: "text" },
 ];
 // Platform names double as the icon lookup key in _includes/socials.html —
-// add a new platform there (an icon `when` branch) as well as here.
+// add a new platform there (an icon `when` branch) as well as here. A platform
+// with no branch (e.g. Lemon8) still renders, using that include's generic link icon.
 const socialItemFields = [
-  { name: "platform", label: "Platform", type: "select", options: ["Instagram", "TikTok", "YouTube", "Spotify", "Facebook", "X (Twitter)", "LinkedIn", "Email"] },
+  { name: "platform", label: "Platform", type: "select", options: ["Instagram", "TikTok", "YouTube", "Spotify", "Lemon8", "Facebook", "X (Twitter)", "LinkedIn", "Email"] },
   { name: "url", label: "Link", type: "text", hint: "Paste the full profile link, e.g. https://instagram.com/yourname. For Email, just type the address." },
 ];
 

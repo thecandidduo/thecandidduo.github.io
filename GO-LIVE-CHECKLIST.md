@@ -37,8 +37,8 @@ A one-page checklist. Full details for each item are in **SETUP-GUIDE.md**.
 - [ ] After approval: create ad units, paste slot IDs into `_config.yml`
 
 ## Nice extras (optional)
-- [ ] Contact form → Formspree ID in `contact.md`
-- [ ] Newsletter → Buttondown/Mailchimp in `_includes/footer.html`
+- [ ] Contact form → set `social.email` in `_config.yml` (the form opens the visitor's email app)
+- [ ] Newsletter (currently removed) → add a Buttondown/Mailchimp signup to `_includes/footer.html`
 - [ ] Analytics → `google_analytics:` in `_config.yml`
 - [ ] SEO → submit `/sitemap.xml` to Google Search Console
 - [ ] Custom domain → Settings → Pages → Custom domain

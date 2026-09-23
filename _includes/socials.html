@@ -1,8 +1,7 @@
 {% comment %}
   "Follow along" social icon strip. Reads _data/socials.yml (edited in the CMS
   under Socials). Renders nothing until at least one link exists. Included at
-  the end of the homepage and the Contact page, just above the footer's
-  newsletter block.
+  the end of the homepage and the Contact page, just above the footer.
 {% endcomment %}
 {% assign social_links = site.data.socials.links %}
 {% if social_links and social_links.size > 0 %}

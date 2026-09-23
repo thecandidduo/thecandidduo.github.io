@@ -452,7 +452,7 @@ a.post-nav__item:hover .post-nav__title{color:var(--accent)}
 /* ============================================================
    FOOTER
    ============================================================ */
-/* ---------- Socials strip (homepage + contact, above the newsletter) ---------- */
+/* ---------- Socials strip (homepage + contact, just above the footer) ---------- */
 .socials{border-top:1px solid var(--line);padding:clamp(3rem,6vw,4.5rem) 0;text-align:center}
 .socials .section-head{margin-bottom:clamp(1.6rem,3.5vw,2.4rem)}
 .socials__list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:1.6rem clamp(1.4rem,4vw,2.6rem)}
@@ -463,14 +463,6 @@ a.post-nav__item:hover .post-nav__title{color:var(--accent)}
 .socials__link:hover .socials__icon,.socials__link:focus-visible .socials__icon{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateY(-3px)}
 .socials__link:hover .socials__label,.socials__link:focus-visible .socials__label{color:var(--accent)}
 
-.newsletter{background:var(--bg-alt);border-top:1px solid var(--line)}
-.newsletter .wrap{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;padding-top:clamp(3rem,6vw,5rem);padding-bottom:clamp(3rem,6vw,5rem)}
-.newsletter h2{font-size:clamp(1.9rem,4vw,2.8rem)}
-.newsletter p{color:var(--muted);margin:0}
-.newsletter form{display:flex;gap:.6rem;flex-wrap:wrap}
-.newsletter input{flex:1;min-width:200px;padding:.95rem 1.1rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--white);font-family:var(--font-body)}
-.newsletter input:focus{outline:0;border-color:var(--accent)}
-@media(max-width:760px){.newsletter .wrap{grid-template-columns:1fr}}
 
 .site-footer{background:var(--espresso);color:var(--cream-on-dark)}
 .site-footer .wrap{padding-top:clamp(3.5rem,6vw,5rem);padding-bottom:2.5rem}

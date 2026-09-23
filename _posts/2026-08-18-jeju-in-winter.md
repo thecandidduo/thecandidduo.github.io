@@ -17,6 +17,8 @@ Everyone told us Jeju was Korea's Hawaii. After a week there in the cold months,
 
 We landed with a tidy plan: sunrise at the crater, the two famous waterfalls, a coastal drive, done. What we actually did was mostly abandon the plan by day two and let the island set the pace.
 
+![](/assets/images/uploads/1790176376391-img_8342.jpg)
+
 ## The island runs on tangerines
 
 You cannot escape the tangerine on Jeju, and you shouldn't try. They're stacked in crates outside every shop, pressed into juice, folded into chocolate, and hanging heavy off trees that spill right over garden walls. We paid a few thousand won to pick our own at a small farm near Seogwipo and left with sticky hands and a bag we finished before dinner.

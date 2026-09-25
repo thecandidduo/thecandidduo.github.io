@@ -48,26 +48,6 @@ layout: default
     </div>
   </div>
 
-  {% comment %} ---------- Previous / Next article ---------- {% endcomment %}
-  {% if page.previous or page.next %}
-  <nav class="post-nav" aria-label="Article navigation">
-    <div class="post-nav__row">
-      {% if page.previous %}
-      <a class="post-nav__item post-nav__item--prev" href="{{ page.previous.url | relative_url }}" rel="prev">
-        <span class="post-nav__dir">&larr; Previous</span>
-        <span class="post-nav__title">{{ page.previous.title }}</span>
-      </a>
-      {% endif %}
-      {% if page.next %}
-      <a class="post-nav__item post-nav__item--next" href="{{ page.next.url | relative_url }}" rel="next">
-        <span class="post-nav__dir">Next &rarr;</span>
-        <span class="post-nav__title">{{ page.next.title }}</span>
-      </a>
-      {% endif %}
-    </div>
-  </nav>
-  {% endif %}
-
   {% comment %} ---------- Related stories (same destination) ---------- {% endcomment %}
   {% assign related = site.posts | where: "destination", page.destination %}
   {% assign relcount = 0 %}

@@ -31,7 +31,7 @@ There are no automated tests or linters in this repo. Verify changes by running 
 **Layouts (`_layouts/`) → Includes (`_includes/`) chain:**
 - `default.html` is the base shell (head/header/footer) that everything else extends via `layout: default`.
 - `home.html` (homepage) assembles hero, ticker, featured/latest stories, Watch & Listen, destinations grid, featured products, about teaser — all Liquid-driven from `site.posts`, `site.products`, and `site.data.homepage`.
-- `post.html` renders an article, auto-inserts an in-article ad after the 3rd paragraph (if the article is long enough), shows prev/next nav, and a related-stories block filtered by same `destination` (falls back to any other posts if fewer than 3 matches). Also emits BlogPosting JSON-LD.
+- `post.html` renders an article, auto-inserts an in-article ad after the 3rd paragraph (if the article is long enough), and ends with a "Keep Reading" related-stories block filtered by same `destination` (falls back to any other posts if fewer than 3 matches). There is deliberately no separate previous/next pager — it duplicated that block. Also emits BlogPosting JSON-LD.
 - `category.html` is the generic "posts filtered by destination" template used by `destinations/*.md`.
 - Reusable pieces live in `_includes/`: `head.html` (fonts, CSS, SEO tag, conditional AdSense script loader, analytics), `header.html` (nav, reads `site.data.navigation.main`), `footer.html`, `hero.html`, `ticker.html`, `story-card.html`, `product-card.html`, `ad.html`.
 

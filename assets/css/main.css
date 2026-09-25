@@ -365,21 +365,6 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 }
 .tag:hover{border-color:var(--accent);color:var(--accent)}
 
-/* Previous / Next article pager */
-.post-nav{max-width:var(--wrap-narrow);margin:clamp(2.5rem,5vw,4rem) auto clamp(3rem,6vw,5rem);padding:0 var(--gutter)}
-.post-nav__row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.2rem,4vw,3rem);border-top:1px solid var(--line);padding-top:clamp(1.6rem,3vw,2.2rem)}
-.post-nav__item{display:flex;flex-direction:column;gap:.45rem}
-.post-nav__item--prev{grid-column:1}
-.post-nav__item--next{grid-column:2;align-items:flex-end;text-align:right}
-.post-nav__dir{font-family:var(--font-ui);font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-.post-nav__title{font-family:var(--font-display);font-size:clamp(1.1rem,2vw,1.35rem);color:var(--ink);line-height:1.22;transition:color .3s var(--ease)}
-a.post-nav__item:hover .post-nav__title{color:var(--accent)}
-@media(max-width:600px){
-  .post-nav__row{grid-template-columns:1fr;gap:1.4rem}
-  .post-nav__item--prev,.post-nav__item--next{grid-column:1}
-  .post-nav__item--next{align-items:flex-start;text-align:left}
-}
-
 /* ============================================================
    AFFILIATE PRODUCTS
    ============================================================ */

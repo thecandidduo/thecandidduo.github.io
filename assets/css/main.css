@@ -425,6 +425,27 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .dest-card__label h3{color:#fff;font-size:1.8rem;margin:0}
 .dest-card__label .count{color:rgba(255,255,255,.75);font-family:var(--font-ui);font-size:.8rem;margin-top:.3rem}
 
+/* Compact destination cards (Destinations page only, via .dest-grid--compact / .dest-card--flag):
+   a short strip — country flag, place name, story count — over a dimmed photo. The homepage's
+   grid keeps the tall photo cards above. The flag <img> sits inside .dest-card, so it must opt out
+   of the photo rules above (`.dest-card img`: fill the card, dim, zoom on hover). */
+.dest-grid--compact{gap:clamp(.8rem,1.8vw,1.2rem)}
+.dest-grid--compact .dest-card{aspect-ratio:auto;height:clamp(92px,11vw,112px)}
+.dest-card--flag .dest-card__label{
+  flex-direction:row;align-items:center;justify-content:flex-start;gap:clamp(.85rem,1.8vw,1.15rem);
+  padding:0 clamp(1rem,2.2vw,1.5rem);
+  background:linear-gradient(90deg,rgba(20,15,10,.8),rgba(20,15,10,.4));
+}
+.dest-card .dest-card__flag{
+  width:clamp(48px,5.6vw,58px);height:auto;aspect-ratio:4/3;flex-shrink:0;object-fit:cover;
+  opacity:1;transition:none;border-radius:3px;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.92),0 4px 14px rgba(0,0,0,.4);
+}
+.dest-card:hover .dest-card__flag{transform:none;opacity:1}
+.dest-card--flag .dest-card__text{display:flex;flex-direction:column}
+.dest-card--flag .dest-card__label h3{font-size:clamp(1.25rem,2.3vw,1.55rem);line-height:1.15}
+.dest-card--flag .dest-card__label .count{margin-top:.2rem}
+
 /* Contact form */
 .form{max-width:560px;margin:2rem auto 0}
 .form label{display:block;font-family:var(--font-ui);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:1.2rem 0 .5rem}

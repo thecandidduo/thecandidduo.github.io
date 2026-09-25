@@ -102,22 +102,7 @@ header_overlay: true
       <span class="eyebrow">Where We've Been</span>
       <h2>Destinations</h2>
     </div>
-    <div class="dest-grid">
-      {% assign dests = "Jeju,New Zealand,Tasmania,Umroh" | split: "," %}
-      {% assign dimgs = "dest-jeju.jpg,dest-newzealand.jpg,dest-tasmania.jpg,dest-umroh.jpg" | split: "," %}
-      {% for d in dests %}
-        {% assign slug = d | slugify %}
-        {% assign n = site.posts | where: "destination", d | size %}
-        <a class="dest-card" href="{{ '/destinations/' | append: slug | append: '/' | relative_url }}">
-          <img src="{{ '/assets/images/' | append: dimgs[forloop.index0] | relative_url }}" alt="{{ d }}" loading="lazy">
-          <span class="dest-card__label">
-            <span class="k">Destination</span>
-            <h3>{{ d }}</h3>
-            <span class="count">{{ n }} {% if n == 1 %}story{% else %}stories{% endif %}</span>
-          </span>
-        </a>
-      {% endfor %}
-    </div>
+    {% include destination-cards.html %}
   </div>
 </section>
 

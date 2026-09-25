@@ -1,0 +1,24 @@
+{% comment %} The destination cards — compact strips with the country's flag — shared by the homepage
+   and /destinations/, so the two can never drift apart.
+   dflags/dcountries run parallel to dests: Jeju is in South Korea, Tasmania is Australian, and
+   Umroh is performed in Saudi Arabia. Flags: assets/images/flags/<code>.svg (see LICENSE.txt there). {% endcomment %}
+<div class="dest-grid dest-grid--compact">
+  {% assign dests = "Jeju,New Zealand,Tasmania,Umroh" | split: "," %}
+  {% assign dimgs = "dest-jeju.jpg,dest-newzealand.jpg,dest-tasmania.jpg,dest-umroh.jpg" | split: "," %}
+  {% assign dflags = "kr,nz,au,sa" | split: "," %}
+  {% assign dcountries = "South Korea,New Zealand,Australia,Saudi Arabia" | split: "," %}
+  {% for d in dests %}
+    {% assign slug = d | slugify %}
+    {% assign n = site.posts | where: "destination", d | size %}
+    <a class="dest-card dest-card--flag" href="{{ '/destinations/' | append: slug | append: '/' | relative_url }}">
+      <img src="{{ '/assets/images/' | append: dimgs[forloop.index0] | relative_url }}" alt="{{ d }}" loading="lazy">
+      <span class="dest-card__label">
+        <img class="dest-card__flag" src="{{ '/assets/images/flags/' | append: dflags[forloop.index0] | append: '.svg' | relative_url }}" alt="Flag of {{ dcountries[forloop.index0] }}" width="56" height="42" loading="lazy">
+        <span class="dest-card__text">
+          <h3>{{ d }}</h3>
+          <span class="count">{{ n }} {% if n == 1 %}story{% else %}stories{% endif %}</span>
+        </span>
+      </span>
+    </a>
+  {% endfor %}
+</div>

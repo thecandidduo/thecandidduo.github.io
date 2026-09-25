@@ -1,7 +1,7 @@
 ---
 title: "15 Days in New Zealand: Our North & South Island Road Trip"
 date: 2026-09-25
-published: false
+published: true
 category: "Guide"
 destination: "New Zealand"
 image: "/assets/images/uploads/1790312994700-img_4506.jpg"

@@ -1,12 +1,11 @@
-# Main navigation. Edit labels/links here (or in the CMS → Site → Navigation).
 main:
-  - title: Stories
-    url: /stories/
-  - title: Destinations
-    url: /destinations/
-  - title: Shop
-    url: /products/
-  - title: About
-    url: /about/
-  - title: Work With Us
-    url: /contact/
+  - title: "Stories"
+    url: "/stories/"
+  - title: "Destinations"
+    url: "/destinations/"
+  - title: "Shop"
+    url: "/products/"
+  - title: "About"
+    url: "/about/"
+  - title: "Work With Us"
+    url: "/contact/"

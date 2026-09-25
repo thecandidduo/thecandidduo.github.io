@@ -27,6 +27,11 @@ Fifteen days, two islands, one rental car, one campervan and about 2,900 km of s
 
 ## 🗺️ The route: one big loop
 
+
+![](/assets/images/uploads/1790317503756-nz-route-map---the-candid-duo_1.png)
+
+
+
 Fly into Auckland, drive south through the geothermal North Island, sail to the South Island, then campervan the West Coast, lakes and fiords before looping back to Christchurch.
 
 | Day | Route | Highlight |
@@ -76,11 +81,11 @@ The days that followed were the reason we came:
 
 ![](/assets/images/uploads/1790317144805-0edbe716-e2fb-462b-8766-0a4c8f72eed7_1_201_a.jpeg)
 
-<!-- IMAGE: Lake Pukaki turquoise with Mt Cook behind -->
+![](/assets/images/uploads/1790317747677-img_4409.jpg)
 
 We finished with the **TranzAlpine**, one of the world's great train rides, coast to coast over the Southern Alps from an open-air viewing carriage.
 
-<!-- IMAGE: TranzAlpine open-air carriage or Waimakariri Gorge -->
+![](/assets/images/uploads/1790317709540-img_4594.jpg)
 
 ## 💰 What it really cost
 
@@ -102,7 +107,7 @@ You need a proper **visitor visa**, not the NZeTA, even if you live in Singapore
 4. **Leave Queenstown by 7 am for Milford.** Save the photo stops for the drive back so you don't miss your cruise.
 5. **Pack soft bags.** Campervan storage is tiny, and duffels squash into lockers far better than suitcases.
 
-<!-- IMAGE: Candid van-life moment — breakfast, cooking or stargazing -->
+![](/assets/images/uploads/1790317584877-img_4427.jpg)
 
 ## 🎒 Want our full itinerary?
 
@@ -121,5 +126,6 @@ This post is the highlight reel. Our **33-page New Zealand North & South Island 
 
 Terima kasih for supporting our little travel page. Tag **@thecandidduo** on your trip, we'd love to see your New Zealand! 🥝
 
-Watch our New Zealand vlog here!
+
+##Watch our New Zealand vlog here!
 {% include youtube.html id="kbAT2QjbJB4" %}

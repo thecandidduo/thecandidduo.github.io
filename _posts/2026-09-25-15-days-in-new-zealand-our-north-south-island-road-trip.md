@@ -4,15 +4,18 @@ date: 2026-09-25
 published: false
 category: "Guide"
 destination: "New Zealand"
+image: "/assets/images/uploads/1790312994700-img_4506.jpg"
+image_thumb: "/assets/images/uploads/1790313000346-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1790313003561-image_hero.jpg"
 dek: "A car up north, a campervan down south, and the honest numbers behind our 2,900 km loop."
 excerpt: "How two Indonesians living in Singapore finally did New Zealand: Auckland to Milford Sound and back to Christchurch, with the full route, what it really cost and what we wish we knew."
 tags: ["new zealand", "road trip", "campervan", "north island", "south island", "itinerary", "budget"]
-featured: false
+featured: true
 ---
 
 Fifteen days, two islands, one rental car, one campervan and about 2,900 km of scenery that made us pull over every ten minutes. This is how two Indonesians living in Singapore finally did New Zealand, from Auckland all the way down to Milford Sound and back to Christchurch.
 
-<!-- IMAGE (also use as the cover image): Hero shot — us with the campervan at Lake Pukaki or Milford Sound -->
+![](/assets/images/uploads/1790313031187-img_4405.jpg)
 
 ## ✨ The trip in numbers
 
@@ -59,7 +62,9 @@ Day 4 was the **Desert Road**, with Mt Ruapehu and Tongariro watching over us al
 
 In Christchurch we swapped the car for a Maui campervan and immediately detoured for **Sheffield Pies** (buy an extra for the road). Then over **Arthur's Pass**, past the giant boulders of **Castle Hill**, to a quiet lakeside DOC campsite for just SGD 21.
 
-<!-- IMAGE: Our campervan parked up at Lake Mahinapua or Castle Hill -->
+
+![](/assets/images/uploads/1790313086680-2d4155c9-658b-4279-a665-319dfc7a8237_1_201_a.jpeg)
+
 
 The days that followed were the reason we came:
 

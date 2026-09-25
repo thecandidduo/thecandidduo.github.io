@@ -347,9 +347,16 @@ textarea { resize: vertical; }
 .list-item-fields { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.2rem; }
 
 @media (max-width: 720px) {
-  .shell { flex-direction: column; }
-  .sidebar { width: auto; flex-direction: row; align-items: center; flex-wrap: wrap; }
-  #nav { flex-direction: row; flex-wrap: wrap; }
+  .shell { flex-direction: column; align-items: stretch; }
+  /* The desktop rail is sticky + 100vh; on a phone that would pin a full-screen panel over the editor.
+     Instead: a normal-flow top bar — brand + user badge, then the nav pills wrapped, then "View site". */
+  .sidebar { width: auto; position: static; height: auto; overflow: visible; flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .7rem 1rem; padding: .9rem 1.2rem; border-right: 0; border-bottom: 1px solid var(--line); }
+  .brand { white-space: nowrap; }
+  .user-badge { flex: 1 1 0; min-width: 0; justify-content: flex-end; border-top: 0; padding-top: 0; }
+  .user-badge span { flex: 0 1 auto; }
+  #nav { order: 3; flex: 1 1 100%; flex-direction: row; flex-wrap: wrap; gap: .3rem; }
+  .nav-item { width: auto; padding: .45rem .7rem; font-size: .85rem; gap: .5rem; }
+  .back-link { order: 4; margin-top: 0; }
   .entry-form, .list-item-fields { grid-template-columns: 1fr; }
   .main { padding: 1.2rem; }
 }

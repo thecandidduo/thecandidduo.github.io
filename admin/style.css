@@ -216,7 +216,13 @@ textarea { resize: vertical; }
 /* ---- "+ Insert image" in a markdown body ---- */
 .body-field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .35rem; }
 .body-field-head label { margin: 0; }
-.body-insert-btn { padding: .3rem .7rem; font-size: .78rem; }
+/* "+ Insert video" pairs with it: same small buttons, plus a paste-a-link row. */
+.body-field-actions { display: flex; gap: .4rem; }
+.body-insert-btn, .body-video-btn { padding: .3rem .7rem; font-size: .78rem; }
+.body-video-row { display: flex; gap: .4rem; margin-bottom: .5rem; }
+.body-video-row[hidden] { display: none; }
+.body-video-row input { flex: 1; min-width: 0; width: auto; }
+.body-video-row .btn-primary, .body-video-row .btn-secondary { padding: .3rem .8rem; font-size: .8rem; }
 .body-insert-status { margin-top: .4rem; }
 
 /* ---- AI story generation ---- */

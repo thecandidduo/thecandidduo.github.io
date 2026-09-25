@@ -4,7 +4,7 @@ import { login, getToken, setToken, clearToken, fetchCurrentUser } from "./auth.
 import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml, parseFlatYaml, serializeFlatYaml } from "./content.js";
 import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
-import { fetchLatestYoutubeVideo, fetchTiktokOembed } from "./media.js";
+import { fetchLatestYoutubeVideo, fetchTiktokOembed, parseYoutubeId } from "./media.js";
 
 const app = document.getElementById("app");
 const state = { token: null, user: null, section: Object.keys(SCHEMA)[0] };
@@ -274,6 +274,7 @@ function renderCollectionEditor(key, schema, item) {
   wireImageFields(main);
   wireMultiselectFields(main);
   wireBodyImageInsert(main);
+  wireBodyVideoInsert(main);
   if (key === "posts" && !item) wireAiGenerator(main);
   if (key === "products") wireProductFetch(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
@@ -647,6 +648,7 @@ async function renderSinglesEditor(key, schema, pageDef) {
     </form>`;
 
   wireBodyImageInsert(main);
+  wireBodyVideoInsert(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
   document.getElementById("save-btn").addEventListener("click", async () => {
     const form = document.getElementById("entry-form");
@@ -910,7 +912,15 @@ function bodyFieldHtml(field, value) {
     <div class="form-row form-row-full">
       <div class="body-field-head">
         <label>${escapeHtml(field.label)}</label>
-        <button type="button" class="btn-secondary body-insert-btn" data-target="${field.name}">+ Insert image</button>
+        <div class="body-field-actions">
+          <button type="button" class="btn-secondary body-insert-btn" data-target="${field.name}">+ Insert image</button>
+          <button type="button" class="btn-secondary body-video-btn" data-target="${field.name}">+ Insert video</button>
+        </div>
+      </div>
+      <div class="body-video-row" data-target="${field.name}" hidden>
+        <input type="text" placeholder="Paste a YouTube link, e.g. https://youtu.be/dQw4w9WgXcQ" autocomplete="off">
+        <button type="button" class="btn-primary body-video-insert">Insert</button>
+        <button type="button" class="btn-secondary body-video-cancel">Cancel</button>
       </div>
       <textarea data-field="${field.name}" data-type="markdown" rows="18" class="markdown-input">${escapeHtml(value)}</textarea>
       <input type="file" accept="image/*" class="body-insert-input" data-target="${field.name}" hidden>
@@ -1321,6 +1331,65 @@ function wireBodyImageInsert(scopeEl) {
       } finally {
         btn.disabled = false;
         fileInput.value = "";
+      }
+    });
+  });
+}
+
+// "+ Insert video" beside "+ Insert image": opens a paste-a-link row, then
+// splices the site's `{% include youtube.html id="…" %}` tag in at the cursor
+// (_includes/youtube.html renders the playable 16:9 player). A bare YouTube
+// URL in the body would NOT embed — kramdown leaves it as plain text — so the
+// button exists to turn any pasted link format into that tag.
+function wireBodyVideoInsert(scopeEl) {
+  scopeEl.querySelectorAll(".body-video-btn").forEach((btn) => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    const target = btn.dataset.target;
+    const row = scopeEl.querySelector(`.body-video-row[data-target="${target}"]`);
+    const input = row.querySelector("input");
+    const statusEl = scopeEl.querySelector(`.body-insert-status[data-target="${target}"]`);
+    const textarea = scopeEl.querySelector(`[data-field="${target}"][data-type="markdown"]`);
+    let start = 0;
+    let end = 0;
+
+    function close() {
+      row.hidden = true;
+      input.value = "";
+    }
+    function insert() {
+      const id = parseYoutubeId(input.value);
+      if (!id) {
+        statusEl.textContent = "That doesn't look like a YouTube video link — paste the address from your browser's address bar or YouTube's Share button.";
+        input.focus();
+        return;
+      }
+      const snippet = `\n\n{% include youtube.html id="${id}" %}\n\n`;
+      textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
+      const newPos = start + snippet.length;
+      close();
+      textarea.focus();
+      textarea.setSelectionRange(newPos, newPos);
+      statusEl.textContent = "Video inserted ✓ — it will show as a playable player on the live site.";
+    }
+
+    btn.addEventListener("click", () => {
+      if (!row.hidden) return close();
+      // Remember where the cursor was: it's the textarea we're about to leave.
+      start = textarea.selectionStart ?? textarea.value.length;
+      end = textarea.selectionEnd ?? textarea.value.length;
+      statusEl.textContent = "";
+      row.hidden = false;
+      input.focus();
+    });
+    row.querySelector(".body-video-insert").addEventListener("click", insert);
+    row.querySelector(".body-video-cancel").addEventListener("click", close);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); // this sits inside the editor's <form> — don't submit it
+        insert();
+      } else if (e.key === "Escape") {
+        close();
       }
     });
   });

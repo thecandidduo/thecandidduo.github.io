@@ -1,5 +1,5 @@
 ---
-title: "Everything We Ate in Jeju: Salt Bread, Seafood & All Things Tangerine"
+title: "Everything We Ate in Jeju: 16 Food Spots to Try"
 date: 2026-09-25
 published: true
 category: "Food"

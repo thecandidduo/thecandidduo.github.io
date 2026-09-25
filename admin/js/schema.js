@@ -38,7 +38,9 @@ const postFields = [
   { name: "excerpt", label: "Short summary", type: "textarea", hint: "1–2 sentences. Shown on cards and in Google results." },
   { name: "tags", label: "Tags", type: "tags", hint: "Comma-separated." },
   { name: "featured", label: "Feature on homepage", type: "boolean", default: false, hint: "Turn on for ONE story to make it the big feature." },
-  { name: "body", label: "Body", type: "markdown", isBody: true },
+  // richText: opens in the visual editor (see js/richtext.js) with a Markdown switch.
+  // Only stories — Pages hold raw HTML/scripts (contact form) a visual editor would destroy.
+  { name: "body", label: "Body", type: "markdown", isBody: true, richText: true },
 ];
 
 const productFields = [

@@ -69,6 +69,7 @@ exclude:
   - GO-LIVE-CHECKLIST.md
   - CLAUDE.md
   - oauth-worker
+  - admin/editor-src   # build source for the visual editor (only admin/lib/editor.bundle.js ships)
   - Gemfile
   - Gemfile.lock
   - vendor

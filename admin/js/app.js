@@ -5,6 +5,7 @@ import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsY
 import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
 import { fetchLatestYoutubeVideo, fetchTiktokOembed, parseYoutubeId } from "./media.js";
+import { mountRichBody } from "./richtext.js";
 
 const app = document.getElementById("app");
 const state = { token: null, user: null, section: Object.keys(SCHEMA)[0] };
@@ -275,6 +276,7 @@ function renderCollectionEditor(key, schema, item) {
   wireMultiselectFields(main);
   wireBodyImageInsert(main);
   wireBodyVideoInsert(main);
+  mountBodyRich(main);
   if (key === "posts" && !item) wireAiGenerator(main);
   if (key === "products") wireProductFetch(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
@@ -649,6 +651,7 @@ async function renderSinglesEditor(key, schema, pageDef) {
 
   wireBodyImageInsert(main);
   wireBodyVideoInsert(main);
+  mountBodyRich(main);
   document.getElementById("cancel-btn").addEventListener("click", () => renderSection(key));
   document.getElementById("save-btn").addEventListener("click", async () => {
     const form = document.getElementById("entry-form");
@@ -814,7 +817,11 @@ function wireAiGenerator(main) {
 
 function setFieldValue(form, name, value) {
   const el = form.querySelector(`[data-field="${name}"]`);
-  if (el) el.value = value || "";
+  if (!el) return;
+  el.value = value || "";
+  // Assigning .value fires no event; the visual editor (richtext.js) listens for
+  // this so an AI-generated body shows up there too.
+  el.dispatchEvent(new CustomEvent("cms:external-set"));
 }
 
 // ---------------- "Fetch details from URL" (Products only) ----------------
@@ -908,11 +915,19 @@ function renderFormFields(fields, values, idPrefix = "") {
 }
 
 function bodyFieldHtml(field, value) {
+  // `richText` fields (the story body) get a Visual | Markdown switch and a
+  // visual editor above the Markdown box; everything else (Pages hold raw HTML
+  // and scripts the visual editor would destroy) stays a plain Markdown box.
+  const rich = !!field.richText;
   return `
-    <div class="form-row form-row-full">
+    <div class="form-row form-row-full body-field"${rich ? " data-rich" : ""}>
       <div class="body-field-head">
         <label>${escapeHtml(field.label)}</label>
         <div class="body-field-actions">
+          ${rich ? `<div class="mode-toggle" role="group" aria-label="Editor mode" hidden>
+            <button type="button" class="mode-btn" data-mode="visual">Visual</button>
+            <button type="button" class="mode-btn" data-mode="markdown">Markdown</button>
+          </div>` : ""}
           <button type="button" class="btn-secondary body-insert-btn" data-target="${field.name}">+ Insert image</button>
           <button type="button" class="btn-secondary body-video-btn" data-target="${field.name}">+ Insert video</button>
         </div>
@@ -922,8 +937,26 @@ function bodyFieldHtml(field, value) {
         <button type="button" class="btn-primary body-video-insert">Insert</button>
         <button type="button" class="btn-secondary body-video-cancel">Cancel</button>
       </div>
+      ${rich ? `<div class="rt-wrap" hidden>
+        <div class="rt-head">
+          <div class="rt-toolbar" role="toolbar" aria-label="Formatting"></div>
+          <div class="rt-tablebar" role="toolbar" aria-label="Table tools" hidden></div>
+          <div class="rt-subrow rt-link-row" hidden>
+            <input type="text" placeholder="Paste the link, e.g. https://example.com" autocomplete="off" aria-label="Link address">
+            <button type="button" class="btn-primary rt-link-apply">Apply</button>
+            <button type="button" class="btn-secondary rt-link-remove">Remove link</button>
+            <button type="button" class="btn-secondary rt-link-cancel">Cancel</button>
+          </div>
+          <div class="rt-subrow rt-alt-row" hidden>
+            <label>Photo description (alt text)</label>
+            <input type="text" placeholder="Describe the photo for Google &amp; screen readers" autocomplete="off">
+          </div>
+        </div>
+        <div class="rt-editor"></div>
+      </div>` : ""}
       <textarea data-field="${field.name}" data-type="markdown" rows="18" class="markdown-input">${escapeHtml(value)}</textarea>
       <input type="file" accept="image/*" class="body-insert-input" data-target="${field.name}" hidden>
+      ${rich ? '<p class="hint rt-notice" hidden></p>' : ""}
       <p class="hint body-insert-status" data-target="${field.name}"></p>
     </div>`;
 }
@@ -1295,6 +1328,19 @@ async function toLocalBlobUrl(url) {
   return URL.createObjectURL(await res.blob());
 }
 
+// The visual editor for a story body, once mounted (see richtext.js). The
+// "+ Insert image / video" buttons ask it, by textarea, whether it is showing —
+// if so they insert into the visual document instead of splicing Markdown.
+const bodyAdapters = new WeakMap();
+
+function mountBodyRich(scopeEl) {
+  const textarea = scopeEl.querySelector('.body-field[data-rich] [data-field][data-type="markdown"]');
+  if (!textarea) return;
+  mountRichBody({ root: scopeEl, textarea, imageSrc }).then((adapter) => {
+    if (adapter) bodyAdapters.set(textarea, adapter);
+  });
+}
+
 // "+ Insert image" toolbar above any markdown body field — uploads the
 // chosen photo and drops a Markdown image tag at the cursor position.
 function wireBodyImageInsert(scopeEl) {
@@ -1320,11 +1366,16 @@ function wireBodyImageInsert(scopeEl) {
       statusEl.textContent = "Uploading…";
       try {
         const path = await uploadImage(file);
-        const snippet = `\n\n![](${path})\n\n`;
-        textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
-        const newPos = start + snippet.length;
-        textarea.focus();
-        textarea.setSelectionRange(newPos, newPos);
+        const rich = bodyAdapters.get(textarea);
+        if (rich && rich.isVisual()) {
+          rich.insertImage(path);
+        } else {
+          const snippet = `\n\n![](${path})\n\n`;
+          textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
+          const newPos = start + snippet.length;
+          textarea.focus();
+          textarea.setSelectionRange(newPos, newPos);
+        }
         statusEl.textContent = "Image inserted ✓";
       } catch (e) {
         statusEl.textContent = "Upload failed: " + e.message;
@@ -1364,12 +1415,18 @@ function wireBodyVideoInsert(scopeEl) {
         input.focus();
         return;
       }
-      const snippet = `\n\n{% include youtube.html id="${id}" %}\n\n`;
-      textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
-      const newPos = start + snippet.length;
-      close();
-      textarea.focus();
-      textarea.setSelectionRange(newPos, newPos);
+      const rich = bodyAdapters.get(textarea);
+      if (rich && rich.isVisual()) {
+        close();
+        rich.insertVideo(id);
+      } else {
+        const snippet = `\n\n{% include youtube.html id="${id}" %}\n\n`;
+        textarea.value = textarea.value.slice(0, start) + snippet + textarea.value.slice(end);
+        const newPos = start + snippet.length;
+        close();
+        textarea.focus();
+        textarea.setSelectionRange(newPos, newPos);
+      }
       statusEl.textContent = "Video inserted ✓ — it will show as a playable player on the live site.";
     }
 

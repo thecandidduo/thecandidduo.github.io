@@ -217,13 +217,106 @@ textarea { resize: vertical; }
 .body-field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .35rem; }
 .body-field-head label { margin: 0; }
 /* "+ Insert video" pairs with it: same small buttons, plus a paste-a-link row. */
-.body-field-actions { display: flex; gap: .4rem; }
+.body-field-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .4rem; }
 .body-insert-btn, .body-video-btn { padding: .3rem .7rem; font-size: .78rem; }
 .body-video-row { display: flex; gap: .4rem; margin-bottom: .5rem; }
 .body-video-row[hidden] { display: none; }
 .body-video-row input { flex: 1; min-width: 0; width: auto; }
 .body-video-row .btn-primary, .body-video-row .btn-secondary { padding: .3rem .8rem; font-size: .8rem; }
 .body-insert-status { margin-top: .4rem; }
+
+/* ---- Visual (rich text) editor for story bodies (js/richtext.js) ---- */
+.mode-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-right: .5rem; }
+.mode-toggle[hidden] { display: none; }
+.mode-btn { background: none; border: 0; color: var(--muted); padding: .3rem .75rem; font-size: .78rem; }
+.mode-btn:hover { color: var(--ink); }
+.mode-btn.is-on { background: var(--accent); color: #fff; }
+
+/* min-width: 0 lets these shrink inside the form grid, so a wide nowrap toolbar scrolls instead of stretching the whole form. */
+.body-field, .rt-wrap, .rt-head { min-width: 0; }
+.rt-wrap { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.rt-wrap[hidden] { display: none; }
+.rt-toolbar, .rt-tablebar { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem; padding: .4rem .5rem; background: var(--panel); border-bottom: 1px solid var(--line); }
+/* The toolbar and its helper rows (table tools, link, photo description) stick together, so they stay in reach on a long story. */
+.rt-head { position: sticky; top: 0; z-index: 5; background: var(--panel); border-radius: var(--radius) var(--radius) 0 0; }
+.rt-head > :first-child { border-radius: var(--radius) var(--radius) 0 0; }
+.rt-tablebar { background: var(--panel-alt); }
+.rt-tablebar[hidden] { display: none; }
+.rt-btn { background: none; border: 1px solid transparent; color: var(--ink); border-radius: 3px; padding: .3rem .55rem; font-size: .78rem; font-weight: 500; min-width: 2rem; }
+.rt-btn:hover:not(:disabled) { background: var(--panel-alt); border-color: var(--line); }
+.rt-btn.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.rt-btn:disabled { opacity: .35; cursor: default; }
+.rt-btn-danger { color: #f3b4ab; }
+.rt-btn-danger:hover:not(:disabled) { background: var(--danger); border-color: var(--danger); color: #fff; }
+.rt-b { font-weight: 800; }
+.rt-i { font-style: italic; font-family: Georgia, serif; }
+.rt-sep { width: 1px; align-self: stretch; background: var(--line); margin: .15rem .3rem; }
+.rt-subrow { display: flex; align-items: center; gap: .4rem; padding: .5rem .5rem; background: var(--panel-alt); border-bottom: 1px solid var(--line); }
+.rt-subrow[hidden] { display: none; }
+.rt-subrow input { flex: 1; min-width: 0; width: auto; }
+.rt-subrow .btn-primary, .rt-subrow .btn-secondary { padding: .3rem .8rem; font-size: .8rem; white-space: nowrap; }
+.rt-alt-row label { margin: 0; color: var(--accent); font-size: .76rem; white-space: nowrap; }
+.rt-notice { color: #e6c98d; }
+
+/* The writing surface mirrors the live article (cream page, Lora body, Playfair headings, terracotta accents). */
+.rt-editor { background: #f7f3ec; border-radius: 0 0 var(--radius) var(--radius); }
+.rt-editor .ProseMirror { min-height: 440px; padding: 1.7rem 2rem 2.2rem; outline: none; color: #4a443c; font-family: "Lora", Georgia, serif; font-size: 1.05rem; line-height: 1.8; }
+.rt-editor .ProseMirror :where(p) { margin: 0; }
+.rt-editor .ProseMirror > * + * { margin-top: 1em; }
+.rt-editor .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; pointer-events: none; color: #a39a8d; }
+.rt-editor .ProseMirror h1, .rt-editor .ProseMirror h2, .rt-editor .ProseMirror h3,
+.rt-editor .ProseMirror h4, .rt-editor .ProseMirror h5, .rt-editor .ProseMirror h6 { font-family: var(--font-display); font-weight: 600; color: #241f1b; line-height: 1.2; margin: 1.6em 0 0; }
+.rt-editor .ProseMirror h1 { font-size: 2.2rem; }
+.rt-editor .ProseMirror h2 { font-size: 1.75rem; }
+.rt-editor .ProseMirror h3 { font-size: 1.35rem; }
+.rt-editor .ProseMirror h4 { font-size: 1.15rem; }
+.rt-editor .ProseMirror > :first-child { margin-top: 0; }
+.rt-editor .ProseMirror a { color: #c05a2f; text-decoration: underline; text-underline-offset: 3px; cursor: text; }
+.rt-editor .ProseMirror strong { color: #241f1b; }
+.rt-editor .ProseMirror ul, .rt-editor .ProseMirror ol { padding-left: 1.4rem; }
+.rt-editor .ProseMirror li > p { margin: 0; }
+.rt-editor .ProseMirror li + li { margin-top: .35em; }
+.rt-editor .ProseMirror blockquote { margin: 1.4em 0; padding: .2rem 0 .2rem 1.4rem; border-left: 3px solid #c05a2f; font-family: var(--font-display); font-style: italic; font-size: 1.3rem; line-height: 1.4; color: #241f1b; }
+.rt-editor .ProseMirror hr { border: 0; border-top: 1px solid #d9cfbf; margin: 2rem 0; }
+.rt-editor .ProseMirror code { background: #ece4d6; border-radius: 2px; padding: .05em .35em; font-size: .88em; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.rt-editor .ProseMirror pre { background: #241f1b; color: #f3ece1; padding: .9rem 1rem; border-radius: 3px; overflow-x: auto; }
+.rt-editor .ProseMirror pre code { background: none; padding: 0; color: inherit; }
+.rt-editor .ProseMirror img { display: block; max-width: 100%; height: auto; margin: 1.2rem 0; border-radius: 2px; cursor: pointer; }
+.rt-editor .ProseMirror p > img:only-child { margin: .4rem 0; }
+.rt-editor .ProseMirror .ProseMirror-selectednode { outline: 3px solid #c05a2f; outline-offset: 2px; }
+.rt-editor .ProseMirror-gapcursor::after { border-top: 1px solid #241f1b; }
+
+.rt-editor .tableWrapper { overflow-x: auto; margin: 1.2rem 0; }
+.rt-editor .ProseMirror table { border-collapse: collapse; width: 100%; table-layout: fixed; font-family: var(--font-ui); font-size: .92rem; line-height: 1.5; margin: 0; }
+.rt-editor .ProseMirror th, .rt-editor .ProseMirror td { border: 1px solid #d9cfbf; padding: .5rem .7rem; vertical-align: top; text-align: left; position: relative; }
+.rt-editor .ProseMirror th { background: #ece4d6; color: #241f1b; font-weight: 600; }
+.rt-editor .ProseMirror th > p, .rt-editor .ProseMirror td > p { margin: 0; }
+.rt-editor .ProseMirror .selectedCell::after { content: ""; position: absolute; inset: 0; background: rgba(192, 90, 47, .2); pointer-events: none; }
+
+/* Things the visual editor carries through untouched: video, hidden notes, template tags. */
+.rt-raw { border-radius: 3px; font-family: var(--font-ui); font-size: .82rem; line-height: 1.45; user-select: none; }
+.rt-raw--video { display: flex; align-items: center; gap: 1rem; background: #241f1b; color: #f3ece1; padding: .7rem; }
+.rt-raw--video img { width: 168px; aspect-ratio: 16 / 9; object-fit: cover; margin: 0; border-radius: 2px; flex-shrink: 0; }
+.rt-raw--video .rt-raw__label { display: flex; flex-direction: column; gap: .2rem; }
+.rt-editor .ProseMirror .rt-raw--video strong { color: #fff; font-size: .9rem; }
+.rt-raw--video span { color: #b9ad9c; }
+.rt-raw--note { display: flex; flex-direction: column; gap: .2rem; border: 1.5px dashed #c9a24d; background: #fbf3dc; color: #6b5a2a; padding: .55rem .8rem; }
+.rt-raw--code { border: 1px dashed #b7ac9b; background: #efe8db; color: #4a443c; padding: .5rem .8rem; }
+.rt-raw__tag { font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+.rt-raw--code code { display: block; background: none; padding: 0; margin-top: .2rem; white-space: pre-wrap; word-break: break-all; }
+
+@media (max-width: 720px) {
+  /* One swipeable row instead of a 3-row wrap — the toolbar is pinned, so it must stay slim. */
+  .rt-toolbar, .rt-tablebar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .rt-toolbar::-webkit-scrollbar, .rt-tablebar::-webkit-scrollbar { display: none; }
+  .rt-btn, .rt-sep { flex-shrink: 0; white-space: nowrap; }
+  .rt-link-row { flex-wrap: wrap; }
+  .rt-link-row input { flex-basis: 100%; }
+  .rt-editor .ProseMirror { padding: 1.2rem 1rem 1.6rem; }
+  .rt-raw--video { flex-direction: column; align-items: flex-start; }
+  .rt-raw--video img { width: 100%; }
+  .rt-alt-row { flex-wrap: wrap; }
+}
 
 /* ---- AI story generation ---- */
 .ai-box { margin-bottom: 1.4rem; }

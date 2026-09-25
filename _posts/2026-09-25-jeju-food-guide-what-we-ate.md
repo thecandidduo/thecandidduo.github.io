@@ -4,6 +4,9 @@ date: 2026-09-25
 published: true
 category: "Food"
 destination: "Jeju"
+image: "/assets/images/uploads/1790343706397-2170e5cc-2b71-47a3-9f13-e50f4a61c62c_1_105_c.jpeg"
+image_thumb: "/assets/images/uploads/1790343720362-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1790343722814-image_hero.jpg"
 excerpt: "Salt bread, seafood ramyeon, whole grilled cutlassfish and market hotteok. The 16 Jeju cafés, restaurants and street food stalls we loved."
 tags: ["jeju", "jeju food", "south korea", "korean street food", "salt bread", "jeju cafes", "jeju itinerary"]
 featured: false
@@ -17,15 +20,19 @@ This is the full list of 16 places we ate at, from bakery cafés and seafood ste
 
 Salt bread (sogeumppang) was our non-negotiable. It's a buttery roll with a crisp, salty bottom, and Jeju's cafés take it seriously.
 
-**[Haejigae Cafe](https://www.trvlogue.com/en/haejigae-cafe-jeju-review)** — A seaside café in Aewol, and our favourite bakery tray of the trip. We loaded up on salt bread sprinkled with coarse salt, a pistachio-crusted chocolate loaf, a cheesy baked savoury bread and a soft cream bun. Come for the bread, stay for the sea view.
+[**Haejigae Cafe**](https://www.trvlogue.com/en/haejigae-cafe-jeju-review) — A seaside café in Aewol, and our favourite bakery tray of the trip. We loaded up on salt bread sprinkled with coarse salt, a pistachio-crusted chocolate loaf, a cheesy baked savoury bread and a soft cream bun. Come for the bread, stay for the sea view.
 
 - **Location:** 52 Aewolbukseo-gil, Aewol-eup, Jeju-si (Aewol coast). Open daily 9am–9pm.
 - **Price range:** Salt bread and pastries ₩5,500–6,500; coffee ₩9,000–10,000. ([DiningCode](https://www.diningcode.com/profile.php?rid=zylCybGEXjcy))
+
+![](/assets/images/uploads/1790343904420-img_9793.jpeg)
 
 **Antoinette Cafe & Bistro** — A calm stop for a proper café breakfast. We had caramelised garlic-butter toast, an almond croissant, a flaky croissant roll, a Portuguese egg tart and a matcha latte.
 
 - **Location:** Yongdam branch, 671 Seohaean-ro, Jeju-si, near the airport with sea views. There's also a Seogwipo branch at 37 Chilsimni-ro 214beon-gil. Open daily 8am–7:30pm.
 - **Price range:** Drinks ₩5,000–8,500; breads and pastries are priced separately on the counter. ([DiningCode](https://www.diningcode.com/profile.php?rid=ze7kgC2Cia3B))
+
+![](/assets/images/uploads/1790343928782-img_9795.jpeg)
 
 **Orrrn** — Where we did coffee and buns: a glossy cream-filled bun, a golden cheese-topped pastry, an iced latte and a matcha latte with latte art. A cosy, easy refuel between sights.
 
@@ -36,22 +43,22 @@ Salt bread (sogeumppang) was our non-negotiable. It's a buttery roll with a cris
 
 Jeju is an island, and it shows. Most of our proper meals were seafood, usually with a spread of banchan on the side.
 
-**[Noraba Ramen](https://danielfooddiary.com/2019/10/22/nolaba/)** — The most dramatic bowl of the trip. Instant-style ramyeon comes piled with a whole octopus, abalone, scallops in the shell, prawns, crab and clams. It's messy, it's fun, and it's a good deal for how much seafood you get.
+[**Noraba Ramen**](https://danielfooddiary.com/2019/10/22/nolaba/) — The most dramatic bowl of the trip. Instant-style ramyeon comes piled with a whole octopus, abalone, scallops in the shell, prawns, crab and clams. It's messy, it's fun, and it's a good deal for how much seafood you get.
 
 - **Location:** 570-1 Aewolhaean-ro, Aewol-eup, Jeju-si, on the Aewol coastal road. It closes in the late afternoon, so go for lunch.
 - **Price range:** Seafood ramyeon ₩11,000; octopus ramyeon ₩15,900; old-school lunchbox ₩6,500. ([DiningCode](https://www.diningcode.com/profile.php?rid=Bk6Rsr5WKQxw))
 
-**[Bada Janchi](https://www.havehalalwilltravel.com/halal-restaurants/detail/bada-janchi)** — A seaside spot on Tapdong-ro in Jeju City. We had a whole grilled fish with crisp skin, fluffy steamed egg, a row of banchan and tangerine slices to finish.
+[**Bada Janchi**](https://www.havehalalwilltravel.com/halal-restaurants/detail/bada-janchi) — A seaside spot on Tapdong-ro in Jeju City. We had a whole grilled fish with crisp skin, fluffy steamed egg, a row of banchan and tangerine slices to finish.
 
 - **Location:** 79 Tapdong-ro, Jeju-si, facing the sea near Tapdong. Open daily 9am–9pm.
 - **Price range:** Grilled mackerel about ₩15,000; mackerel stew for two ₩30,000; cutlassfish stew ₩42,000; abalone sashimi ₩60,000. ([DiningCode](https://www.diningcode.com/profile.php?rid=t0F0WudncL1N), [Tripadvisor](https://www.tripadvisor.com.sg/Restaurant_Review-g297885-d13963097-Reviews-Bada_Janchi-Jeju_Jeju_Island.html))
 
-**[Chunsim](https://thehalalfoodblog.com/jeju-chunshimine/)** — Famous for one thing: whole grilled cutlassfish (galchi, or hairtail). The fish arrives at full length and takes up most of the table. The main branch is in Andeok, Seogwipo.
+[**Chunsim**](https://thehalalfoodblog.com/jeju-chunshimine/) — Famous for one thing: whole grilled cutlassfish (galchi, or hairtail). The fish arrives at full length and takes up most of the table. The main branch is in Andeok, Seogwipo.
 
 - **Location:** Main branch, 16 Changcheonjungang-ro 24beon-gil, Andeok-myeon, Seogwipo-si.
 - **Price range:** Whole grilled cutlassfish ₩89,000–158,000 (2–4 people); grilled mackerel ₩20,000; abalone cutlassfish stew ₩28,000. This is the priciest meal on the list. ([DiningCode](https://www.diningcode.com/profile.php?rid=JTuEaNCZKVYA))
 
-**[Negeori Restaurant](https://www.tripadvisor.com/Restaurant_Review-g297892-d9388569-Reviews-Negeori_Restaurant-Seogwipo_Jeju_Island.html)** — Our pick for galchi jorim, a spicy braised cutlassfish stew, in Seogwipo. We paired it with grilled fish, seaweed soup and rice. Rich, spicy and perfect for a cold December day.
+[**Negeori Restaurant**](https://www.tripadvisor.com/Restaurant_Review-g297892-d9388569-Reviews-Negeori_Restaurant-Seogwipo_Jeju_Island.html) — Our pick for galchi jorim, a spicy braised cutlassfish stew, in Seogwipo. We paired it with grilled fish, seaweed soup and rice. Rich, spicy and perfect for a cold December day.
 
 - **Location:** 20 Seomun-ro 29beon-gil, Seogwipo-si, on Arangjoeul Food Street near Cheonjiyeon Falls. Open daily 7am–9:40pm. ([VisitKorea](https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=53114))
 - **Price range:** Cutlassfish soup and rockfish soups ₩16,000; galchi jorim ₩55,000 (2 people) to ₩65,000 (3 people); large grilled cutlassfish ₩80,000. ([DiningCode](https://www.diningcode.com/profile.php?rid=LvNVnd6yLgOV))
@@ -65,7 +72,7 @@ Some of our favourite bites cost under 2,000 won and came in a paper cup.
 - **Location:** Dongmun Traditional Market, 20 Gwandeok-ro 14-gil, Jeju-si, near Jeju Airport. The day market runs 8am–9pm, and the night market runs 6pm–midnight through Gate 8. ([Daum travel guide](https://v.daum.net/v/tZye9eLZl3))
 - **Price range:** Hotteok starts from about ₩1,000–1,500 each; night-market dishes are around ₩7,000–13,000. ([Threads](https://www.threads.com/@jejuplanets/post/DRyyKR7krj5))
 
-**[Yeongjin Hotteok](https://www.tiktok.com/@thecandidduo/video/7611834650935282964)** — The stall from our hotteok video. The uncle shapes each pancake by hand and presses it on the griddle, while the auntie fills the flower-shaped gukhwappang moulds beside him. The board read 1,500 won per hotteok, 3 pulppang for 2,000 won, and 1,000 won per fishcake skewer.
+[**Yeongjin Hotteok**](https://www.tiktok.com/@thecandidduo/video/7611834650935282964) — The stall from our hotteok video. The uncle shapes each pancake by hand and presses it on the griddle, while the auntie fills the flower-shaped gukhwappang moulds beside him. The board read 1,500 won per hotteok, 3 pulppang for 2,000 won, and 1,000 won per fishcake skewer.
 
 - **Location:** We couldn't find this stall listed online. Look for the blue Yeongjin Hotteok (영진호떡) sign.
 - **Price range:** From the stall board: hotteok ₩1,500 each, 3 pulppang for ₩2,000, fishcake ₩1,000 a skewer.
@@ -84,7 +91,7 @@ Some of our favourite bites cost under 2,000 won and came in a paper cup.
 
 Jeju's two signature flavours are gamgyul (tangerine) and green tea, and we tried to have both at every café.
 
-**[Hugely Jeju](https://www.corner.inc/place/pjDyp6XnUhwv)** — The cutest dessert of the trip: tangerine gelato shaped like a whole tangerine, leaf and all, served in a cone. We also had a tangerine mousse that comes wrapped in the same foam netting real Jeju tangerines are sold in.
+[**Hugely Jeju**](https://www.corner.inc/place/pjDyp6XnUhwv) — The cutest dessert of the trip: tangerine gelato shaped like a whole tangerine, leaf and all, served in a cone. We also had a tangerine mousse that comes wrapped in the same foam netting real Jeju tangerines are sold in.
 
 - **Location:** 83 Heungun-gil, Jeju-si, close to the airport, with ocean views from the second floor. Open daily 10am–8:30pm.
 - **Price range:** Tangerine (hallabong) gelato ₩12,000; sherbet ₩10,000; hallabong juice ₩6,500. ([DiningCode](https://www.diningcode.com/profile.php?rid=j07i01OMKoyt))

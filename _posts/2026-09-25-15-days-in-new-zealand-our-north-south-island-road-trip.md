@@ -74,7 +74,7 @@ The days that followed were the reason we came:
 - 🍣 **Lake Pukaki**: fresh salmon sashimi at the foot of Aoraki/Mt Cook, then our wildest night: no power, no signal, a sky full of stars
 - ⭐ **Hooker Valley Track** to a glacier lake, then stargazing in Tekapo's Dark Sky Reserve
 
-<!-- IMAGE: Milford Sound from the cruise deck -->
+![](/assets/images/uploads/1790317144805-0edbe716-e2fb-462b-8766-0a4c8f72eed7_1_201_a.jpeg)
 
 <!-- IMAGE: Lake Pukaki turquoise with Mt Cook behind -->
 
@@ -120,3 +120,6 @@ This post is the highlight reel. Our **33-page New Zealand North & South Island 
 👉 **[Get the full itinerary on Gumroad](https://GUMROAD-LINK-HERE)**
 
 Terima kasih for supporting our little travel page. Tag **@thecandidduo** on your trip, we'd love to see your New Zealand! 🥝
+
+Watch our New Zealand vlog here!
+{% include youtube.html id="kbAT2QjbJB4" %}

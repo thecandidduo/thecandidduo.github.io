@@ -5,6 +5,7 @@ import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsY
 import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
 import { fetchLatestYoutubeVideo, fetchTiktokOembed, parseYoutubeId } from "./media.js";
+import { shrinkImage } from "./image-shrink.js";
 import { mountRichBody } from "./richtext.js";
 
 const app = document.getElementById("app");
@@ -1489,8 +1490,10 @@ function wireMultiselectFields(scopeEl) {
 }
 
 async function uploadImage(file) {
-  const base64 = await fileToBase64(file);
-  const safeName = file.name.toLowerCase().replace(/[^a-z0-9.\-_]/g, "-");
+  const shrunk = await shrinkImage(file);
+  const base64 = await fileToBase64(shrunk);
+  let safeName = file.name.toLowerCase().replace(/[^a-z0-9.\-_]/g, "-");
+  if (shrunk !== file) safeName = safeName.replace(/\.[a-z0-9]+$/, "") + ".jpg"; // e.g. a HEIC that came out as JPEG
   return uploadImageBase64(base64, safeName);
 }
 

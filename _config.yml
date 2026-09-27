@@ -61,6 +61,13 @@ collections:
 defaults:
   - scope: { path: "", type: "posts" }
     values: { layout: "post" }
+  # The CMS is noindex, so keep it out of sitemap.xml too (otherwise Search
+  # Console flags "Submitted URL marked 'noindex'").
+  - scope: { path: "admin" }
+    values: { sitemap: false }
+  # Search Console ownership files (keep them — deleting one un-verifies the site).
+  - scope: { path: "google*.html" }
+    values: { sitemap: false }
 
 # ---- Files Jekyll should ignore ----
 exclude:

@@ -16,3 +16,11 @@ it here — you paste it into Cloudflare once. Full click-by-click steps are in
 6. Put the worker URL into `admin/config.yml` → `base_url`.
 
 That's the whole login setup. It's free and you only do it once.
+
+## Traffic counter (optional)
+
+The same worker also powers the CMS Dashboard's traffic card (a cookie-free page-view
+counter). It needs a free D1 database bound to the worker as `DB` — see
+**SETUP-GUIDE.md → Step 6g**, or the comment at the top of `worker.js`.
+
+Tests for the counter (Node 22+, no dependencies): `node --test oauth-worker/test/stats.test.mjs oauth-worker/test/tracker.test.mjs`

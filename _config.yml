@@ -39,6 +39,9 @@ adsense:
 
 # ---- Analytics (optional) ----
 google_analytics: ""                   # e.g. "G-XXXXXXXXXX"
+# Cookie-free page-view counter that feeds the CMS Dashboard (SETUP-GUIDE, Step 6g).
+# This is your CMS worker's address; set it to "" to switch counting off.
+stats_url: "https://candidduo-cms-auth.thecandiduo2.workers.dev"
 
 # ---- Social / contact (also editable in the CMS) ----
 social:

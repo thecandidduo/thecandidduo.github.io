@@ -241,6 +241,47 @@ Skip steps 2–4 if you don't want the two AI buttons; the rest of the CMS
      finds your worker's web address.
 4. **Save / Deploy.**
 
+### 6g — Turn on the traffic dashboard (optional)
+
+The CMS **Dashboard** (the first item in the sidebar) shows how many people are
+visiting: page views and visitors per day, your most-read stories, where visitors
+come from, which countries, and phone vs. computer. It also shows whether your last
+save is live, a content overview, and recent activity.
+
+The visitor numbers come from a tiny counter that runs in **your own** Cloudflare
+account — no cookies, no third-party scripts, no IP addresses stored. Everything else
+on the Dashboard works straight away; only the traffic card needs this one-time setup
+(about five minutes, free):
+
+1. **Update your worker's code** (skip if you've just done 6f step 1 with the latest
+   file). Cloudflare → **Workers & Pages** → your worker → **Edit code**, select all and
+   delete, paste in all of `oauth-worker/worker.js`, click **Deploy**.
+2. **Create a free database.** Cloudflare dashboard → **Storage & databases → D1 SQL
+   database → Create database**. Name it `candidduo-stats`. (Nothing to set up inside it —
+   the worker creates its own tables the first time it's used.)
+3. **Connect it to your worker.** Your worker → **Settings → Bindings → Add → D1
+   database**. Set the **variable name** to exactly `DB`, choose `candidduo-stats`, and
+   **Deploy**.
+4. **Check the secret.** Worker → **Settings → Variables and Secrets** must contain
+   `GITHUB_REPO` = `YOURNAME/YOURNAME.github.io` (you may have added it in 6f). If it's
+   missing the Dashboard will tell you.
+5. Open the CMS **Dashboard** and click **I've done this — check again**. It shows
+   "Counting is on" — then open your site in a **private / incognito window** and browse
+   a page or two. Refresh the Dashboard a minute later and your visit appears.
+
+Good to know:
+- **Your own visits aren't counted.** While you're logged into the CMS, this browser
+  is marked as "the owner", so clicking around your site doesn't inflate the numbers
+  (a small blog needs that). Visitors in other browsers are counted normally. There's a
+  "Count my visits" link at the bottom of the traffic card if you want to test.
+- **The numbers are rough.** Ad blockers and privacy browsers hide some visitors, and
+  automated bots are filtered out on a best-effort basis. Use it for trends ("is it
+  growing? what's popular?"), not exact accounting.
+- **Free plan limits are generous** (a Cloudflare D1 database and worker allow tens of
+  thousands of page views a day at no cost).
+- **To switch counting off,** set `stats_url: ""` in `_config.yml`.
+- Your Privacy page (`/privacy/`) describes the counter in its **Analytics** section.
+
 ---
 
 ## 🟢 Step 7 — Write your first post

@@ -56,6 +56,22 @@ export async function getFile(token, filePath) {
   return { sha: json.sha, text: decodeBase64Utf8(json.content) };
 }
 
+// The latest GitHub Pages build — the step that publishes a save to the live site.
+// Returns null if Pages has no builds yet.
+export async function getLatestPagesBuild(token) {
+  const res = await apiFetch(token, `/repos/${REPO}/pages/builds/latest`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Couldn't read the site's publish status (${res.status})`);
+  return res.json();
+}
+
+// Newest commits on the site's branch (every CMS save is one), newest first.
+export async function listRecentCommits(token, count = 15) {
+  const res = await apiFetch(token, `/repos/${REPO}/commits?sha=${BRANCH}&per_page=${count}`);
+  if (!res.ok) throw new Error(`Couldn't read recent activity (${res.status})`);
+  return res.json();
+}
+
 async function errorMessage(res, fallback) {
   const body = await res.json().catch(() => ({}));
   return body.message || fallback;

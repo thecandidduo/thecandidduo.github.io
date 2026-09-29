@@ -29,7 +29,9 @@ We use third-party advertising, including **Google AdSense**, to help keep this 
 
 ## Analytics
 
-We may use privacy-respecting analytics (such as Google Analytics) to understand how visitors use the site in aggregate. This data is not used to personally identify you.
+We count page views with a simple counter that we run ourselves, without cookies. For each visit it records only which page was viewed, the website that sent you here (if any), your country, and whether you're on a phone, tablet or computer. It does not store your IP address. To estimate roughly how many different people visit each day, it uses a one-way scrambled code made from your connection and browser details plus a random value that changes daily; that code can't be turned back into anything about you, and it is deleted within a couple of days, so we can't recognise you from one day to the next. If your browser sends a "Do Not Track" signal, we don't count your visit at all.
+
+We may also use other privacy-respecting analytics (such as Google Analytics) to understand how visitors use the site in aggregate. This data is not used to personally identify you.
 
 ## Affiliate links
 

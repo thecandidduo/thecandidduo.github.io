@@ -1,4 +1,33 @@
-{% comment %} Optional Google Analytics 4. Set google_analytics in _config.yml to enable. {% endcomment %}
+{% comment %}
+  1) The site's own page-view counter (feeds the CMS Dashboard). Cookie-free: it sends only the
+     page path and the referring site's name to the worker's /hit route (oauth-worker/worker.js),
+     which adds one to a daily tally — no IP addresses or personal data are stored. Off when
+     stats_url in _config.yml is empty. It quietly does nothing when: the page isn't on the real
+     site (localhost / previews), the visitor sends Do Not Track, it's an automated browser, or
+     this browser belongs to the site owner (the CMS sets cd_ignore in localStorage when logged in).
+  2) Optional Google Analytics 4. Set google_analytics in _config.yml to enable.
+{% endcomment %}
+{% if site.stats_url and site.stats_url != "" %}
+<script>
+(function () {
+  try {
+    if (location.hostname !== "{{ site.url | remove: 'https://' | remove: 'http://' }}") return;
+    if (navigator.doNotTrack === "1" || window.doNotTrack === "1" || navigator.webdriver) return;
+    // Storage can throw when a browser blocks it — that must not stop the visit being counted.
+    try { if (localStorage.getItem("cd_ignore")) return; } catch (e) {}
+    var ref = "";
+    try {
+      var h = new URL(document.referrer).hostname.replace(/^www\./, "");
+      if (h && h !== location.hostname) ref = h;
+    } catch (e) {}
+    var url = "{{ site.stats_url }}/hit";
+    var body = JSON.stringify({ p: location.pathname, r: ref });
+    if (navigator.sendBeacon) navigator.sendBeacon(url, new Blob([body], { type: "text/plain" }));
+    else fetch(url, { method: "POST", body: body, keepalive: true, mode: "no-cors" });
+  } catch (e) {}
+})();
+</script>
+{% endif %}
 {% if site.google_analytics and site.google_analytics != "" %}
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
 <script>

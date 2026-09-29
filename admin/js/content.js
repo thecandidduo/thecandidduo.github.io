@@ -170,3 +170,10 @@ export function serializeListsYaml(data, sections) {
   out.push("");
   return out.join("\n");
 }
+
+// "2026-09-25-my-post.md" -> "/stories/my-post/" (Jekyll's permalink is /stories/:title/,
+// and :title is the filename minus its date prefix — not the front matter title).
+export function postUrlFromFilename(name) {
+  const m = name.match(/^\d{4}-\d{2}-\d{2}-(.+)\.md$/);
+  return `/stories/${m ? m[1] : name.replace(/\.md$/, "")}/`;
+}

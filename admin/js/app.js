@@ -1,15 +1,27 @@
 import { SCHEMA } from "./schema.js";
 import * as GH from "./github-api.js";
 import { login, getToken, setToken, clearToken, fetchCurrentUser } from "./auth.js";
-import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml, parseFlatYaml, serializeFlatYaml } from "./content.js";
+import { parseFrontmatter, serializeFrontmatter, parseListsYaml, serializeListsYaml, parseFlatYaml, serializeFlatYaml, postUrlFromFilename } from "./content.js";
 import { REPO, BRANCH, SITE_URL, UPLOADS_PATH, YOUTUBE_CHANNEL_URL } from "./config.js";
 import { generateStory, fetchProductDetails, fileToBase64, isPdf, MAX_AI_IMAGES, MAX_AI_DOCUMENTS } from "./ai.js";
 import { fetchLatestYoutubeVideo, fetchTiktokOembed, parseYoutubeId } from "./media.js";
 import { shrinkImage } from "./image-shrink.js";
 import { mountRichBody } from "./richtext.js";
+import { renderDashboard } from "./dashboard.js";
 
 const app = document.getElementById("app");
 const state = { token: null, user: null, section: Object.keys(SCHEMA)[0] };
+
+// The public site's page-view counter skips any browser with localStorage.cd_ignore set, so the
+// owner's own visits (while logged into the CMS) don't inflate a small blog's numbers. The
+// Dashboard's "Count my visits" opts back in by setting cd_count_me (see dashboard.js).
+function keepOwnerOutOfStats() {
+  try {
+    if (!localStorage.getItem("cd_count_me")) localStorage.setItem("cd_ignore", "1");
+  } catch {
+    /* private mode etc. — the owner's visits just get counted */
+  }
+}
 
 async function init() {
   applyFavicon();
@@ -18,6 +30,7 @@ async function init() {
     try {
       state.user = await fetchCurrentUser(token);
       state.token = token;
+      keepOwnerOutOfStats();
     } catch (e) {
       clearToken();
     }
@@ -73,6 +86,7 @@ function renderLogin() {
       setToken(token);
       state.token = token;
       state.user = await fetchCurrentUser(token);
+      keepOwnerOutOfStats();
       render();
     } catch (e) {
       err.hidden = false;
@@ -121,12 +135,27 @@ function renderNav() {
   });
 }
 
+function openSection(key) {
+  state.section = key;
+  renderApp();
+}
+
+// Jump straight into a "new item" editor (used by the Dashboard's + New story). The section's
+// list is deliberately NOT rendered first: it loads asynchronously and would overwrite the
+// editor when it finished.
+function openNewItem(key) {
+  state.section = key;
+  renderNav();
+  renderCollectionEditor(key, SCHEMA[key], null);
+}
+
 async function renderSection(key) {
   const schema = SCHEMA[key];
   const main = document.getElementById("main");
   main.innerHTML = `<div class="loading">Loading…</div>`;
   try {
-    if (schema.kind === "collection") await renderCollectionList(key, schema);
+    if (schema.kind === "dashboard") await renderDashboard({ main, token: state.token, navigate: openSection, newItem: openNewItem });
+    else if (schema.kind === "collection") await renderCollectionList(key, schema);
     else if (schema.kind === "datafile") await renderDatafile(key, schema);
     else if (schema.kind === "singles") await renderSingles(key, schema);
     else if (schema.kind === "settings") await renderSettingsEditor(key, schema);
@@ -375,11 +404,6 @@ async function loadPostSummaries() {
   const published = items.filter((p) => p.published);
   published.sort((a, b) => a.title.localeCompare(b.title));
   return published;
-}
-
-function postUrlFromFilename(name) {
-  const m = name.match(/^\d{4}-\d{2}-\d{2}-(.+)\.md$/);
-  return `/stories/${m ? m[1] : name.replace(/\.md$/, "")}/`;
 }
 
 function renderDatafileBody(key, schema, st) {
@@ -1563,6 +1587,7 @@ function escapeAttr(str) {
 }
 
 const ICONS = {
+  dashboard: '<svg viewBox="0 0 24 24"><path d="M4 20V10h4v10Zm6 0V4h4v16Zm6 0v-7h4v7Z"/></svg>',
   posts: '<svg viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 5h16v2H4zm0 5h10v2H4zm0 5h16v2H4z"/></svg>',
   products: '<svg viewBox="0 0 24 24"><path d="M20 7h-3a5 5 0 0 0-10 0H4a1 1 0 0 0-1 1l1.2 11.1A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 2-1.9L21 8a1 1 0 0 0-1-1ZM9 7a3 3 0 0 1 6 0Z"/></svg>',
   homepage: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1Z"/></svg>',

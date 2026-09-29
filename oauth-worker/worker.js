@@ -13,6 +13,10 @@
  *      free endpoints (YouTube's channel RSS feed, TikTok's oEmbed API), no
  *      API key or cost involved, just server-side fetches the browser can't
  *      make itself due to CORS.
+ *   5. Counts page views for the CMS Dashboard (a tiny, cookie-free, first-party
+ *      traffic counter — see "Traffic counter" below). It needs a free D1
+ *      database bound to this worker as `DB` (SETUP-GUIDE.md, Step 6g); every
+ *      other feature works without it.
  * The two AI features keep your API key server-side instead of in the
  * browser's JS where anyone could read it. Gemini was picked for these two
  * specifically because Google AI Studio's free tier needs no credit card —
@@ -29,6 +33,11 @@
  *                           *this* repo can trigger them
  *   GEMINI_API_KEY        — free, from aistudio.google.com/apikey — required
  *                           for the AI features only; login works without it
+ *   SITE_ORIGIN           — optional. Only page views reported from this origin
+ *                           are counted. Defaults to https://thecandidduo.github.io
+ *
+ * Binding (Settings → Bindings → Add → D1 database):
+ *   DB                    — a free D1 database for the traffic counter
  */
 
 const AI_MODEL = "gemini-3.6-flash";
@@ -46,8 +55,10 @@ const CORS_HEADERS = {
 // so they require a real GitHub session with push access to *this* repo —
 // otherwise anyone who found this worker's URL could burn through that quota
 // with a throwaway GitHub account.
-async function requirePushAccess(request, env) {
-  if (!env.GEMINI_API_KEY) return { ok: false, status: 500, message: "Missing GEMINI_API_KEY secret" };
+//
+// `ai: false` skips the Gemini-key check for routes (like /stats) that don't call Gemini.
+async function requirePushAccess(request, env, { ai = true } = {}) {
+  if (ai && !env.GEMINI_API_KEY) return { ok: false, status: 500, message: "Missing GEMINI_API_KEY secret" };
   if (!env.GITHUB_REPO) return { ok: false, status: 500, message: "Missing GITHUB_REPO secret" };
 
   const authHeader = request.headers.get("authorization") || "";
@@ -158,8 +169,195 @@ async function callGemini(env, { systemPrompt, parts, schema }) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Traffic counter (the CMS Dashboard's "rough traffic")
+// ---------------------------------------------------------------------------
+// A deliberately small, privacy-friendly page-view counter that stores its
+// numbers in your own Cloudflare D1 database — no cookies, no third-party
+// script, no IP addresses saved. Each page view adds one to a daily tally
+// keyed by page, referring site, country (from Cloudflare) and device type.
+// "Unique visitors" are approximated per day from a one-way hash of
+// IP + browser + a random salt that changes daily; those hashes (and the salts)
+// are deleted after a day, so a visitor can't be recognised across days.
+//   POST /hit    public; called by a tiny script on every page (sendBeacon)
+//   GET  /stats  CMS only (needs a GitHub session with push access)
+// Counts are rough by nature: ad blockers and privacy browsers hide some visitors.
+
+const STATS_TZ_OFFSET_MIN = 8 * 60; // days roll over at midnight Singapore time
+const DEFAULT_SITE_ORIGIN = "https://thecandidduo.github.io";
+const BOT_RE = /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|httpclient|axios|node-fetch|go-http|java\//i;
+
+const STATS_DDL = [
+  "CREATE TABLE IF NOT EXISTS hits (day TEXT NOT NULL, path TEXT NOT NULL, ref TEXT NOT NULL, country TEXT NOT NULL, device TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, path, ref, country, device))",
+  "CREATE TABLE IF NOT EXISTS uniques (day TEXT PRIMARY KEY, visitors INTEGER NOT NULL DEFAULT 0)",
+  "CREATE TABLE IF NOT EXISTS seen (day TEXT NOT NULL, hash TEXT NOT NULL, PRIMARY KEY (day, hash))",
+  "CREATE TABLE IF NOT EXISTS salts (day TEXT PRIMARY KEY, salt TEXT NOT NULL)",
+];
+
+let statsTablesReady = false;
+async function ensureStatsTables(db) {
+  if (statsTablesReady) return;
+  await db.batch(STATS_DDL.map((sql) => db.prepare(sql)));
+  statsTablesReady = true;
+}
+
+// Run `fn` with the tables in place. The tables are created on first use, so there's
+// no SQL to paste anywhere; if the database is ever swapped for a fresh one while this
+// worker is still warm, "no such table" triggers a re-create and one retry.
+async function withStatsTables(db, fn) {
+  await ensureStatsTables(db);
+  try {
+    return await fn();
+  } catch (e) {
+    if (!/no such table/i.test(String((e && e.message) || e))) throw e;
+    statsTablesReady = false;
+    await ensureStatsTables(db);
+    return await fn();
+  }
+}
+
+// "YYYY-MM-DD" in the site's timezone, `offsetDays` from today.
+function statsDay(offsetDays = 0, now = Date.now()) {
+  return new Date(now + STATS_TZ_OFFSET_MIN * 60000 + offsetDays * 86400000).toISOString().slice(0, 10);
+}
+
+function cleanPath(p) {
+  if (typeof p !== "string") return "";
+  const path = p.split(/[?#]/)[0].replace(/index\.html$/, "");
+  return path.length <= 200 && /^\/[A-Za-z0-9\-._~%\/+]*$/.test(path) ? path : "";
+}
+
+function cleanRef(r) {
+  if (typeof r !== "string") return "";
+  const host = r.trim().toLowerCase().replace(/^www\./, "");
+  return host.includes(".") && /^[a-z0-9.-]{3,80}$/.test(host) ? host : "";
+}
+
+function deviceFrom(ua) {
+  if (/iPad|Tablet/i.test(ua)) return "tablet";
+  if (/Mobi|Android|iPhone|iPod/i.test(ua)) return "mobile";
+  return "desktop";
+}
+
+let saltCache = { day: "", salt: "" };
+async function saltForDay(db, day, now) {
+  if (saltCache.day === day) return saltCache.salt;
+  let row = await db.prepare("SELECT salt FROM salts WHERE day = ?").bind(day).first();
+  if (!row) {
+    // First visit of a new day: create today's salt and forget anything older than yesterday.
+    const cutoff = statsDay(-1, now);
+    await db.batch([
+      db.prepare("INSERT OR IGNORE INTO salts (day, salt) VALUES (?, ?)").bind(day, crypto.randomUUID()),
+      db.prepare("DELETE FROM seen WHERE day < ?").bind(cutoff),
+      db.prepare("DELETE FROM salts WHERE day < ?").bind(cutoff),
+    ]);
+    row = await db.prepare("SELECT salt FROM salts WHERE day = ?").bind(day).first();
+  }
+  saltCache = { day, salt: row.salt };
+  return row.salt;
+}
+
+async function anonymousId(salt, ip, ua) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${salt}|${ip}|${ua}`));
+  return [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Returns a short reason string (handy for tests); the caller ignores it.
+async function recordHit(request, env, now = Date.now()) {
+  if (!env.DB) return "no-database";
+  if ((request.headers.get("origin") || "") !== (env.SITE_ORIGIN || DEFAULT_SITE_ORIGIN)) return "wrong-origin";
+  const ua = request.headers.get("user-agent") || "";
+  if (!ua || BOT_RE.test(ua)) return "bot";
+
+  let data;
+  try {
+    data = JSON.parse(await request.text()); // sendBeacon posts text/plain to avoid a CORS preflight
+  } catch {
+    return "bad-body";
+  }
+  const path = cleanPath(data && data.p);
+  if (!path) return "bad-path";
+  const ref = cleanRef(data.r);
+  const country = String((request.cf && request.cf.country) || "").toUpperCase();
+  const device = deviceFrom(ua);
+  const day = statsDay(0, now);
+
+  return withStatsTables(env.DB, async () => {
+    const salt = await saltForDay(env.DB, day, now);
+    const id = await anonymousId(salt, request.headers.get("cf-connecting-ip") || "", ua);
+    const [, seen] = await env.DB.batch([
+      env.DB.prepare(
+        "INSERT INTO hits (day, path, ref, country, device, views) VALUES (?, ?, ?, ?, ?, 1) ON CONFLICT (day, path, ref, country, device) DO UPDATE SET views = views + 1"
+      ).bind(day, path, ref, /^[A-Z]{2}$/.test(country) ? country : "", device),
+      env.DB.prepare("INSERT OR IGNORE INTO seen (day, hash) VALUES (?, ?)").bind(day, id),
+    ]);
+    if (seen.meta && seen.meta.changes > 0) {
+      await env.DB.prepare(
+        "INSERT INTO uniques (day, visitors) VALUES (?, 1) ON CONFLICT (day) DO UPDATE SET visitors = visitors + 1"
+      ).bind(day).run();
+    }
+    return "counted";
+  });
+}
+
+async function buildStats(db, days, now = Date.now()) {
+  return withStatsTables(db, () => queryStats(db, days, now));
+}
+
+async function queryStats(db, days, now) {
+  const since = statsDay(-(days - 1), now);
+  const prevSince = statsDay(-(2 * days - 1), now);
+  const prevEnd = statsDay(-days, now);
+  const top = (col, limit) =>
+    db.prepare(`SELECT ${col} AS name, SUM(views) AS views FROM hits WHERE day >= ? GROUP BY ${col} ORDER BY views DESC LIMIT ${limit}`).bind(since);
+  const [daily, uniq, pages, refs, countries, devices, prevViews, prevUniq, first] = await db.batch([
+    db.prepare("SELECT day, SUM(views) AS views FROM hits WHERE day >= ? GROUP BY day").bind(since),
+    db.prepare("SELECT day, visitors FROM uniques WHERE day >= ?").bind(since),
+    top("path", 10),
+    top("ref", 10),
+    top("country", 10),
+    top("device", 5),
+    db.prepare("SELECT COALESCE(SUM(views), 0) AS n FROM hits WHERE day >= ? AND day <= ?").bind(prevSince, prevEnd),
+    db.prepare("SELECT COALESCE(SUM(visitors), 0) AS n FROM uniques WHERE day >= ? AND day <= ?").bind(prevSince, prevEnd),
+    db.prepare("SELECT MIN(day) AS day FROM hits"),
+  ]);
+
+  const viewsByDay = Object.fromEntries(daily.results.map((r) => [r.day, r.views]));
+  const visitorsByDay = Object.fromEntries(uniq.results.map((r) => [r.day, r.visitors]));
+  const series = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const day = statsDay(-i, now);
+    series.push({ day, views: viewsByDay[day] || 0, visitors: visitorsByDay[day] || 0 });
+  }
+  const list = (res) => res.results.map((r) => ({ name: r.name, views: r.views }));
+  return {
+    ok: true,
+    timezone: "Asia/Singapore",
+    days,
+    since,
+    firstDay: (first.results[0] && first.results[0].day) || null,
+    totals: {
+      views: series.reduce((n, d) => n + d.views, 0),
+      visitors: series.reduce((n, d) => n + d.visitors, 0),
+    },
+    previous: { views: prevViews.results[0].n, visitors: prevUniq.results[0].n },
+    daily: series,
+    pages: list(pages),
+    referrers: list(refs),
+    countries: list(countries),
+    devices: list(devices),
+  };
+}
+
+function jsonResponse(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS_HEADERS, "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  });
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const { pathname, searchParams } = url;
     const origin = url.origin;
@@ -171,6 +369,32 @@ export default {
       return new Response("The Candid Duo — CMS auth worker is running ✓", {
         headers: { "content-type": "text/plain; charset=utf-8" },
       });
+    }
+
+    // Page-view beacon from the public site (see "Traffic counter" above). Always
+    // answers 204 straight away and counts in the background, so it can never slow
+    // a page down or show a visitor an error.
+    if (pathname === "/hit") {
+      const work = recordHit(request, env).catch(() => {});
+      if (ctx && ctx.waitUntil) ctx.waitUntil(work);
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    // Dashboard numbers — CMS only.
+    if (pathname === "/stats") {
+      if (request.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+      if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: CORS_HEADERS });
+      const access = await requirePushAccess(request, env, { ai: false });
+      if (!access.ok)
+        return jsonResponse({ error: access.status === 500 ? "missing_secret" : "unauthorized", message: access.message }, access.status);
+      if (!env.DB)
+        return jsonResponse({ error: "no_database", message: "No D1 database is bound to this worker as DB yet." }, 501);
+      const days = Math.min(365, Math.max(1, parseInt(searchParams.get("days") || "30", 10) || 30));
+      try {
+        return jsonResponse(await buildStats(env.DB, days));
+      } catch (e) {
+        return jsonResponse({ error: "stats_failed", message: e.message || "Couldn't read the stats." }, 500);
+      }
     }
 
     // AI story generation — called via fetch() from the CMS, so (unlike the

@@ -104,6 +104,13 @@ const socialItemFields = [
 ];
 
 export const SCHEMA = {
+  // Not backed by a content file — a read-only overview (traffic, publish status, content
+  // stats, recent activity), rendered by js/dashboard.js. First key = first menu item = the
+  // page the CMS opens on (state.section defaults to Object.keys(SCHEMA)[0]).
+  dashboard: {
+    label: "Dashboard",
+    kind: "dashboard",
+  },
   posts: {
     label: "Stories",
     singular: "Story",

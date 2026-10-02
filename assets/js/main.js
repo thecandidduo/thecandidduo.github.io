@@ -82,7 +82,9 @@
     render(0); reset();
   }
 
-  /* ---- Category filter (stories page) ---- */
+  /* ---- Story filter (stories, family, products pages) ----
+     A button matches cards on data-cat, or on the card attribute named by its
+     data-filter-by (e.g. "section"), which can hold several space-separated values. */
   var filters = document.querySelector(".filters");
   if (filters) {
     var scope = filters.closest("section") || document;
@@ -91,9 +93,10 @@
       btn.addEventListener("click", function () {
         filters.querySelectorAll("button").forEach(function (b) { b.classList.remove("active"); });
         btn.classList.add("active");
-        var cat = btn.dataset.filter;
+        var value = btn.dataset.filter;
+        var by = btn.dataset.filterBy || "cat";
         cards.forEach(function (c) {
-          var show = cat === "all" || c.dataset.cat === cat;
+          var show = value === "all" || (c.dataset[by] || "").split(" ").indexOf(value) !== -1;
           c.style.display = show ? "" : "none";
         });
       });

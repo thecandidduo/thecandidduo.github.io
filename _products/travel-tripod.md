@@ -4,7 +4,7 @@ image: "/assets/images/uploads/1790173731569-sg-11134207-81zvb-mmpwegyloljc23.we
 price: "SGD 96"
 platform: "Shopee"
 country: ["Singapore"]
-category: "Travel Essential"
+category: "Travel Essentials"
 affiliate_url: "https://s.shopee.sg/6L4fcY8aL2"
 blurb: "Our go to cabin sized backpack that has a lot of pockets!"
 featured: true

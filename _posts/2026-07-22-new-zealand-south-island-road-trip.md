@@ -2,6 +2,7 @@
 title: "New Zealand: Two Weeks in a Campervan"
 date: 2026-07-22
 published: false
+section: ["Travel"]
 category: "Adventure"
 destination: "New Zealand"
 image: "/assets/images/uploads/1789572528165-img_4405.jpg"

@@ -1,0 +1,39 @@
+{% comment %}
+  Grid of our own digital products, shared by the homepage ("From Our Shop") and /products/ ("Made by Us").
+  Order: products with a Position (`order`) first, lowest number first, then the rest newest first.
+  include.featured_first — featured products jump to the front (homepage).
+  include.limit          — show at most this many.
+  include.store_links    — add a "Visit our Gumroad store" / "Visit our Etsy shop" button for each
+                           Gumroad or Etsy entry in _data/socials.yml (CMS → Socials), so the store
+                           address is kept in one place.
+{% endcomment %}
+{% assign dp_ordered = site.digital_products | where_exp: "p", "p.order" | sort: "order" %}
+{% assign dp_rest = site.digital_products | where_exp: "p", "p.order == nil" | sort: "date" | reverse %}
+{% assign dp_list = dp_ordered | concat: dp_rest %}
+{% if include.featured_first %}
+  {% assign dp_featured = dp_list | where: "featured", true %}
+  {% assign dp_other = dp_list | where_exp: "p", "p.featured != true" %}
+  {% assign dp_list = dp_featured | concat: dp_other %}
+{% endif %}
+{% assign dp_limit = include.limit | default: 100 %}
+<div class="product-grid product-grid--3">
+  {% for p in dp_list limit: dp_limit %}{% include digital-card.html product=p %}{% endfor %}
+</div>
+{% if include.store_links %}
+  {% assign dp_socials = site.data.socials.links %}
+  {% if dp_socials == nil %}{% assign dp_socials = "" | split: "" %}{% endif %}
+  {% assign dp_etsy = dp_socials | where: "platform", "Etsy" %}
+  {% assign dp_gumroad = dp_socials | where: "platform", "Gumroad" %}
+  {% assign dp_stores = dp_gumroad | concat: dp_etsy %}
+  {% if dp_stores.size > 0 %}
+  <div class="shop-links">
+    {% for s in dp_stores %}
+      {% assign store_url = s.url | strip %}
+      {% if store_url != "" %}
+        {% unless store_url contains "://" %}{% assign store_url = "https://" | append: store_url %}{% endunless %}
+        <a class="btn" href="{{ store_url }}" target="_blank" rel="noopener">Visit our {{ s.platform }} {% if s.platform == "Etsy" %}shop{% else %}store{% endif %}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endif %}

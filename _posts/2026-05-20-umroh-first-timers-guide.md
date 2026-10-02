@@ -1,6 +1,7 @@
 ---
 title: "Umroh for First-Timers: The Honest, Practical Guide We Wish We'd Had"
 date: 2026-05-20
+section: ["Travel"]
 category: Guide
 destination: Umroh
 image: /assets/images/hero-umroh.jpg

@@ -48,25 +48,30 @@ layout: default
     </div>
   </div>
 
-  {% comment %} ---------- Related stories (same destination) ---------- {% endcomment %}
-  {% assign related = site.posts | where: "destination", page.destination %}
+  {% comment %} ---------- Related stories ----------
+     Up to 3, newest first within each tier: same destination (if the story has one), then the
+     same section (a story in both counts as Family), then anything else. `shown` is a
+     "|url|url|" string so no story appears twice, and never the current one. {% endcomment %}
+  {% assign same_place = "" | split: "" %}
+  {% if page.destination and page.destination != "" %}{% assign same_place = site.posts | where: "destination", page.destination %}{% endif %}
+  {% if page.section contains "Family" %}{% assign home_section = "Family" %}{% else %}{% assign home_section = "Travel" %}{% endif %}
+  {% assign same_section = site.posts | where: "section", home_section %}
+  {% assign related = same_place | concat: same_section | concat: site.posts %}
+  {% assign shown = "|" | append: page.url | append: "|" %}
   {% assign relcount = 0 %}
   <section class="section" style="padding-top:clamp(3rem,6vw,5rem)">
     <div class="wrap">
       <div class="section-head"><span class="eyebrow">Keep Reading</span><h2>More Stories</h2></div>
       <div class="story-grid">
         {% for r in related %}
-          {% unless r.url == page.url %}
-            {% if relcount < 3 %}{% include story-card.html post=r %}{% assign relcount = relcount | plus: 1 %}{% endif %}
+          {% assign key = "|" | append: r.url | append: "|" %}
+          {% unless shown contains key %}
+            {% include story-card.html post=r %}
+            {% assign shown = shown | append: r.url | append: "|" %}
+            {% assign relcount = relcount | plus: 1 %}
+            {% if relcount == 3 %}{% break %}{% endif %}
           {% endunless %}
         {% endfor %}
-        {% if relcount < 3 %}
-          {% for r in site.posts %}
-            {% unless r.url == page.url or r.destination == page.destination %}
-              {% if relcount < 3 %}{% include story-card.html post=r %}{% assign relcount = relcount | plus: 1 %}{% endif %}
-            {% endunless %}
-          {% endfor %}
-        {% endif %}
       </div>
     </div>
   </section>

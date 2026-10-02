@@ -2,6 +2,7 @@
 title: "A Winter in Jeju"
 date: 2026-08-18
 published: true
+section: ["Travel"]
 category: "Culture"
 destination: "Jeju"
 image: "/assets/images/uploads/1789395738935-img_9147.jpg"

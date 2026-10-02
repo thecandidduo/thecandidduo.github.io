@@ -13,8 +13,14 @@ description: "Every story from The Candid Duo — travel guides, honest reflecti
 <section class="section" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
   <div class="wrap">
     {% assign cats = site.posts | map: "category" | uniq | sort %}
+    {% assign family_count = site.posts | where: "section", "Family" | size %}
     <div class="filters">
       <button class="active" data-filter="all">All</button>
+      {% comment %} Section buttons only once there's something to tell apart (data-section on each card). {% endcomment %}
+      {% if family_count > 0 %}
+      <button data-filter="travel" data-filter-by="section">Travel</button>
+      <button data-filter="family" data-filter-by="section">Family</button>
+      {% endif %}
       {% for c in cats %}{% if c and c != "" %}<button data-filter="{{ c | slugify }}">{{ c }}</button>{% endif %}{% endfor %}
     </div>
 

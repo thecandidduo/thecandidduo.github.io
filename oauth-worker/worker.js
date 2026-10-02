@@ -100,7 +100,7 @@ function guessPlatform(hostname) {
 
 const PRODUCT_SYSTEM_PROMPT =
   "You extract product info from an e-commerce page's raw HTML for a travel " +
-  "blog's affiliate product CMS. Look at meta tags (og:title, og:image, " +
+  "and family blog's affiliate product CMS. Look at meta tags (og:title, og:image, " +
   'og:description, product:price:amount), JSON-LD <script type="application/ld+json"> ' +
   "Product schema, and any visible price/title text in the HTML. If the page " +
   'is a bot-block / CAPTCHA / "enable JavaScript" placeholder with no real ' +
@@ -115,17 +115,23 @@ const PRODUCT_RESPONSE_SCHEMA = {
     name: { type: "STRING", description: "Product name/title. Empty string if not found." },
     price: { type: "STRING", description: "Price with currency as shown on the page, e.g. 'SGD 45.90'. Empty string if not found." },
     blurb: { type: "STRING", description: "One short sentence describing the product. Empty string if not found." },
-    category: { type: "STRING", description: "A short category guess, e.g. 'Camera Gear', 'Travel Essentials'. Empty string if unsure." },
+    category: { type: "STRING", description: "A short category guess, e.g. 'Camera Gear', 'Travel Essentials', 'Kids & Baby', 'Family Travel Gear'. Empty string if unsure." },
     image_url: { type: "STRING", description: "Best absolute product photo URL found (from og:image or similar). Empty string if not found." },
   },
   required: ["name", "price", "blurb", "category", "image_url"],
 };
 
+// Keep both lists in step with the "section" and "category" options in
+// admin/js/schema.js — the CMS ignores any value that isn't one of its options.
+const SECTION_LIST = ["Travel", "Family"];
+const CATEGORY_LIST = ["Culture", "Adventure", "Guide", "Food", "Reflection", "Parenting", "Kids' Activities", "Milestones"];
+
 const AI_SYSTEM_PROMPT =
-  'You are a travel writer for "The Candid Duo," a warm, first-person travel ' +
-  "blog written by two friends who share honest, practical, occasionally " +
-  "funny stories about their trips. Given a prompt from the site admin (and " +
-  "any attached photos, PDFs, or notes), write a complete blog post in that " +
+  'You are a writer for "The Candid Duo," a warm, first-person blog by a ' +
+  "couple living in Singapore about travel and family life: honest, " +
+  "practical, occasionally funny stories about their trips, parenting and " +
+  "everyday life at home. Given a prompt from the site admin (and any " +
+  "attached photos, PDFs, or notes), write a complete blog post in that " +
   "voice: personal, vivid, specific — real place names, food, small moments " +
   "— never generic listicle copy. Keep paragraphs short. Write the body in " +
   "Markdown. Respond with JSON matching the given schema only.";
@@ -138,8 +144,14 @@ const STORY_RESPONSE_SCHEMA = {
     excerpt: { type: "STRING", description: "1-2 sentence summary shown on cards and in search results." },
     tags: { type: "ARRAY", items: { type: "STRING" }, description: "3-6 short topical tags." },
     body: { type: "STRING", description: "Full story body in Markdown, several paragraphs." },
+    section: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+      description: `Which part of the blog the story belongs to, from exactly: ${SECTION_LIST.join(", ")}. Use both for a trip with the kids.`,
+    },
+    category: { type: "STRING", description: `The one best fit, written exactly as one of: ${CATEGORY_LIST.join(", ")}.` },
   },
-  required: ["title", "dek", "excerpt", "tags", "body"],
+  required: ["title", "dek", "excerpt", "tags", "body", "section", "category"],
 };
 
 // Calls Gemini's generateContent endpoint with structured-output enabled and

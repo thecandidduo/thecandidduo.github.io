@@ -1,7 +1,7 @@
 // Source of truth for what the CMS can edit — replaces admin/config.yml
 // (Decap's schema format). Field shape: { name, label, type, options?,
 // default?, hint?, required? }. type is one of:
-//   text | textarea | date | select | multiselect | boolean | tags | image | image_crop | markdown
+//   text | textarea | number | date | select | multiselect | boolean | tags | image | image_crop | markdown
 // `isBody: true` marks the one field (per collection) that holds the
 // markdown body instead of a front matter key.
 // `image_crop` is a derived, actually-cropped image (drag-to-pan + zoom,
@@ -15,6 +15,8 @@
 // one of a field's several crops is used for collection list/grid cards
 // (`findCropField` in app.js) — needed once there's more than one to choose
 // from.
+// `emptyOption` (select only) adds a first, blank choice with that label, which
+// saves as "no value" — without it a select always submits one of its options.
 
 const COUNTRY_OPTIONS = [
   "Available Worldwide",
@@ -28,8 +30,12 @@ const postFields = [
   { name: "title", label: "Title", type: "text", required: true },
   { name: "date", label: "Publish date", type: "date", required: true },
   { name: "published", label: "Published", type: "boolean", default: true, hint: "Turn off to save as a draft — it won't appear on the live site until turned back on." },
-  { name: "category", label: "Category", type: "select", options: ["Culture", "Adventure", "Guide", "Food", "Reflection"], default: "Culture" },
-  { name: "destination", label: "Destination", type: "select", options: ["Jeju", "New Zealand", "Tasmania", "Umroh", "Singapore", "Other"] },
+  // The blog's two niches. A story can be in both (e.g. a trip with the kids). Templates treat a
+  // story with no section as Travel. Keep the values in step with SECTION_LIST in oauth-worker/worker.js.
+  { name: "section", label: "Section", type: "multiselect", options: ["Travel", "Family"], default: ["Travel"], hint: "Travel, Family or both. Family stories appear on the Family page and in the homepage's Family Life row." },
+  // Keep in step with CATEGORY_LIST in oauth-worker/worker.js (the AI generator picks from it).
+  { name: "category", label: "Category", type: "select", options: ["Culture", "Adventure", "Guide", "Food", "Reflection", "Parenting", "Kids' Activities", "Milestones"], default: "Culture" },
+  { name: "destination", label: "Destination", type: "select", emptyOption: "None (not a trip)", options: ["Jeju", "New Zealand", "Tasmania", "Umroh", "Singapore", "Other"], hint: "Leave as None for at-home family stories." },
   { name: "image", label: "Cover image", type: "image", hint: "Best size ~1600×900px." },
   { name: "image_thumb", label: "Thumbnail crop", type: "image_crop", cropFor: "image", listThumbnail: true, aspectW: 4, aspectH: 3, outputW: 1200, outputH: 900, hint: "Crop how this photo appears in story-card thumbnails across the site." },
   { name: "image_hero", label: "Hero banner crop", type: "image_crop", cropFor: "image", aspectW: 16, aspectH: 9, outputW: 1600, outputH: 900, hint: "Crop how this photo appears as the homepage's full-width hero banner — a much wider frame than the thumbnail crop above. Only needed if this story is picked as a Hero Slide." },
@@ -49,7 +55,7 @@ const productFields = [
   { name: "price", label: "Price", type: "text", hint: "Include the currency, e.g. SGD 39" },
   { name: "platform", label: "Buy on (platform)", type: "select", options: ["Shopee", "Amazon", "Lazada", "TikTok Shop", "Etsy", "Other"] },
   { name: "country", label: "Available in (countries)", type: "multiselect", options: COUNTRY_OPTIONS, hint: "Select every country this product is available in." },
-  { name: "category", label: "Category", type: "text", hint: "e.g. Camera Gear, Travel Essentials. Reuse exact wording to group items on /products/." },
+  { name: "category", label: "Category", type: "text", hint: "e.g. Camera Gear, Travel Essentials, Kids & Baby, Family Travel Gear. Reuse exact wording to group items on /products/." },
   // Deliberately not named `url`: on a collection item Jekyll's built-in `url`
   // (the item's generated page address) shadows any front matter `url`, so
   // templates could never read it — the Shop now button linked to a
@@ -59,6 +65,25 @@ const productFields = [
   { name: "featured", label: "Feature on homepage", type: "boolean", default: false },
   { name: "date", label: "Date added", type: "date", required: true },
   { name: "body", label: "Details (optional)", type: "markdown", isBody: true },
+];
+
+// Our own digital products (sold on Gumroad/Etsy), shown on the homepage ("From Our Shop") and at
+// the top of /products/ ("Made by Us") — kept apart from the affiliate products above because they
+// get plain store links (not rel=sponsored) and no affiliate disclosure. A product can be on both
+// stores; each link gets its own button. Like `affiliate_url`, no field is called `url` (see the
+// productFields note).
+const digitalFields = [
+  { name: "name", label: "Product name", type: "text", required: true },
+  { name: "image", label: "Cover image", type: "image", hint: "Square works best. Your Gumroad or Etsy thumbnail is ideal." },
+  { name: "format", label: "Format", type: "text", hint: "Shown above the name, e.g. Printable PDF · 24 pages." },
+  { name: "price", label: "Price", type: "text", hint: "Include the currency, e.g. SGD 6" },
+  { name: "price_was", label: "Original price", type: "text", hint: "Optional. Shown crossed out before the price during a sale, e.g. SGD 30." },
+  { name: "gumroad_url", label: "Gumroad link", type: "text", hint: "This product's Gumroad page. Leave empty if it isn't on Gumroad." },
+  { name: "etsy_url", label: "Etsy link", type: "text", hint: "This product's Etsy listing. Leave empty if it isn't on Etsy." },
+  { name: "blurb", label: "Short description", type: "textarea" },
+  { name: "order", label: "Position", type: "number", hint: "Optional. Lower numbers show first (1, 2, 3…). Products without a position come after, newest first." },
+  { name: "featured", label: "Show first on homepage", type: "boolean", default: false, hint: "The homepage shows 3 products: featured ones first, then the rest in Position order." },
+  { name: "date", label: "Date added", type: "date", required: true },
 ];
 
 const pageFields = [
@@ -99,7 +124,7 @@ const navItemFields = [
 // add a new platform there (an icon `when` branch) as well as here. A platform
 // with no branch (e.g. Lemon8) still renders, using that include's generic link icon.
 const socialItemFields = [
-  { name: "platform", label: "Platform", type: "select", options: ["Instagram", "TikTok", "YouTube", "Spotify", "Lemon8", "Facebook", "X (Twitter)", "LinkedIn", "Email"] },
+  { name: "platform", label: "Platform", type: "select", options: ["Instagram", "TikTok", "YouTube", "Spotify", "Lemon8", "Facebook", "X (Twitter)", "LinkedIn", "Gumroad", "Etsy", "Email"] },
   { name: "url", label: "Link", type: "text", hint: "Paste the full profile link, e.g. https://instagram.com/yourname. For Email, just type the address." },
 ];
 
@@ -119,7 +144,7 @@ export const SCHEMA = {
     fields: postFields,
     titleField: "title",
     imageField: "image",
-    metaFields: ["category", "date"],
+    metaFields: ["section", "category", "date"],
     badgeField: "featured",
     draftField: "published",
     buildFilename(values, existingName) {
@@ -137,6 +162,21 @@ export const SCHEMA = {
     titleField: "name",
     imageField: "image",
     metaFields: ["category", "platform"],
+    badgeField: "featured",
+    buildFilename(values, existingName) {
+      if (existingName) return existingName;
+      return `${slugify(values.name)}.md`;
+    },
+  },
+  digital: {
+    label: "Digital Products",
+    singular: "Digital Product",
+    kind: "collection",
+    folder: "_digital_products",
+    fields: digitalFields,
+    titleField: "name",
+    imageField: "image",
+    metaFields: ["format", "price"],
     badgeField: "featured",
     buildFilename(values, existingName) {
       if (existingName) return existingName;

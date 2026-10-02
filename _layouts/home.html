@@ -95,6 +95,28 @@ header_overlay: true
 {% if tiktok_embed_count > 0 %}<script async src="https://www.tiktok.com/embed.js"></script>{% endif %}
 {% endif %}
 
+<!-- ===================== FAMILY LIFE ===================== -->
+{% comment %} Hidden until at least one story is in the Family section. {% endcomment %}
+{% assign family_posts = site.posts | where: "section", "Family" %}
+{% if family_posts.size > 0 %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">At Home &amp; Away</span>
+      <h2>Family Life</h2>
+    </div>
+    <div class="story-grid">
+      {% for post in family_posts limit: 3 %}
+        {% include story-card.html post=post %}
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:clamp(2.5rem,5vw,3.5rem)">
+      <a class="btn" href="{{ '/family/' | relative_url }}">All family stories</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- ===================== DESTINATIONS ===================== -->
 <section class="section">
   <div class="wrap">
@@ -105,6 +127,24 @@ header_overlay: true
     {% include destination-cards.html %}
   </div>
 </section>
+
+<!-- ===================== FROM OUR SHOP (our own digital products) ===================== -->
+{% comment %} Hidden until a product exists in _digital_products (CMS → Digital Products). {% endcomment %}
+{% if site.digital_products.size > 0 %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Made by Us</span>
+      <h2>From Our Shop</h2>
+      <p class="lead">Printables we made ourselves, ready to download.</p>
+    </div>
+    {% include digital-products.html limit=3 featured_first=true %}
+    <div style="text-align:center;margin-top:clamp(2.2rem,4vw,3rem)">
+      <a class="btn" href="{{ '/products/' | relative_url }}">See everything we've made</a>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <!-- ===================== OUR RECENT FAV PRODUCTS ===================== -->
 {% assign fav_products = site.products | where: "featured", true | sort: "date" | reverse %}

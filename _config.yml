@@ -59,6 +59,8 @@ feed:
 collections:
   products:
     output: false      # products link out to shops; no individual pages needed
+  digital_products:
+    output: false      # our own printables, sold on Gumroad/Etsy; also link out
 
 # ---- Defaults ----
 defaults:

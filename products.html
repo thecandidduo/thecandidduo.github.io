@@ -1,17 +1,47 @@
 ---
 layout: default
-title: Our Favorite Products
+title: Shop
 permalink: /products/
-description: "Every travel product The Candid Duo recommends — camera gear, packing essentials and more, filtered by category."
+description: "Printables made by The Candid Duo, plus the travel gear and everyday products we genuinely recommend, filtered by category."
 ---
+{% comment %} Two parts: our own digital products (_digital_products, "Made by Us") on top once any exist,
+   then the affiliate picks (_products) with their category filter and disclosure. {% endcomment %}
+{% assign has_digital = false %}
+{% if site.digital_products.size > 0 %}{% assign has_digital = true %}{% endif %}
 <div class="wrap page-hero">
+  {% if has_digital %}
+  <span class="eyebrow">Shop</span>
+  <h1>Made by Us, Loved by Us</h1>
+  <p class="lead">Printables we made ourselves, plus the gear and everyday finds we genuinely recommend.</p>
+  {% else %}
   <span class="eyebrow">Shop Our Faves</span>
   <h1>Our Favorite Products</h1>
   <p class="lead">Everything we genuinely recommend, in one place. Filter by what you're after.</p>
+  {% endif %}
 </div>
 
-<section class="section" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
+{% if has_digital %}
+<section class="section" id="made-by-us" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
   <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Made by Us</span>
+      <h2>Our Digital Products</h2>
+      <p class="lead">Instant downloads from our own shops on Gumroad and Etsy.</p>
+    </div>
+    {% include digital-products.html store_links=true %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section"{% unless has_digital %} style="padding-top:clamp(1.5rem,3vw,2.5rem)"{% endunless %}>
+  <div class="wrap">
+    {% if has_digital %}
+    <div class="section-head">
+      <span class="eyebrow">Shop Our Faves</span>
+      <h2>Our Favorite Products</h2>
+      <p class="lead">Everything we genuinely recommend. Filter by what you're after.</p>
+    </div>
+    {% endif %}
     {% assign all_products = site.products | sort: "date" | reverse %}
     {% assign cats = site.products | map: "category" | uniq | sort %}
     <div class="filters">
@@ -27,6 +57,6 @@ description: "Every travel product The Candid Duo recommends — camera gear, pa
     <p style="text-align:center;color:var(--muted);font-size:1.15rem">Product picks are coming soon.</p>
     {% endif %}
 
-    <p class="product-disclosure">Some links on this page are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you — thank you for supporting The Candid Duo.</p>
+    <p class="product-disclosure">Some of these links are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you — thank you for supporting The Candid Duo.</p>
   </div>
 </section>

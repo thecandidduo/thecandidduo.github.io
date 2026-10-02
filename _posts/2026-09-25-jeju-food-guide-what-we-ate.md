@@ -2,6 +2,7 @@
 title: "Everything We Ate in Jeju: 16 Food Spots to Try"
 date: 2026-09-25
 published: true
+section: ["Travel"]
 category: "Food"
 destination: "Jeju"
 image: "/assets/images/uploads/1790343706397-2170e5cc-2b71-47a3-9f13-e50f4a61c62c_1_105_c.jpeg"

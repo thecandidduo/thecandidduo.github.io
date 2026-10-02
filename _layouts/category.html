@@ -1,23 +1,39 @@
 ---
 layout: default
 ---
+{% comment %} A page listing every story that shares one front matter value.
+   Destination pages just set `destination:` (the default filter_by). The Family page sets
+   `filter_by: section` and `section: Family`, which also matches stories in both sections.
+   Optional: eyebrow, lead, filters (category buttons, shown once 2+ categories exist),
+   empty (text while there are no stories), back_url + back_text (the button underneath). {% endcomment %}
+{% assign filter_by = page.filter_by | default: "destination" %}
+{% assign filter_value = page[filter_by] %}
 <div class="wrap page-hero">
-  <span class="eyebrow">Destination</span>
-  <h1>{{ page.destination }}</h1>
+  <span class="eyebrow">{{ page.eyebrow | default: "Destination" }}</span>
+  <h1>{{ page.title }}</h1>
   {% if page.lead %}<p class="lead">{{ page.lead }}</p>{% endif %}
 </div>
 <section class="section" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
   <div class="wrap">
-    {% assign posts = site.posts | where: "destination", page.destination %}
+    {% assign posts = site.posts | where: filter_by, filter_value %}
     {% if posts.size > 0 %}
+    {% if page.filters %}
+      {% assign cats = posts | map: "category" | compact | uniq | sort %}
+      {% if cats.size > 1 %}
+      <div class="filters">
+        <button class="active" data-filter="all">All</button>
+        {% for c in cats %}<button data-filter="{{ c | slugify }}">{{ c }}</button>{% endfor %}
+      </div>
+      {% endif %}
+    {% endif %}
     <div class="story-grid">
       {% for post in posts %}{% include story-card.html post=post %}{% endfor %}
     </div>
     {% else %}
-    <p style="text-align:center;color:var(--muted);font-size:1.15rem">Stories from {{ page.destination }} are on their way. Check back soon.</p>
+    <p style="text-align:center;color:var(--muted);font-size:1.15rem">{% if page.empty %}{{ page.empty }}{% else %}Stories from {{ filter_value }} are on their way. Check back soon.{% endif %}</p>
     {% endif %}
     <div style="text-align:center;margin-top:3rem">
-      <a class="btn" href="{{ '/destinations/' | relative_url }}">All destinations</a>
+      <a class="btn" href="{{ page.back_url | default: '/destinations/' | relative_url }}">{{ page.back_text | default: "All destinations" }}</a>
     </div>
   </div>
 </section>

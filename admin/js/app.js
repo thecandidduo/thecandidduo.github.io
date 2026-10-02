@@ -244,12 +244,20 @@ function badgeInfo(item, schema) {
   return fallback ? { text: fallback, cls: "" } : null;
 }
 
+// The small grey line under a list item's title, e.g. "Travel + Family · Guide · 2026-09-25".
+function metaText(item, schema) {
+  return (schema.metaFields || [])
+    .map((f) => (Array.isArray(item.data[f]) ? item.data[f].join(" + ") : item.data[f]))
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function collectionCardHtml(item, schema) {
   const title = item.data[schema.titleField] || "(untitled)";
   const cropField = findCropField(schema);
   const img = (cropField && item.data[cropField.name]) || (schema.imageField ? item.data[schema.imageField] : null);
   const badge = badgeInfo(item, schema);
-  const meta = (schema.metaFields || []).map((f) => item.data[f]).filter(Boolean).join(" · ");
+  const meta = metaText(item, schema);
   return `
     <div class="card" data-open="${escapeAttr(item.path)}">
       <div class="card-thumb">${img ? `<img src="${imageSrc(img)}" loading="lazy">` : '<div class="thumb-empty"></div>'}</div>
@@ -266,7 +274,7 @@ function collectionRowHtml(item, schema) {
   const cropField = findCropField(schema);
   const img = (cropField && item.data[cropField.name]) || (schema.imageField ? item.data[schema.imageField] : null);
   const badge = badgeInfo(item, schema);
-  const meta = (schema.metaFields || []).map((f) => item.data[f]).filter(Boolean).join(" · ");
+  const meta = metaText(item, schema);
   return `
     <div class="row-item" data-open="${escapeAttr(item.path)}">
       <div class="row-thumb">${img ? `<img src="${imageSrc(img)}" loading="lazy">` : '<div class="thumb-empty"></div>'}</div>
@@ -827,6 +835,13 @@ function wireAiGenerator(main) {
       setFieldValue(form, "excerpt", story.excerpt);
       setFieldValue(form, "tags", Array.isArray(story.tags) ? story.tags.join(", ") : story.tags);
       setFieldValue(form, "body", story.body);
+      // Older workers don't return these; unknown values are ignored rather than guessed.
+      const fields = SCHEMA.posts.fields;
+      const categoryOptions = fields.find((f) => f.name === "category").options;
+      if (categoryOptions.includes(story.category)) setFieldValue(form, "category", story.category);
+      const sectionOptions = fields.find((f) => f.name === "section").options;
+      const sections = (Array.isArray(story.section) ? story.section : []).filter((s) => sectionOptions.includes(s));
+      if (sections.length) setMultiselectValue(form, "section", sections);
       const titleEl = document.getElementById("editor-title");
       if (titleEl && story.title) titleEl.textContent = story.title;
       panel.hidden = true;
@@ -847,6 +862,16 @@ function setFieldValue(form, name, value) {
   // Assigning .value fires no event; the visual editor (richtext.js) listens for
   // this so an AI-generated body shows up there too.
   el.dispatchEvent(new CustomEvent("cms:external-set"));
+}
+
+// Ticks exactly `values` in a multiselect; the bubbling change event lets
+// wireMultiselectFields redraw its chips and "N selected" label.
+function setMultiselectValue(form, name, values) {
+  const wrap = form.querySelector(`[data-field="${name}"][data-type="multiselect"]`);
+  if (!wrap) return;
+  const boxes = wrap.querySelectorAll('input[type="checkbox"]');
+  boxes.forEach((cb) => (cb.checked = values.includes(cb.value)));
+  if (boxes.length) boxes[0].dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 // ---------------- "Fetch details from URL" (Products only) ----------------
@@ -1014,10 +1039,14 @@ function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}, allField
       return `<textarea id="${id}" data-field="${field.name}" data-type="textarea" rows="3">${escapeHtml(value)}</textarea>`;
     case "date":
       return `<input type="date" id="${id}" data-field="${field.name}" data-type="date" value="${escapeAttr(value)}">`;
+    case "number":
+      return `<input type="number" step="1" id="${id}" data-field="${field.name}" data-type="number" value="${escapeAttr(value)}">`;
     case "boolean":
       return `<label class="switch"><input type="checkbox" id="${id}" data-field="${field.name}" data-type="boolean" ${value ? "checked" : ""}><span></span></label>`;
     case "select":
-      return `<select id="${id}" data-field="${field.name}" data-type="select">${(field.options || [])
+      return `<select id="${id}" data-field="${field.name}" data-type="select">${
+        field.emptyOption !== undefined ? `<option value="">${escapeHtml(field.emptyOption)}</option>` : ""
+      }${(field.options || [])
         .map((o) => `<option value="${escapeAttr(o)}" ${o === value ? "selected" : ""}>${escapeHtml(o)}</option>`)
         .join("")}</select>`;
     case "tags":
@@ -1590,6 +1619,7 @@ const ICONS = {
   dashboard: '<svg viewBox="0 0 24 24"><path d="M4 20V10h4v10Zm6 0V4h4v16Zm6 0v-7h4v7Z"/></svg>',
   posts: '<svg viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 5h16v2H4zm0 5h10v2H4zm0 5h16v2H4z"/></svg>',
   products: '<svg viewBox="0 0 24 24"><path d="M20 7h-3a5 5 0 0 0-10 0H4a1 1 0 0 0-1 1l1.2 11.1A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 2-1.9L21 8a1 1 0 0 0-1-1ZM9 7a3 3 0 0 1 6 0Z"/></svg>',
+  digital: '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16l-5.7-5.7 1.4-1.4 3.3 3.3ZM4 18h16v2H4z"/></svg>',
   homepage: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1Z"/></svg>',
   navigation: '<svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>',
   pages: '<svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm8 1.5V8h4.5Z"/></svg>',

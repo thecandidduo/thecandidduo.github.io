@@ -1,0 +1,33 @@
+{% assign p = include.product %}
+{% comment %}
+  One of our own digital products (_digital_products, CMS → Digital Products). Same card look as
+  product-card.html, but it's our own shop: plain rel="noopener" (no sponsored/nofollow), and one
+  button per store the product is on (gumroad_url, etsy_url). The image and title link to the first
+  of those. No field is called `url`: Jekyll's built-in url would shadow it (see product-card.html).
+{% endcomment %}
+{% assign dc_gumroad = p.gumroad_url | strip %}
+{% assign dc_etsy = p.etsy_url | strip %}
+{% if dc_gumroad != "" %}{% unless dc_gumroad contains "://" %}{% assign dc_gumroad = "https://" | append: dc_gumroad %}{% endunless %}{% endif %}
+{% if dc_etsy != "" %}{% unless dc_etsy contains "://" %}{% assign dc_etsy = "https://" | append: dc_etsy %}{% endunless %}{% endif %}
+{% assign dc_main = dc_gumroad %}
+{% if dc_main == "" %}{% assign dc_main = dc_etsy %}{% endif %}
+<article class="product-card product-card--digital">
+  {% if dc_main != "" %}<a class="product-card__media" href="{{ dc_main }}" target="_blank" rel="noopener" aria-label="{{ p.name | escape }}">{% else %}<div class="product-card__media">{% endif %}
+    {% if p.image %}<img src="{{ p.image | relative_url }}" alt="{{ p.name | escape }}" loading="lazy">{% endif %}
+  {% if dc_main != "" %}</a>{% else %}</div>{% endif %}
+  <div class="product-card__body">
+    {% if p.format %}<span class="product-card__cat">{{ p.format }}</span>{% endif %}
+    <h3 class="product-card__name">{% if dc_main != "" %}<a href="{{ dc_main }}" target="_blank" rel="noopener">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</h3>
+    {% if p.blurb %}<p class="product-card__blurb">{{ p.blurb }}</p>{% endif %}
+    <div class="product-card__pills"><span class="pill pill--platform">Instant download</span></div>
+    <div class="product-card__foot">
+      {% if p.price %}<span class="product-card__price">{% if p.price_was %}<s class="product-card__was">{{ p.price_was }}</s> {% endif %}{{ p.price }}</span>{% endif %}
+      {% if dc_main != "" %}
+      <span class="product-card__stores">
+        {% if dc_gumroad != "" %}<a class="btn btn--accent btn--sm" href="{{ dc_gumroad }}" target="_blank" rel="noopener" aria-label="Buy {{ p.name | escape }} on Gumroad">Gumroad</a>{% endif %}
+        {% if dc_etsy != "" %}<a class="btn btn--accent btn--sm" href="{{ dc_etsy }}" target="_blank" rel="noopener" aria-label="Buy {{ p.name | escape }} on Etsy">Etsy</a>{% endif %}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</article>

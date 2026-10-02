@@ -2,6 +2,7 @@
 title: "Tasmania, the Slow Road"
 date: 2026-06-15
 published: true
+section: ["Travel"]
 category: "Adventure"
 destination: "Tasmania"
 image: "/assets/images/uploads/1789569565587-img_6703.jpeg"

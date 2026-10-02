@@ -2,7 +2,12 @@
 {% assign words = post.content | number_of_words %}
 {% assign rt = words | divided_by: 200 | plus: 1 %}
 {% assign thumb = post.image_thumb | default: post.image %}
-<article class="card" data-cat="{{ post.category | default: 'story' | slugify }}">
+{% comment %} data-section: space-separated, e.g. "travel family"; a story with no section is Travel.
+   Built as "slug slug " then stripped, because Liquid silently drops any block whose body is only
+   whitespace, so a separate "add a space unless last" block would print nothing. {% endcomment %}
+{% assign card_sections = post.section | default: "Travel" %}
+{% capture card_section_slugs %}{% for s in card_sections %}{{ s | slugify }} {% endfor %}{% endcapture %}
+<article class="card" data-cat="{{ post.category | default: 'story' | slugify }}" data-section="{{ card_section_slugs | strip }}">
   <a class="card__media" href="{{ post.url | relative_url }}" aria-label="{{ post.title | escape }}">
     {% if thumb %}<img src="{{ thumb | relative_url }}" alt="{{ post.image_alt | default: post.title | escape }}" loading="lazy">{% endif %}
   </a>

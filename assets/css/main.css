@@ -61,6 +61,12 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .narrow{max-width:var(--wrap-narrow)}
 .section{padding:clamp(3rem,7vw,6rem) 0}
 .section--alt{background:var(--bg-alt)}
+/* Two untinted sections back to back (e.g. Family Life then Destinations on the homepage) would
+   stack both paddings into one big empty band: drop the second one's top padding and draw a
+   content-width hairline instead. */
+.section:not(.section--alt) + .section:not(.section--alt){padding-top:0}
+.section:not(.section--alt) + .section:not(.section--alt) > .wrap::before{
+  content:"";display:block;border-top:1px solid var(--line);margin-bottom:clamp(2.5rem,5vw,4rem)}
 .eyebrow{
   font-family:var(--font-ui);
   text-transform:uppercase;
@@ -301,7 +307,9 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 /* ============================================================
    POST PAGE
    ============================================================ */
-.post-hero{position:relative;padding-top:clamp(7rem,14vw,9rem)}
+/* The header is sticky (in the page flow) everywhere except the homepage, so this padding is just the
+   gap under it — not room for a header floating over the page like the homepage hero has. */
+.post-hero{position:relative;padding-block:clamp(2.5rem,6vw,4rem) clamp(2.2rem,5vw,3.2rem)}
 .post-hero__cover{
   width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:var(--radius);
   margin-top:2rem;background:var(--bg-alt);
@@ -395,13 +403,26 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
   gap:.6rem;padding-top:.85rem;border-top:1px solid var(--line)}
 .product-card__price{font-family:var(--font-display);font-size:1.2rem;font-weight:600;color:var(--ink)}
 .btn--sm{padding:.6em 1.05em;font-size:.7rem}
+/* Our own digital products (digital-card.html): same card, 3 to a row so they get more room */
+.product-grid--3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.product-grid--3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:440px){.product-grid--3{grid-template-columns:1fr}}
+.product-card__was{font-size:.8em;font-weight:400;color:var(--muted);margin-right:.2em}
+.product-card--digital .product-card__foot{flex-wrap:wrap}
+.product-card__stores{display:flex;flex-wrap:wrap;gap:.4rem;margin-left:auto}
+.shop-links{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:clamp(2.2rem,4vw,3rem)}
 .product-disclosure{font-family:var(--font-ui);font-size:.78rem;color:var(--muted);
   margin-top:1.6rem;text-align:center;max-width:60ch;margin-left:auto;margin-right:auto}
 
 /* ============================================================
    PAGE (about / contact / listing)
    ============================================================ */
-.page-hero{padding-top:clamp(7.5rem,14vw,10rem);padding-bottom:clamp(1rem,3vw,2rem);text-align:center}
+.page-hero{padding-block:clamp(2.5rem,6vw,4rem);text-align:center} /* see .post-hero */
+/* Title band: page and story titles sit on a full-width band of the deeper cream the homepage uses
+   for its tinted sections, which sets them apart from the content below. The element stays
+   content-width; a box-shadow paints the colour out to both screen edges (shadows never make a
+   page scroll sideways) and clip-path stops it spilling above or below the band. */
+.page-hero,.post-hero{background:var(--bg-alt);box-shadow:0 0 0 100vmax var(--bg-alt);clip-path:inset(0 -100vmax)}
 .page-hero .eyebrow{display:block}
 .page-hero h1{font-size:clamp(2.6rem,6vw,4.4rem)}
 .page-hero .lead{font-size:1.2rem;color:var(--muted);max-width:52ch;margin:1rem auto 0}
@@ -457,9 +478,8 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .form textarea{min-height:150px;resize:vertical}
 .form .btn{margin-top:1.6rem;width:100%;justify-content:center}
 
-/* Category filter (stories page) */
-.filters{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-bottom:clamp(2rem,4vw,3rem)}
-.filters button{
+/* Story / product filter buttons (stories, family and products pages) */
+.filters{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-bottom:clamp(2rem,4vw,3rem)}.filters button{
   font-family:var(--font-ui);font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   padding:.55em 1.3em;border:1px solid var(--line);border-radius:100px;background:transparent;color:var(--muted);cursor:pointer;transition:.3s;
 }

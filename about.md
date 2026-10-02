@@ -1,13 +1,15 @@
 ---
-layout: page
-title: About Us
-eyebrow: Who We Are
-permalink: /about/
-lead: "Two wanderers, one honest lens — trading the predictable for the unscripted, one road at a time."
+title: "About Us"
+eyebrow: "Who We Are"
+lead: "Two plus one wanderers, one honest lens and unscripted captures of our travel and life journey"
 description: "Meet The Candid Duo — the couple behind the travel stories, vlogs and podcasts."
+layout: "page"
+permalink: "/about/"
 ---
 
-We're **The Candid Duo** — a couple who got tired of the highlight reel.
+![](/assets/images/uploads/1790933277627-img_5330.jpg)
+
+We're **The Candid Duo** — a couple (+1 toddler) who got tired of the highlight reel.
 
 Somewhere between the perfectly-lit hotel shots and the "top 10 things to do" lists, we felt like travel had lost its honesty. So we started documenting ours: the real costs, the wrong turns, the buses we missed, and the tiny unplanned moments that turned into the best stories.
 
@@ -23,10 +25,4 @@ Based in Singapore, we cover everything from slow island loops and mountain road
 
 Because the best moments are rarely the posed ones. We'd rather show you the sunrise we almost slept through than a version of travel that doesn't exist.
 
-> Come for the destinations. Stay for the honesty.
-
 *Want to work with us, or just say hi? Head to our [Work With Us]({{ '/contact/' | relative_url }}) page — we read everything.*
-
----
-
-*Replace this page's words and photos with your own story in the CMS (**Pages → About Us**). This is just a starting point.*

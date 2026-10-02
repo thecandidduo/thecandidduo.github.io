@@ -27,6 +27,8 @@ We use third-party advertising, including **Google AdSense**, to help keep this 
 - Google's use of advertising cookies enables it and its partners to serve ads to you based on your visits to this site and/or other sites on the internet.
 - You can opt out of personalised advertising by visiting [Google Ads Settings](https://www.google.com/settings/ads). You can also opt out of some third-party vendors' use of cookies for personalised advertising via [aboutads.info](https://www.aboutads.info/choices/).
 
+**Visitors in Europe, the UK and Switzerland.** If you visit from the European Economic Area, the UK or Switzerland, a message from Google asks for your permission before advertising cookies are used or ads are personalised. You can choose **Consent**, **Do not consent**, or **Manage options** to decide purpose by purpose and partner by partner. If you don't consent, you can still read everything here; any ads you see won't be personalised to you. You can change your choice at any time with the **Privacy and cookie settings** link at the bottom of the page.
+
 ## Analytics
 
 We count page views with a simple counter that we run ourselves, without cookies. For each visit it records only which page was viewed, the website that sent you here (if any), your country, and whether you're on a phone, tablet or computer. It does not store your IP address. To estimate roughly how many different people visit each day, it uses a one-way scrambled code made from your connection and browser details plus a random value that changes daily; that code can't be turned back into anything about you, and it is deleted within a couple of days, so we can't recognise you from one day to the next. If your browser sends a "Do Not Track" signal, we don't count your visit at all.
@@ -39,8 +41,4 @@ Some posts may contain affiliate links. If you buy something through one, we may
 
 ## Your choices
 
-You can browse this site without giving us any personal information. To manage cookies, use your browser's privacy settings. To reach us about your data, email [{{ site.social.email }}](mailto:{{ site.social.email }}).
-
----
-
-*This is a general template, not legal advice. If your audience includes the EU/UK (GDPR) or California (CCPA), consider a consent banner and review the policy with a professional.*
+You can browse this site without giving us any personal information. To manage cookies, use your browser's privacy settings. If you're in the European Economic Area, the UK or Switzerland, you can also change your advertising choices at any time with the **Privacy and cookie settings** link at the bottom of the page. To reach us about your data, email [{{ site.social.email }}](mailto:{{ site.social.email }}).

@@ -404,9 +404,26 @@ property, then set `google_analytics: "G-XXXXXXXXXX"` in `_config.yml`.
 `/sitemap.xml`. Add your site to [Google Search Console](https://search.google.com/search-console)
 and submit that sitemap so your stories show up in search.
 
-**🌐 Use your own domain** (e.g. `thecandidduo.com`) — buy one from any registrar,
-then in GitHub **Settings → Pages → Custom domain**, enter it and follow the DNS
-instructions. Tick **Enforce HTTPS**. (Then update `url:` in `_config.yml`.)
+**🌐 Use your own domain** (this site now uses `thecandidduo.com`) — buy one from
+any registrar, then **first** add these DNS records at the registrar (on Cloudflare,
+set each one to **DNS only** — the grey cloud, not the orange one):
+
+| Type | Name | Value |
+|---|---|---|
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| CNAME | `www` | `YOURNAME.github.io` |
+
+Only once the domain shows your site's address (it can take a few minutes to a
+few hours), add a `CNAME` file containing the domain to the repo, and update `url:`
+in `_config.yml` and `SITE_URL` in `admin/js/config.js` (doing this before the DNS
+works makes your github.io address redirect to a domain that goes nowhere). When
+GitHub **Settings → Pages** shows the certificate is ready, tick **Enforce HTTPS**.
+The traffic counter (Step 6g) only counts the addresses listed in
+`DEFAULT_SITE_ORIGINS` in `oauth-worker/worker.js`, so update that and redeploy the
+worker too.
 
 ---
 

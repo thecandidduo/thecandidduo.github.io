@@ -10,10 +10,11 @@ description: >-
   Jeju, New Zealand, Tasmania, Umroh and everywhere in between.
 author: The Candid Duo
 
-# Your live web address.
+# Your live web address. This is our own domain (the CNAME file next to this
+# one tells GitHub Pages about it; thecandidduo.github.io now redirects here).
 # If your repo is named  <username>.github.io  keep baseurl empty (recommended).
 # If it's a normal repo (e.g. "blog"), set baseurl to "/blog".
-url: "https://thecandidduo.github.io"  # << CHANGE  (your GitHub Pages URL)
+url: "https://thecandidduo.com"        # << CHANGE  (your web address)
 baseurl: ""                            # << CHANGE only if using a project repo
 
 # ---- Build settings (leave as-is) ----

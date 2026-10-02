@@ -45,7 +45,7 @@ This opens your email app with the message pre-filled, addressed to <strong>{{ s
     var name = document.getElementById("name").value.trim();
     var email = document.getElementById("email").value.trim();
     var message = document.getElementById("message").value.trim();
-    var subject = "New message from " + name + " via thecandidduo.github.io";
+    var subject = "New message from " + name + " via thecandidduo.com";
     var body = message + "\n\n—\n" + name + " (" + email + ")";
     window.location.href = "mailto:{{ site.social.email }}?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
   });

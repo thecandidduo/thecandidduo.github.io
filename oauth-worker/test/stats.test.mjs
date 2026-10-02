@@ -36,7 +36,7 @@ function makeD1() {
   return { prepare: (sql) => stmt(sql), async batch(list) { return list.map((s) => s._do()); }, raw: db };
 }
 
-const SITE = "https://thecandidduo.github.io";
+const SITE = "https://thecandidduo.com";
 const CHROME = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
 const IPHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
 const GOOD = "good-token";
@@ -129,6 +129,19 @@ test("ignores bots, wrong or missing Origin, junk bodies and unsafe paths", asyn
   // ...and real browsers are not mistaken for bots
   for (const ua of [CHROME, IPHONE, "Mozilla/5.0 (X11; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0"]) await hit({ p: "/" }, { ua });
   assert.equal(before(), 3);
+});
+
+test("counts the old github.io address too, unless SITE_ORIGIN overrides the list", async () => {
+  const count = () => rows("SELECT COALESCE(SUM(views), 0) n FROM hits")[0].n;
+  await hit({ p: "/" }, { origin: "https://thecandidduo.github.io" });
+  assert.equal(count(), 1);
+  env.SITE_ORIGIN = "https://example.org , https://thecandidduo.com,";
+  await hit({ p: "/" }, { origin: "https://thecandidduo.github.io" });
+  await hit({ p: "/" }, { origin: "" }); // the trailing comma must not let a missing Origin through
+  assert.equal(count(), 1);
+  await hit({ p: "/" }, { origin: "https://example.org" });
+  await hit({ p: "/" });
+  assert.equal(count(), 3);
 });
 
 test("junk referrers are dropped; the visitor's own site is not a referrer", async () => {

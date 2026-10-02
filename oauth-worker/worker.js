@@ -33,8 +33,9 @@
  *                           *this* repo can trigger them
  *   GEMINI_API_KEY        — free, from aistudio.google.com/apikey — required
  *                           for the AI features only; login works without it
- *   SITE_ORIGIN           — optional. Only page views reported from this origin
- *                           are counted. Defaults to https://thecandidduo.github.io
+ *   SITE_ORIGIN           — optional. Only page views reported from these
+ *                           origins (comma-separated) are counted. Defaults to
+ *                           https://thecandidduo.com and the old github.io address
  *
  * Binding (Settings → Bindings → Add → D1 database):
  *   DB                    — a free D1 database for the traffic counter
@@ -196,7 +197,9 @@ async function callGemini(env, { systemPrompt, parts, schema }) {
 // Counts are rough by nature: ad blockers and privacy browsers hide some visitors.
 
 const STATS_TZ_OFFSET_MIN = 8 * 60; // days roll over at midnight Singapore time
-const DEFAULT_SITE_ORIGIN = "https://thecandidduo.github.io";
+// The old github.io address stays on the list so the counter keeps working on both sides of
+// the move to our own domain (GitHub Pages now redirects it there, so it reports nothing new).
+const DEFAULT_SITE_ORIGINS = "https://thecandidduo.com, https://thecandidduo.github.io";
 const BOT_RE = /bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|httpclient|axios|node-fetch|go-http|java\//i;
 
 const STATS_DDL = [
@@ -277,7 +280,8 @@ async function anonymousId(salt, ip, ua) {
 // Returns a short reason string (handy for tests); the caller ignores it.
 async function recordHit(request, env, now = Date.now()) {
   if (!env.DB) return "no-database";
-  if ((request.headers.get("origin") || "") !== (env.SITE_ORIGIN || DEFAULT_SITE_ORIGIN)) return "wrong-origin";
+  const origins = (env.SITE_ORIGIN || DEFAULT_SITE_ORIGINS).split(",").map((o) => o.trim()).filter(Boolean);
+  if (!origins.includes(request.headers.get("origin") || "")) return "wrong-origin";
   const ua = request.headers.get("user-agent") || "";
   if (!ua || BOT_RE.test(ua)) return "bot";
 

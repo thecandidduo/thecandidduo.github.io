@@ -4,6 +4,9 @@ date: 2026-10-02
 published: true
 section: ["Family"]
 category: "Parenting"
+image: "/assets/images/uploads/1790927798143-img_3452.jpg"
+image_thumb: "/assets/images/uploads/1790927805106-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1790927811571-image_hero.jpg"
 excerpt: "Three things no course, book or performance review ever taught me: be present, be intentional, and stay calm when a tiny human is very much not calm."
 tags: ["parenting", "toddler", "motherhood", "mindfulness", "intentional parenting", "toddler meltdowns", "patience"]
 featured: false

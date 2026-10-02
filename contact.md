@@ -1,22 +1,11 @@
 ---
-layout: page
-title: Work With Us
-eyebrow: Let's Talk
-permalink: /contact/
+title: "Work With Us"
+eyebrow: "Let's Talk"
 lead: "Brand collaborations, tourism boards, or a simple hello — we'd love to hear from you."
 description: "Work with The Candid Duo — collaborations, partnerships and press. Get in touch."
+layout: "page"
+permalink: "/contact/"
 ---
-
-We partner with brands, hotels and tourism boards whose stories are worth telling honestly. If that sounds like you, here's how we can help — and how to reach us.
-
-## Ways we collaborate
-
-- **Sponsored stories & vlogs** — long-form content across the blog, YouTube and TikTok.
-- **Destination campaigns** — on-the-ground coverage with a real point of view.
-- **Product features** — travel gear, apps and services we'd genuinely use.
-- **Ambassador partnerships** — ongoing, not one-and-done.
-
-Want the full picture — audience, past partners and rates? Email us for the media kit.
 
 ## Say hello
 

@@ -5,6 +5,8 @@ published: true
 section: ["Travel"]
 category: "Guide"
 destination: "New Zealand"
+image_thumb: "/assets/images/uploads/1791873693376-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1791873698098-image_hero.jpg"
 excerpt: "Road-tripping New Zealand by campervan? There are 3 campsite types: freedom camps, DOC campsites and holiday parks. Picking the wrong one can affect your trip, especially in winter."
 tags: ["new zealand", "campervan", "nz road trip", "freedom camping", "doc campsites", "holiday parks", "thl app"]
 featured: false

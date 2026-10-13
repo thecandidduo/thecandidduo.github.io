@@ -1,14 +1,16 @@
 ---
 title: "Umroh for First-Timers: The Honest, Practical Guide We Wish We'd Had"
 date: 2026-05-20
+published: false
 section: ["Travel"]
-category: Guide
-destination: Umroh
-image: /assets/images/hero-umroh.jpg
+category: "Guide"
+destination: "Umroh"
+image: "/assets/images/hero-umroh.jpg"
 image_alt: "Pilgrims gathered at the holy mosque"
 dek: "Nobody prepared us for how emotional — and how logistical — a first Umroh would be. Here's what we learned, gently and practically."
 excerpt: "Nobody quite prepared us for how emotional, and how logistical, a first Umroh would be. Here's the honest, practical guide we wish someone had handed us before we went."
-tags: [umroh, umrah, saudi arabia, muslim travel, pilgrimage]
+tags: ["umroh", "umrah", "saudi arabia", "muslim travel", "pilgrimage"]
+featured: false
 ---
 
 We'd read the guides and watched the videos, and still, standing there for the first time, nothing we'd prepared quite covered it. A first Umroh is deeply emotional and surprisingly logistical, all at once — and most of the advice we found focused on one and skipped the other.

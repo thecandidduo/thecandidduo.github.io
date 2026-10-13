@@ -5,6 +5,9 @@ published: true
 section: ["Travel"]
 category: "Guide"
 destination: "Jeju"
+image: "/assets/images/uploads/1791873146396-img_8429.jpg"
+image_thumb: "/assets/images/uploads/1791873165886-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1791873176145-image_hero.jpg"
 excerpt: "Jeju is visa-free for Indonesian passports if you fly in direct, but we still packed a whole folder. Changi asked a couple of questions. Jeju immigration? Literally nothing."
 tags: ["jeju", "jeju visa free", "indonesian passport", "jeju immigration", "korea travel documents", "singapore to jeju"]
 featured: false

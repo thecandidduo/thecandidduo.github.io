@@ -1,11 +1,12 @@
 ---
-title: "15 Days in New Zealand: Our North & South Island Road Trip"
+title: "15-Day New Zealand Road Trip Itinerary: North & South Island"
 date: 2026-09-25
 published: true
 section: ["Travel"]
 category: "Guide"
 destination: "New Zealand"
 image: "/assets/images/uploads/1790312994700-img_4506.jpg"
+image_alt: "The Church of the Good Shepherd on the shore of Lake Tekapo, New Zealand"
 image_thumb: "/assets/images/uploads/1790313000346-image_thumb.jpg"
 image_hero: "/assets/images/uploads/1790313003561-image_hero.jpg"
 dek: "A car up north, a campervan down south, and the honest numbers behind our 2,900 km loop."
@@ -16,7 +17,7 @@ featured: true
 
 Fifteen days, two islands, one rental car, one campervan and about 2,900 km of scenery that made us pull over every ten minutes. This is how two Indonesians living in Singapore finally did New Zealand, from Auckland all the way down to Milford Sound and back to Christchurch.
 
-![](/assets/images/uploads/1790313031187-img_4405.jpg)
+![Snow-capped mountains rising above a red hut with a green roof in New Zealand's South Island](/assets/images/uploads/1790313031187-img_4405.jpg)
 
 ## ✨ The trip in numbers
 
@@ -29,7 +30,7 @@ Fifteen days, two islands, one rental car, one campervan and about 2,900 km of s
 ## 🗺️ The route: one big loop
 
 
-![](/assets/images/uploads/1790317503756-nz-route-map---the-candid-duo_1.png)
+![Map of our 15-day New Zealand road trip: Auckland to Wellington on the North Island, then a South Island loop from Christchurch via Franz Josef, Queenstown, Milford Sound and Lake Tekapo](/assets/images/uploads/1790317503756-nz-route-map---the-candid-duo_1.png)
 
 
 
@@ -69,7 +70,7 @@ Day 4 was the **Desert Road**, with Mt Ruapehu and Tongariro watching over us al
 In Christchurch we swapped the car for a Maui campervan and immediately detoured for **Sheffield Pies** (buy an extra for the road). Then over **Arthur's Pass**, past the giant boulders of **Castle Hill**, to a quiet lakeside DOC campsite for just SGD 21.
 
 
-![](/assets/images/uploads/1790313086680-2d4155c9-658b-4279-a665-319dfc7a8237_1_201_a.jpeg)
+![The giant limestone boulders of Castle Hill, on the road to Arthur's Pass](/assets/images/uploads/1790313086680-2d4155c9-658b-4279-a665-319dfc7a8237_1_201_a.jpeg)
 
 
 The days that followed were the reason we came:
@@ -80,13 +81,13 @@ The days that followed were the reason we came:
 - 🍣 **Lake Pukaki**: fresh salmon sashimi at the foot of Aoraki/Mt Cook, then our wildest night: no power, no signal, a sky full of stars
 - ⭐ **Hooker Valley Track** to a glacier lake, then stargazing in Tekapo's Dark Sky Reserve
 
-![](/assets/images/uploads/1790317144805-0edbe716-e2fb-462b-8766-0a4c8f72eed7_1_201_a.jpeg)
+![Mitre Peak rising over Milford Sound, seen from the cruise wharf](/assets/images/uploads/1790317144805-0edbe716-e2fb-462b-8766-0a4c8f72eed7_1_201_a.jpeg)
 
-![](/assets/images/uploads/1790317747677-img_4409.jpg)
+![A gravel trail through alpine scrub toward snow-covered peaks near Aoraki/Mt Cook](/assets/images/uploads/1790317747677-img_4409.jpg)
 
 We finished with the **TranzAlpine**, one of the world's great train rides, coast to coast over the Southern Alps from an open-air viewing carriage.
 
-![](/assets/images/uploads/1790317709540-img_4594.jpg)
+![Snowy mountains and green farmland through the window of the TranzAlpine train](/assets/images/uploads/1790317709540-img_4594.jpg)
 
 ## 💰 What it really cost
 
@@ -108,7 +109,7 @@ You need a proper **visitor visa**, not the NZeTA, even if you live in Singapore
 4. **Leave Queenstown by 7 am for Milford.** Save the photo stops for the drive back so you don't miss your cruise.
 5. **Pack soft bags.** Campervan storage is tiny, and duffels squash into lockers far better than suitcases.
 
-![](/assets/images/uploads/1790317584877-img_4427.jpg)
+![Hiking the Hooker Valley Track, with snowy Aoraki/Mt Cook ahead](/assets/images/uploads/1790317584877-img_4427.jpg)
 
 ## 🎒 Want our full itinerary?
 

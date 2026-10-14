@@ -5,12 +5,14 @@ layout: default
    Destination pages just set `destination:` (the default filter_by). The Family page sets
    `filter_by: section` and `section: Family`, which also matches stories in both sections.
    Optional: eyebrow, lead, filters (category buttons, shown once 2+ categories exist),
-   empty (text while there are no stories), back_url + back_text (the button underneath). {% endcomment %}
+   empty (text while there are no stories), back_url + back_text (the button underneath),
+   heading (the big title on the page, when `title` is worded for Google instead, e.g. title
+   "Jeju Travel Guides" with heading "Jeju"). {% endcomment %}
 {% assign filter_by = page.filter_by | default: "destination" %}
 {% assign filter_value = page[filter_by] %}
 <div class="wrap page-hero">
   <span class="eyebrow">{{ page.eyebrow | default: "Destination" }}</span>
-  <h1>{{ page.title }}</h1>
+  <h1>{{ page.heading | default: page.title }}</h1>
   {% if page.lead %}<p class="lead">{{ page.lead }}</p>{% endif %}
 </div>
 <section class="section" style="padding-top:clamp(1.5rem,3vw,2.5rem)">

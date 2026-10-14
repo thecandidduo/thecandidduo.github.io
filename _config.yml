@@ -4,11 +4,15 @@
 # ============================================================
 
 title: The Candid Duo
-tagline: A Travel Journal
+# Shown nowhere on the page: it completes the homepage's Google title ("The Candid Duo | …").
+tagline: Travel Guides & Family Stories
+# Also printed in the footer.
 description: >-
   Unscripted travel stories, vlogs and podcasts from two wanderers —
   Jeju, New Zealand, Tasmania, Umroh and everywhere in between.
-author: The Candid Duo
+author: The Candid Duo       # more details for search engines in _data/authors.yml
+# The logo search engines show for the site and as the stories' publisher.
+logo: /assets/images/uploads/1789569997436-the-candid-duo-logo.png
 
 # Your live web address. This is our own domain (the CNAME file next to this
 # one tells GitHub Pages about it; thecandidduo.github.io now redirects here).
@@ -74,6 +78,13 @@ defaults:
   # Search Console ownership files (keep them — deleting one un-verifies the site).
   - scope: { path: "google*.html" }
     values: { sitemap: false }
+  # Share image (link previews, Google) for pages that don't set their own `image:`. Only story
+  # pages display `image` on the page itself, so this changes nothing visible. Set here rather
+  # than in the files because the CMS page editor drops front matter keys it doesn't know.
+  - scope: { path: "", type: "pages" }
+    values: { image: /assets/images/hero-brand.jpg }
+  - scope: { path: "about.md" }
+    values: { image: /assets/images/uploads/1790933277627-img_5330.jpg }
 
 # ---- Files Jekyll should ignore ----
 exclude:

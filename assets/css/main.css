@@ -452,6 +452,9 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
    of the photo rules above (`.dest-card img`: fill the card, dim, zoom on hover). */
 .dest-grid--compact{gap:clamp(.8rem,1.8vw,1.2rem)}
 .dest-grid--compact .dest-card{aspect-ratio:auto;height:clamp(92px,11vw,112px)}
+/* An odd card out on the last row spans it instead of sitting half-width beside a gap
+   (destinations without stories are left out, so the count isn't always even). */
+.dest-grid--compact > .dest-card:last-child:nth-child(odd){grid-column:1/-1}
 .dest-card--flag .dest-card__label{
   flex-direction:row;align-items:center;justify-content:flex-start;gap:clamp(.85rem,1.8vw,1.15rem);
   padding:0 clamp(1rem,2.2vw,1.5rem);

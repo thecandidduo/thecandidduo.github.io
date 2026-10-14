@@ -1,5 +1,5 @@
 ---
-title: "Tasmania, the Slow Road"
+title: "Tasmania Road Trip: Freycinet, Cradle Mountain & What It Cost"
 date: 2026-06-15
 published: true
 section: ["Travel"]

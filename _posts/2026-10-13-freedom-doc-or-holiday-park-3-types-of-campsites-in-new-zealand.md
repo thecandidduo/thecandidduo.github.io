@@ -1,10 +1,12 @@
 ---
-title: "Freedom, DOC or Holiday Park? 3 Types of Campsites in New Zealand"
+title: "Freedom Camping vs DOC vs Holiday Parks: NZ Campervan Guide"
 date: 2026-10-13
 published: true
 section: ["Travel"]
 category: "Guide"
 destination: "New Zealand"
+image: "/assets/images/uploads/1791873698098-image_hero.jpg"
+image_alt: "Our Maui campervan parked under a clear blue sky in New Zealand"
 image_thumb: "/assets/images/uploads/1791873693376-image_thumb.jpg"
 image_hero: "/assets/images/uploads/1791873698098-image_hero.jpg"
 excerpt: "Road-tripping New Zealand by campervan? There are 3 campsite types: freedom camps, DOC campsites and holiday parks. Picking the wrong one can affect your trip, especially in winter."

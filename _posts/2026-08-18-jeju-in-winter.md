@@ -1,5 +1,5 @@
 ---
-title: "A Winter in Jeju"
+title: "Jeju in Winter: Tangerines, Sunrise Peak & Haenyeo Divers"
 date: 2026-08-18
 published: true
 section: ["Travel"]
@@ -18,7 +18,7 @@ Everyone told us Jeju was Korea's Hawaii. After a week there in the cold months,
 
 We landed with a tidy plan: sunrise at the crater, the two famous waterfalls, a coastal drive, done. What we actually did was mostly abandon the plan by day two and let the island set the pace.
 
-![](/assets/images/uploads/1790176376391-img_8342.jpg)
+![Salt bread and pastries on a tray at a seaside café in Jeju, with the sea behind](/assets/images/uploads/1790176376391-img_8342.jpg)
 
 ## The island runs on tangerines
 

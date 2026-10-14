@@ -18,13 +18,15 @@ layout: default
 
   {% if page.image %}
   <div class="wrap">
-    <img class="post-hero__cover" src="{{ page.image | relative_url }}" alt="{{ page.image_alt | default: page.title | escape }}">
+    <img class="post-hero__cover" src="{{ page.image | relative_url }}" alt="{{ page.image_alt | default: page.title | escape }}" fetchpriority="high">
     {% if page.image_credit %}<p style="text-align:center;font-family:var(--font-ui);font-size:.78rem;color:var(--muted);margin-top:.6rem">{{ page.image_credit }}</p>{% endif %}
   </div>
   {% endif %}
 
   <div class="article">
-    {% assign paras = content | split: '</p>' %}
+    {% comment %} Photos in the story load only as the reader nears them; the cover above stays eager. {% endcomment %}
+    {% assign body = content | replace: '<img ', '<img loading="lazy" decoding="async" ' %}
+    {% assign paras = body | split: '</p>' %}
     {% assign total = paras.size %}
     {% for p in paras %}
       {{ p }}{% unless forloop.last %}</p>{% endunless %}
@@ -76,19 +78,6 @@ layout: default
     </div>
   </section>
 </article>
-
-{% comment %} ---- Article structured data for SEO ---- {% endcomment %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": {{ page.title | jsonify }},
-  "image": ["{{ page.image | absolute_url }}"],
-  "datePublished": "{{ page.date | date_to_xmlschema }}",
-  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
-  "author": {"@type": "Organization", "name": {{ site.author | jsonify }}},
-  "publisher": {"@type": "Organization", "name": {{ site.title | jsonify }}},
-  "description": {{ page.excerpt | strip_html | truncatewords: 30 | jsonify }},
-  "mainEntityOfPage": "{{ url_full }}"
-}
-</script>
+{% comment %} The story's structured data (BlogPosting) comes from {% raw %}{% seo %}{% endraw %} in head.html, with the
+   author details from _data/authors.yml and the publisher logo from `logo` in _config.yml. A
+   hand-written copy used to sit here too, which gave Google two articles per page. {% endcomment %}

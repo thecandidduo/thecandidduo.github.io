@@ -1,6 +1,7 @@
 ---
 layout: category
-title: Family
+title: "Family Life & Parenting Stories"   # the Google title; `heading` is what the page shows
+heading: Family
 eyebrow: Family Life
 permalink: /family/
 filter_by: section

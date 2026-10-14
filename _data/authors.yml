@@ -1,0 +1,6 @@
+# Extra author details jekyll-seo-tag adds to each story's structured data (BlogPosting).
+# The key must match `author:` in _config.yml exactly. "Organization" because the byline is the
+# duo, not one person.
+"The Candid Duo":
+  type: Organization
+  url: https://thecandidduo.com/about/

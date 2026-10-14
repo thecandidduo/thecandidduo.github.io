@@ -2,12 +2,12 @@
 title: "About Us"
 eyebrow: "Who We Are"
 lead: "Two plus one wanderers, one honest lens and unscripted captures of our travel and life journey"
-description: "Meet The Candid Duo — the couple behind the travel stories, vlogs and podcasts."
+description: "Meet The Candid Duo: an Indonesian couple (plus one toddler) in Singapore, behind the travel guides, family stories, vlogs and podcast."
 layout: "page"
 permalink: "/about/"
 ---
 
-![](/assets/images/uploads/1790933277627-img_5330.jpg)
+![The three of us in front of our campervan in New Zealand](/assets/images/uploads/1790933277627-img_5330.jpg)
 
 We're **The Candid Duo** — a couple (+1 toddler) who got tired of the highlight reel.
 

@@ -1,11 +1,12 @@
 ---
-title: "Visa-Free to Jeju, But We Still Brought a Whole Folder (an Indonesian Passport POV)"
+title: "Jeju Visa-Free with an Indonesian Passport: What We Brought"
 date: 2026-10-13
 published: true
 section: ["Travel"]
 category: "Guide"
 destination: "Jeju"
 image: "/assets/images/uploads/1791873146396-img_8429.jpg"
+image_alt: "The three of us in front of Seongsan Ilchulbong, Jeju"
 image_thumb: "/assets/images/uploads/1791873165886-image_thumb.jpg"
 image_hero: "/assets/images/uploads/1791873176145-image_hero.jpg"
 excerpt: "Jeju is visa-free for Indonesian passports if you fly in direct, but we still packed a whole folder. Changi asked a couple of questions. Jeju immigration? Literally nothing."

@@ -1,11 +1,12 @@
 ---
-title: "Everything We Ate in Jeju: 16 Food Spots to Try"
+title: "Jeju Food Guide: What to Eat (16 Spots We Loved)"
 date: 2026-09-25
 published: true
 section: ["Travel"]
 category: "Food"
 destination: "Jeju"
 image: "/assets/images/uploads/1790343706397-2170e5cc-2b71-47a3-9f13-e50f4a61c62c_1_105_c.jpeg"
+image_alt: "Collage of what we ate in Jeju: salt bread, seafood ramyeon, grilled cutlassfish, tangerine desserts and more"
 image_thumb: "/assets/images/uploads/1790343720362-image_thumb.jpg"
 image_hero: "/assets/images/uploads/1790343722814-image_hero.jpg"
 excerpt: "Salt bread, seafood ramyeon, whole grilled cutlassfish and market hotteok. The 16 Jeju cafés, restaurants and street food stalls we loved."
@@ -28,7 +29,7 @@ A seaside café in Aewol, and our favourite bakery tray of the trip. We loaded u
 - **Location:** 52 Aewolbukseo-gil, Aewol-eup, Jeju-si (Aewol coast). Open daily 9am–9pm.
 - **Price range:** Salt bread and pastries ₩5,500–6,500; coffee ₩9,000–10,000. ([DiningCode](https://www.diningcode.com/profile.php?rid=zylCybGEXjcy))
 
-![](/assets/images/uploads/1790343904420-img_9793.jpeg)
+![Salt bread, a pistachio-crusted chocolate loaf, cheesy baked bread and a cream bun at Haejigae Cafe](/assets/images/uploads/1790343904420-img_9793.jpeg)
 
 ### Antoinette Cafe & Bistro
 
@@ -37,7 +38,7 @@ A calm stop for a proper café breakfast. We had caramelised garlic-butter toast
 - **Location:** Yongdam branch, 671 Seohaean-ro, Jeju-si, near the airport with sea views. There's also a Seogwipo branch at 37 Chilsimni-ro 214beon-gil. Open daily 8am–7:30pm.
 - **Price range:** Drinks ₩5,000–8,500; breads and pastries are priced separately on the counter. ([DiningCode](https://www.diningcode.com/profile.php?rid=ze7kgC2Cia3B))
 
-![](/assets/images/uploads/1790343928782-img_9795.jpeg)
+![Garlic-butter toast, an almond croissant, a croissant roll, an egg tart and a matcha latte at Antoinette Cafe & Bistro](/assets/images/uploads/1790343928782-img_9795.jpeg)
 
 ### Orrrn
 

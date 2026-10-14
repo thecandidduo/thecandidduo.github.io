@@ -13,6 +13,23 @@
 
 {% seo %}
 
+{% comment %} A listing page with no stories yet (e.g. a destination whose only story went back to draft)
+   is thin content to Google, so keep it out of search until it has one — this lifts by itself. {% endcomment %}
+{% if page.layout == "category" %}
+  {% assign seo_filter_by = page.filter_by | default: "destination" %}
+  {% assign seo_listed = site.posts | where: seo_filter_by, page[seo_filter_by] %}
+  {% if seo_listed.size == 0 %}<meta name="robots" content="noindex">{% endif %}
+{% endif %}
+
+{% comment %} Homepage only: who runs the site, with its logo and social profiles (the CMS's Socials list,
+   _data/socials.yml), so Google can tie the site and those accounts together. {% endcomment %}
+{% if page.url == "/" %}
+  {% assign profiles = site.data.socials.links | where_exp: "l", "l.platform != 'Email'" | where_exp: "l", "l.url != ''" %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":{{ site.title | jsonify }},"url":{{ "/" | absolute_url | jsonify }}{% if site.logo %},"logo":{{ site.logo | absolute_url | jsonify }}{% endif %},"sameAs":[{% for l in profiles %}{% assign u = l.url %}{% unless u contains "://" %}{% assign u = "https://" | append: u %}{% endunless %}{{ u | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}]}
+</script>
+{% endif %}
+
 {% comment %} ---- Google AdSense loader (only when enabled) ---- {% endcomment %}
 {% if site.adsense.enabled and site.adsense.publisher_id != "ca-pub-XXXXXXXXXXXXXXXX" %}
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.adsense.publisher_id }}" crossorigin="anonymous"></script>

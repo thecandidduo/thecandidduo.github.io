@@ -4,6 +4,9 @@ date: 2026-10-16
 published: true
 section: ["Family"]
 category: "Parenting"
+image: "/assets/images/uploads/1794237236048-whatsapp-image-2026-11-09-at-23.11.03.jpeg"
+image_thumb: "/assets/images/uploads/1794237245739-image_thumb.jpg"
+image_hero: "/assets/images/uploads/1794237251378-image_hero.jpg"
 excerpt: "One year of being a stay-at-home mum with zero help made me braver, a bit more patient (and somehow also less?), and very, very short on me-time."
 tags: ["parenting", "stay at home mum", "sahm", "motherhood", "no village", "parenting in singapore", "flying solo with a toddler"]
 featured: false

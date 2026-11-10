@@ -1,7 +1,7 @@
 // Hand-rolled front matter + simple-YAML read/write. No library: the shapes
 // this CMS touches are fixed and small (flat front matter; `_data/*.yml` is
-// always a dict of arrays-of-flat-objects), so a full YAML parser is more
-// risk than it's worth. Every rewritten file is a full re-serialization, not
+// a dict of arrays-of-flat-objects, plus the odd single flat object), so a
+// full YAML parser is more risk than it's worth. Every rewritten file is a full re-serialization, not
 // a format-preserving edit — same trade-off Decap itself makes.
 
 function parseScalar(raw) {
@@ -16,13 +16,16 @@ function parseScalar(raw) {
     return inner.split(",").map((item) => parseScalar(item.trim()));
   }
   if (s.startsWith('"') && s.endsWith('"') && s.length >= 2) {
-    return s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+    // One pass, so an escaped backslash before an n (\\n) stays a backslash + n.
+    return s.slice(1, -1).replace(/\\(["\\n])/g, (_, c) => (c === "n" ? "\n" : c));
   }
   return s;
 }
 
+// Line breaks (a textarea's Enter) are written as \n: a raw newline would end the
+// value early when parsed back line by line here. Jekyll reads \n as a real newline.
 function quoteString(str) {
-  return '"' + String(str).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+  return '"' + String(str).replace(/\r\n?/g, "\n").replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n") + '"';
 }
 
 // `fieldTypes`: { [key]: 'date' | 'boolean' | 'tags' | 'number' | anything-else(string) }
@@ -113,6 +116,9 @@ export function serializeFlatYaml(data, fields) {
 //       title: Hi
 //     - image: /b.jpg
 //       title: Bye
+// or (a `single: true` tab, e.g. the homepage's Who We Are block) one flat object:
+//   about:
+//     title: Hi
 export function parseListsYaml(text) {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const result = {};
@@ -140,6 +146,12 @@ export function parseListsYaml(text) {
       currentItem[cont[1]] = parseScalar(cont[2]);
       continue;
     }
+    // Indented `key: value` with no list item open: the section is a single object.
+    if (cont && currentKey) {
+      if (Array.isArray(result[currentKey]) && result[currentKey].length === 0) result[currentKey] = {};
+      if (!Array.isArray(result[currentKey])) result[currentKey][cont[1]] = parseScalar(cont[2]);
+      continue;
+    }
   }
   return result;
 }
@@ -150,6 +162,15 @@ export function parseListsYaml(text) {
 export function serializeListsYaml(data, sections) {
   const out = [];
   for (const section of sections) {
+    if (section.single) {
+      const obj = data[section.key] || {};
+      const lines = section.itemFields
+        .filter((f) => obj[f.name] !== null && obj[f.name] !== undefined && obj[f.name] !== "")
+        .map((f) => `  ${f.name}: ${serializeScalar(obj[f.name], f.type)}`);
+      // An all-empty block is left out entirely; the template falls back to its defaults.
+      if (lines.length) out.push(`${section.key}:`, ...lines);
+      continue;
+    }
     const items = data[section.key] || [];
     out.push(`${section.key}:`);
     if (items.length === 0) {

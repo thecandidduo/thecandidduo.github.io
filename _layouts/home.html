@@ -171,17 +171,20 @@ header_overlay: true
 {% endif %}
 
 <!-- ===================== ABOUT TEASER ===================== -->
+{% comment %} Edited in the CMS under Homepage → Who We Are (`about:` in _data/homepage.yml).
+   Any field left empty falls back to the original wording below. {% endcomment %}
+{% assign about = site.data.homepage.about %}
 <section class="section">
   <div class="wrap">
     <div class="featured" style="border:0;padding-bottom:0;margin-bottom:0">
       <div class="card__media" style="aspect-ratio:3/2;margin:0;border-radius:2px;overflow:hidden">
-        <img src="{{ '/assets/images/about-duo.jpg' | relative_url }}" alt="The Candid Duo">
+        <img src="{{ about.image | default: '/assets/images/about-duo.jpg' | relative_url }}" alt="{{ about.image_alt | default: 'The Candid Duo' | escape }}" loading="lazy" decoding="async">
       </div>
-      <div>
-        <span class="eyebrow">Who We Are</span>
-        <h2 style="font-size:clamp(1.9rem,3.6vw,2.8rem)">Two wanderers, one honest lens.</h2>
-        <p style="font-size:1.12rem">We're the couple behind The Candid Duo — trading the predictable for the unscripted, and writing it all down before we forget. No sponsored gloss, just the real cost, the wrong turns, and the moments that made the trip.</p>
-        <a class="btn" href="{{ '/about/' | relative_url }}">Our story</a>
+      <div class="about-teaser__text">
+        <span class="eyebrow">{{ about.eyebrow | default: "Who We Are" | escape }}</span>
+        <h2 style="font-size:clamp(1.9rem,3.6vw,2.8rem)">{{ about.title | default: "Two wanderers, one honest lens." | escape }}</h2>
+        {{ about.text | default: "We're the couple behind The Candid Duo — trading the predictable for the unscripted, and writing it all down before we forget. No sponsored gloss, just the real cost, the wrong turns, and the moments that made the trip." | markdownify }}
+        <a class="btn" href="{{ about.cta_url | default: '/about/' | relative_url }}">{{ about.cta_text | default: "Our story" | escape }}</a>
       </div>
     </div>
   </div>

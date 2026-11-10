@@ -2,6 +2,7 @@
 // (Decap's schema format). Field shape: { name, label, type, options?,
 // default?, hint?, required? }. type is one of:
 //   text | textarea | number | date | select | multiselect | boolean | tags | image | image_crop | markdown
+// Optional layout keys: `full: true` spans both form columns; `rows` sets a textarea's height.
 // `isBody: true` marks the one field (per collection) that holds the
 // markdown body instead of a front matter key.
 // `image_crop` is a derived, actually-cropped image (drag-to-pan + zoom,
@@ -116,6 +117,17 @@ const mediaItemFields = [
   { name: "image", label: "Image", type: "image" },
   { name: "embed_id", label: "Video ID (playable embed)", type: "text", hint: "YouTube or TikTok video ID — filled in automatically by the buttons above. Leave blank to just link out instead of embedding." },
 ];
+// The homepage's "Who We Are" block, near the bottom of the page. One object, not a list
+// (`single: true` on its tab). Any field left empty shows the original wording (defaults in home.html).
+const aboutFields = [
+  { name: "image", label: "Photo", type: "image", hint: "Landscape works best: it's shown in a 3:2 frame, trimmed to fit (about 1200×800)." },
+  { name: "image_alt", label: "Photo description", type: "text", hint: "Describe the photo for screen readers and Google, e.g. \"The three of us at Lake Tekapo\"." },
+  { name: "eyebrow", label: "Small label", type: "text", hint: "The small orange line above the heading." },
+  { name: "title", label: "Heading", type: "text" },
+  { name: "text", label: "Text", type: "textarea", full: true, rows: 6, hint: "Leave a blank line between paragraphs." },
+  { name: "cta_text", label: "Button text", type: "text" },
+  { name: "cta_url", label: "Button link", type: "text", hint: "A page on this site, like /about/, or a full https:// link." },
+];
 const navItemFields = [
   { name: "title", label: "Label", type: "text" },
   { name: "url", label: "Link", type: "text" },
@@ -191,6 +203,7 @@ export const SCHEMA = {
       { key: "hero", label: "Hero Slides", singular: "Slide", itemFields: heroItemFields, titleField: "title" },
       { key: "ticker", label: "Ticker", singular: "Ticker Item", itemFields: tickerItemFields, titleField: "label" },
       { key: "media_features", label: "Watch & Listen", singular: "Media Card", itemFields: mediaItemFields, titleField: "title" },
+      { key: "about", label: "Who We Are", single: true, itemFields: aboutFields },
     ],
   },
   navigation: {

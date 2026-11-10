@@ -376,7 +376,12 @@ async function renderDatafile(key, schema) {
   const file = await GH.getFile(state.token, schema.file);
   const data = file ? parseListsYaml(file.text) : {};
   schema.tabs.forEach((t) => {
-    if (!data[t.key]) data[t.key] = [];
+    // `single` tabs hold one object (e.g. Homepage → Who We Are); the rest are lists.
+    if (t.single) {
+      if (!data[t.key] || Array.isArray(data[t.key])) data[t.key] = {};
+    } else if (!Array.isArray(data[t.key])) {
+      data[t.key] = [];
+    }
   });
   const st = { sha: file ? file.sha : null, data, activeTab: schema.tabs[0].key };
   if (schema.tabs.some((t) => t.key === "hero")) {
@@ -423,7 +428,7 @@ function renderDatafileBody(key, schema, st) {
     </div>
     <div class="error-banner" id="form-error" hidden></div>
     <div class="tabs">
-      ${schema.tabs.map((t) => `<button class="tab ${t.key === st.activeTab ? "active" : ""}" data-tab="${t.key}">${t.label} (${(st.data[t.key] || []).length})</button>`).join("")}
+      ${schema.tabs.map((t) => `<button class="tab ${t.key === st.activeTab ? "active" : ""}" data-tab="${t.key}">${t.label}${t.single ? "" : ` (${(st.data[t.key] || []).length})`}</button>`).join("")}
     </div>
     <div id="tab-body"></div>`;
 
@@ -468,6 +473,11 @@ function renderDatafileBody(key, schema, st) {
 function renderTabItems(schema, st) {
   const tab = schema.tabs.find((t) => t.key === st.activeTab);
   const body = document.getElementById("tab-body");
+  if (tab.single) {
+    body.innerHTML = `<div class="single-editor entry-form" id="single-editor">${renderFormFields(tab.itemFields, st.data[tab.key], `${tab.key}_`)}</div>`;
+    wireImageFields(body);
+    return;
+  }
   const items = st.data[tab.key] || [];
   const singular = tab.singular;
   body.innerHTML = `
@@ -637,6 +647,11 @@ function wireStoryPickers(scopeEl, posts) {
 
 function syncActiveTabFromDom(schema, st) {
   const tab = schema.tabs.find((t) => t.key === st.activeTab);
+  if (tab.single) {
+    const el = document.getElementById("single-editor");
+    if (el) st.data[tab.key] = collectFormValues(el, tab.itemFields).values;
+    return;
+  }
   const container = document.getElementById("list-editor");
   if (!container) return;
   const items = [];
@@ -955,7 +970,7 @@ function renderFormFields(fields, values, idPrefix = "") {
     .filter((f) => !f.isBody && !(f.type === "image_crop" && f.cropFor))
     .map(
       (f) => `
-    <div class="form-row">
+    <div class="form-row${f.full ? " form-row-full" : ""}">
       <label for="${idPrefix}f_${f.name}">${escapeHtml(f.label)}${f.required ? " *" : ""}</label>
       ${fieldInputHtml(f, values[f.name], idPrefix, values, fields)}
       ${f.hint ? `<p class="hint">${escapeHtml(f.hint)}</p>` : ""}
@@ -1036,7 +1051,7 @@ function fieldInputHtml(field, rawValue, idPrefix = "", allValues = {}, allField
   const value = rawValue !== undefined && rawValue !== null ? rawValue : field.default !== undefined ? field.default : "";
   switch (field.type) {
     case "textarea":
-      return `<textarea id="${id}" data-field="${field.name}" data-type="textarea" rows="3">${escapeHtml(value)}</textarea>`;
+      return `<textarea id="${id}" data-field="${field.name}" data-type="textarea" rows="${field.rows || 3}">${escapeHtml(value)}</textarea>`;
     case "date":
       return `<input type="date" id="${id}" data-field="${field.name}" data-type="date" value="${escapeAttr(value)}">`;
     case "number":

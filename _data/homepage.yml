@@ -41,3 +41,11 @@ media_features:
     title: "[Jeju Trip] Ep.3 Arte Museum, Hallasan Hike, Osulloc & More!"
     url: "https://studio.youtube.com/video/d53q1sHuZGI/edit"
     image: "/assets/images/uploads/1790932780765-maxresdefault.jpg"
+about:
+  image: "/assets/images/about-duo.jpg"
+  image_alt: "The Candid Duo"
+  eyebrow: "Who We Are"
+  title: "Two wanderers, one honest lens."
+  text: "We're the couple behind The Candid Duo — trading the predictable for the unscripted, and writing it all down before we forget. No sponsored gloss, just the real cost, the wrong turns, and the moments that made the trip."
+  cta_text: "Our story"
+  cta_url: "/about/"
